@@ -39,9 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'backend',
-    'corsheaders',
+    # 'corsheaders',
     'sass_processor',
-    'import_export',
+    # 'import_export',
     'bootstrap_modal_forms',
     'widget_tweaks',
 ]

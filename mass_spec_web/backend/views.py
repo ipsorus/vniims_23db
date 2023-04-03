@@ -16,7 +16,7 @@ from plotly.graph_objs import Figure
 from . import forms
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from .models import UserProfile
-from .permissions import IsOwnerProfileOrReadOnly
+# from .permissions import IsOwnerProfileOrReadOnly
 
 # class SubmitterView(ReadOnlyModelViewSet):
 #     # authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
