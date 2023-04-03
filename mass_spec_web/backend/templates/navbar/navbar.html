@@ -1,0 +1,59 @@
+<nav class="navbar navbar-expand-xl fixed-top navbar-dark">
+<!-- navbar dropdowns -->
+    <div class="navbar-header">
+        <a class="navbar-brand" href="/">ФГБУ ВНИИМС<span class="title-full"> - База масс-спектров</span></a>
+    </div>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Главная</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/upload">Загрузить</a>
+        </li>
+          <li class="nav-item">
+          <a class="nav-link" href="/display">Тестовый спектр</a>
+        </li>
+          <li class="nav-item dropdown">
+
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownLogin" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {% if user.is_authenticated %}
+              Панель управления
+              {% else %}
+              Вход / Регистрация
+              {% endif %}
+          </a>
+
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownLogin">
+              {% if user.is_superuser %}
+              <li><a class="dropdown-item" href="/admin" target="_blank">Админпанель</a></li>
+              {% endif %}
+              {% if user.is_authenticated %}
+              <li><a class="dropdown-item" href="/user_profile">Профиль {{ user }}</a></li>
+              <li><a class="dropdown-item" href="{% url 'logout' %}?next={{ request.path }}">Выход</a></li>
+              {% else %}
+              <li><a id="login-btn" class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Авторизация</a></li>
+              <li><a id="signup-btn" class="dropdown-item" href="#">Регистрация</a></li>
+              {% endif %}
+
+          </ul>
+        </li>
+      </ul>
+        <form name="searchBox" class="nav navbar-form navbar-right ng-pristine ng-valid" role="search">
+            <div class="input-group custom-search-form">
+                <input type="text" class="form-control ng-pristine ng-valid ng-touched" [(ngModel)]="searchBoxQuery"
+                       placeholder="Поиск..." triggers="focus"
+                       placement="bottom" name="search-box"/>
+
+                <span class="input-group-btn">
+                    <button data-toggle="collapse" data-target=".navbar-collapse.show" class="btn btn-repeat" type="submit" (click)="performSimpleQuery(searchBoxQuery)">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </button>
+                </span>
+            </div>
+        </form>
+    </div>
+</nav>

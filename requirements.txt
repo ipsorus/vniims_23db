@@ -1,3 +1,13 @@
 Django==4.1.7
-djangorestframework==3.14.0
+
 psycopg2==2.9.5
+libsass==0.22.0
+django-compressor==4.3.1
+django-sass-processor==1.2.2
+django-widget-tweaks==1.4.12
+django-bootstrap-modal-forms==2.2.1
+
+plotly~=5.13.1
+pymzml~=2.5.2
+pySPLASH~=0.0.1
+

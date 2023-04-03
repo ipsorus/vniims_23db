@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div ng-value="error"></div>
+
+<div class="row">
+    <div class="col-md-12">
+      <h3><i class="bi-CloudUpload"></i>Загрузка масс-спектра</h3>
+
+        <div class="h5">Загружайте отдельные масс-спектры с помощью простого управляемого мастера</div>
+        <br />
+        {% if not user.is_authenticated %}
+        <div class="alert alert-warning" role="alert">
+            <h4> Пожалуйста, <a id="login-btn_upload_page" href="#" class="fakeRef" data-bs-toggle="modal" data-bs-target="#loginModal">авторизуйтесь</a> перед началом загрузки!</h4>
+            <h5>Вы можете начать использовать загрузчик без учетной записи, но вы не сможете отправлять свои записи без регистрации и входа в систему.</h5>
+        </div>
+        {% endif %}
+
+
+        <!-- Select files to upload -->
+        <div *ngIf="page === 0" class="card">
+            <div class="card-header"><strong style="font-size: 1.2em;">Отправьте масс-спектр для загрузки</strong></div>
+
+            <div class="card-body">
+                <p class="lead">
+                    <small>Пожалуйста, выберите масс-спектр для загрузки. Вы можете выбрать загрузку файла, который загрузчик
+                        проанализирует и заполнит всей доступной составной информацией и метаданными, или вы можете вставить спектр
+                        и заполнить эти данные в мастере.
+                    </small>
+                </p>
+                <br />
+
+              <label><strong>Загрузка файла:</strong></label>
+                <form method="POST" action="" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <!-- Выводим каждое поле формы в отдельном параграфе -->
+                    <div class="input-group mb-3">
+                    <input class="form-control" type="file" id="formFile" name="file">
+                    <button class="btn btn-primary mb" type="submit">Загрузка</button>
+                    </div>
+                </form>
+                <span class="help-block">Поддерживаемый формат (.txt)</span>
+
+                <br />
+                <br />
+                <br />
+
+                <div class="input-group" [ngClass]="{'has-error': pasteError}">
+                  <div class="input-group">
+                    <label><strong>Вставить масс-спектр в виде текста:</strong></label>
+                  </div>
+                  <textarea class="form-control" [rows]="10" [(ngModel)]="pastedSpectrum"></textarea>
+                  <div class="input-group">
+                    <span class="text-left">
+                      Поддерживается загрузка в одну строку <code>[m/z]:[intensity] [m/z]:[intensity] ...</code> или многострочно:<br />
+                      <code>[m/z] [intensity]</code><br />
+                      <code>[m/z] [intensity]</code><br />
+                      <code>...</code><br />
+                    </span>
+                  </div>
+                </div>
+              <button class="btn btn-primary" (click)="parsePastedSpectrum(pastedSpectrum)">Загрузить спектр</button>
+            </div>
+        </div>
+        <!-- Loading message -->
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <h3 class="float-left" *ngIf="spectrum.compound[0].names.length > 0">Масс-спектр</h3>
+                    <h3 class="float-left" *ngIf="spectrum.compound[0].names.length === 0"> (идентификатор)</h3>
+                    <h3 class="float-right"><spectrum-feedback-results-curation [spectrum]="spectrum"></spectrum-feedback-results-curation></h3>
+                  </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12" *ngIf="spectrum.score">
+                            <span placement="right"
+                                  ngbTooltip="Click to see the explanation for the 0.0 + spectrum.score.score | number:'1.2-2' / 5 score"
+                                  (click)="showScore = !showScore">
+                                Рейтинг:
+                                <ngb-rating [(rate)]="spectrum.score.score" max="5" readonly="true"></ngb-rating>
+                              <i class="bi-QuestionCircle"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row" *ngIf="showScore && spectrum.score">
+                        <div class="col-md-12">
+                            <div class="card top17">
+                                <div class="card-header">
+                                    Explanation for the spectrum.score.score | number:'1.2-2' / 5 star score
+                                </div>
+                                <div class="card-body">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Impact Rating</th>
+                                            <th>Reason</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr *ngFor=" let impact of spectrum.score.impacts|orderBy: '-value'"
+                                            [ngClass]="impact.value < 0 ? 'danger' : (impact.value > 0 ? 'success' : 'warning')">
+                                            <td>impact.value | number:'1.2-2'</td>
+                                            <td>impact.reason</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card top17" *ngIf="!spectrum.score">This spectrum has not yet been curated.</div>
+                        </div>
+                    </div>
+
+                    <div class="row top5" *ngIf="spectrum.library !== null">
+                        <div class="col-md-12">
+                            <ul class="list-unstyled">
+                                <li>
+                                    <div class="h5">
+                                        <display-library-reference [spectrum]="spectrum"></display-library-reference>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row top5">
+                        <div class="col-md-8">
+                            <ul class="list-inline">
+                                <li *ngFor="let tag of spectrum.tags">
+                                    <tag-query [ruleBased]="tag.ruleBased" [tag]="tag" [type]="spectrum"></tag-query>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="col-md-4 text-right">
+                            <spectra-download [spectrum]="spectrum"></spectra-download>
+                        </div>
+                    </div>
+
+                    <div class="row top5">
+                        <div class="col-md-9">
+                            <ul class="list-inline">
+                                <li>
+                                    <div class="h5" *ngIf="spectrum.splash">
+                                        Всплеск: SPLASH (в разработке)
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="h5">
+                                        Отправитель: имя пользователя
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="col-md-3 text-right">
+                            <spectrum-review [spectrum]="spectrum" *ngIf="authenticationService.isLoggedIn()"></spectrum-review>
+                        </div>
+                    </div>
+
+
+                    <!-- mass spectral properties -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div *ngIf="currentFeedback.length > 0">
+                              <spectrum-feedback-results-community [spectrumID]="spectrum.id" [currentFeedback]="currentFeedback"></spectrum-feedback-results-community>
+                            </div>
+                        <div class="accordion" id="accordionPanelsStayOpenExample">
+                          <div class="accordion-item">
+                            <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                Масс-спектр
+                              </button>
+                            </h2>
+                            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                              <div class="accordion-body">
+                                  {% autoescape off %}
+                                  {{ plot_div }}
+                                  {% endautoescape %}
+                              </div>
+                            </div>
+                          </div>
+                          <div class="accordion-item">
+                            <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                                Таблица ионов / Таблица пиков
+                              </button>
+                            </h2>
+                            <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+                              <div class="accordion-body">
+                                <div style="height: 400px; overflow: auto; margin-top: 10px;">
+                                  <table class="table">
+                                    <thead>
+                                    <table class="table"><thead><tr><th>&nbsp;</th><th><button class="fakeRef">Ion</button></th><th><button class="fakeRef">Intensity</button></th><th><button class="fakeRef">Relative Intensity</button></th><th><button class="fakeRef">Annotation</button></th></tr></thead><tbody><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>74.03</td><td>0.39</td><td>1</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>100.13</td><td>1.29</td><td>3</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>133.06</td><td>1</td><td>3</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>133.06</td><td>2.55</td><td>7</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>134.06</td><td>0.5</td><td>1</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>162.13</td><td>1.22</td><td>3</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>177.17</td><td>6.77</td><td>17</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>178.97</td><td>0.52</td><td>1</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>185.17</td><td>0.73</td><td>2</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>212.13</td><td>8.49</td><td>22</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>213.1</td><td>17.8</td><td>46</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>214.94</td><td>1.5</td><td>4</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>226.32</td><td>0.36</td><td>1</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>241.11</td><td>1.14</td><td>3</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>256.09</td><td>39.05</td><td>100</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>257.74</td><td>3.13</td><td>8</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>258.26</td><td>1.89</td><td>5</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>259.84</td><td>0.45</td><td>1</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>329.11</td><td>20.05</td><td>51</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><tr><td><input type="checkbox" class="ng-untouched ng-pristine ng-valid"></td><td>331.08</td><td>1.39</td><td>4</td><td><input type="text" placeholder="Annotation" class="form-control ng-untouched ng-pristine ng-valid"></td></tr><!----></tbody></table>
+                                    </thead>
+                                    <tbody>
+                                   <!-- <tr *ngFor="let ion of massSpec | filterPipe:ionTableSort"> -->
+                                   <tr *ngFor="let ion of massSpec|orderBy: ionTableSort">
+                                      <td>ion.ion | number : '1.0-6'</td>
+                                      <td>ion.intensity | number : '1.0-6'</td>
+                                      <td>
+                                        ion.annotation
+
+                                        <!-- display this, if it's a computed value -->
+                                        <i class="bi-Flask" *ngIf="ion.computer === true" ngbTooltip="Calculated by MoNA auto curation" placement="top"></i>
+                                      </td>
+                                    </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="accordion-item">
+                            <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+                                Дополнительная информация
+                              </button>
+                            </h2>
+                            <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
+                              <div class="accordion-body">
+                                  <div class="card-body"><div class="lead"><small>Метаданные обеспечивают более полное представление о масс-спектре и позволяют пользователям легче находить важные спектры. Это также повышает точность автоконфигурации и может повысить оценку этой записи spectrum. Ниже приведен список <b>настоятельно рекомендуемых</b> к предоставлению метаданных. </small></div><br><div style="margin-top: 10px;"><div><label>Введение источника / Тип хроматографии:</label><br><select name="chromatography" class="form-control ng-untouched ng-pristine ng-valid"><option value="" selected="selected">Выбрать один вариант</option><option value="Жидкостная хроматография (LC)">Жидкостная хроматография (LC)</option><option value="Газовая хроматография (GC)">Газовая хроматография (GC)</option><option value="Прямая инъекция/инфузия (DI)">Прямая инъекция/инфузия (DI)</option><option value="Капиллярный электрофорез (CE)">Капиллярный электрофорез (CE)</option></select></div><br><!----><div><label>Тип / уровень MS:</label><br><select name="mslevel" class="form-control ng-untouched ng-pristine ng-valid"><option value="" selected="selected">Выбрать один вариант</option><option value="MS">MS</option><option value="MS2">MS2</option><option value="MS3">MS3</option><option value="MS4">MS4</option><option value="MS5">MS5</option></select></div><br><!----><div><label>Метод ионизации:</label><br><select name="ionization" class="form-control ng-untouched ng-pristine ng-valid"><option value="" selected="selected">Выбрать один вариант</option><option value="Химическая ионизация при атмосферном давлении (APCI)">Химическая ионизация при атмосферном давлении (APCI)</option><option value="Электронный удар (EI)">Электронный удар (EI)</option><option value="Химическая ионизация (CI)">Химическая ионизация (CI)</option><option value="Ионизация электрораспылением (ESI)">Ионизация электрораспылением (ESI)</option><option value="Быстрая атомная бомбардировка (FAB)">Быстрая атомная бомбардировка (FAB)</option><option value="Лазерная десорбция ионизация с матрицей (MALDI)">Лазерная десорбция ионизация с матрицей (MALDI)</option></select></div><br><div><label>Полярность / Ионный режим:</label><br><select name="ionmode" class="form-control ng-untouched ng-pristine ng-valid"><option value="" selected="selected">Выбрать один вариант</option><option value="Positive">Положительный</option><option value="Negative">Отрицательный</option></select></div><br><br><div><label>Авторы (через запятую):</label><br><input type="text" class="form-control ng-untouched ng-pristine ng-valid"></div></div></div>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                    </div>
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Составная информация</h4>
+
+                            <div class="accordion" id="accordionExample">
+                              <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingTwo">
+                                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Биологическая информация
+                                  </button>
+                                </h2>
+                                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                  <div class="accordion-body">
+                                    <strong>Это тело аккордеона второго элемента.</strong> По умолчанию он скрыт, пока плагин свертывания не добавит соответствующие классы, которые мы используем для стилизации каждого элемента. Эти классы управляют общим внешним видом, а также отображением и скрытием с помощью переходов CSS. Вы можете изменить все это с помощью собственного CSS или переопределить наши переменные по умолчанию. Также стоит отметить, что практически любой HTML может быть помещен в <code>.accordion-body</code>, хотя переход ограничивает переполнение.
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div *ngIf="spectrum.metaData.length">
+                                <h4>Масс-спектральные метаданные</h4>
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Наименование</th>
+                                        <th>Значение</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr *ngFor="let meta of spectrum.metaData | filterPipe: {category: '!annotation', deleted : '!true', hidden: '!true'}">
+                                        <td class="col-lg-4 col-md-4">
+                                          <metadata-query [metaData]="meta"> meta.name</metadata-query>
+                                        </td>
+                                        <td class="col-lg-8 col-md-8">
+                                            <span *ngIf="checkNumber(meta.value)">meta.value | number:'1.0-4' meta.unit</span>
+                                            <span *ngIf="!checkNumber(meta.value)">meta.value meta.unit</span>
+                                            <fa-icon [icon]="faFlask" *ngIf="meta.computed === true" ngbTooltip="Calculated by MoNA Auto Curation" placement="top"></fa-icon>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <br/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

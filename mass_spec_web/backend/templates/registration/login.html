@@ -1,0 +1,44 @@
+{% load widget_tweaks %}
+
+<form method="POST" action="" autocomplete="off">
+  {% csrf_token %}
+
+  <div class="modal-header">
+    <h3 class="modal-title">Авторизация</h3>
+    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+
+    <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+      {% for error in form.non_field_errors %}
+        <div class="alert alert-danger .alert-dismissible" role="alert">
+            <div class="text-left">
+              <strong>Ошибка:</strong> {{ error }}<br />
+            </div>
+          </div>
+      {% endfor %}
+    </div>
+
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {% render_field field class="form-control" placeholder=field.label autofocus="" %}
+        <div class="{% if field.errors %} invalid{% endif %}">
+          {% for error in field.errors %}
+            <p class="help-block">{{ error }}</p>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+    <a href="/" class="forgot-password">Восстановить пароль?</a>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+    <button type="submit" class="btn btn-primary" formnovalidate="formnovalidate">Войти</button>
+  </div>
+
+</form>
