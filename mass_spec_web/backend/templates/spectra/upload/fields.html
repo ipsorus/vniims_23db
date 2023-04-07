@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<script type="text/javascript">
+    function addField() {
+        var form = $("#fieldsForm");
+        var index = Number(form.children().last().attr("index")) + 1;
+        form.append(
+            '<div class="input-group mb-3" id="spectrumField' + index + '" index="' + index + '" }}>' +
+                '<input name="key' + index + '" type="text" class="form-control" placeholder="Key" value="">' + 
+                '<input name="value' + index + '" type="text" class="form-control" placeholder="Value" value="">' + 
+                '<button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="removeField(' + index + ');">Remove</button>' +
+            '</div>'
+        );
+    }
+
+    function removeField(id) {
+        $("#spectrumField" + id).remove();
+    }
+
+    function submitForm() {
+        $("#fieldsForm").submit();
+    }
+</script>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header text-center">
+                Spectrum Metadata
+                <a href="{% url 'upload_metadata' id=id %}" class="btn btn-link float-start">Назад</a>
+                <button type="button" class="btn btn-link float-end" onclick="submitForm();">Далее</button>
+            </div>
+            <div class="card-body">
+                <p>In addition to the recommended metadata, we encourage users to provide any other information available about this mass spectral record including:</p>
+                <ul>
+                    <li>Sample properties</li>
+                    <li>Instrument manufacturer and model</li>
+                    <li>Analytical methods and conditions</li>
+                </ul>
+                <form method="post" id="fieldsForm">
+                    {% csrf_token %}
+                    {% for field in fields %}
+                        <div class="input-group mb-3" id="spectrumField{{ forloop.counter0 }}" index={{ forloop.counter0 }}>
+                            <input id="key{{ forloop.counter0 }}" name="key{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Key" value="{{ field.key }}">
+                            <input id="value{{ forloop.counter0 }}" name="value{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Value" value="{{ field.value }}">
+                            <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="removeField({{ forloop.counter0 }});">Remove</button>
+                        </div>
+                    {% endfor %}
+                </form>
+                <button class="btn btn-outline-secondary" onclick="addField();" type="button" id="button-add-field">Add field</button>
+            </div>
+            <div class="card-footer text-body-secondary">
+                <a href="{% url 'upload_metadata' id=id %}" class="btn btn-link float-start">Назад</a>
+                <button type="button" class="btn btn-link float-end" onclick="submitForm();">Далее</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

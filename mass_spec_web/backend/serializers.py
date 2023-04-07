@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import UserProfile
+from .models import UserProfile, SpectrumMeasurement, SpectrumField
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -38,3 +38,15 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     class Meta:
         model = UserProfile
         fields = "__all__"
+
+
+class SpectrumMeasurementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpectrumMeasurement
+        fields = "__all__"
+
+
+class SpectrumFieldSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpectrumField
+        fields = ['key', 'value']

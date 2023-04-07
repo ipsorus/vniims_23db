@@ -1,3 +1,12 @@
+import os
+from pathlib import Path
+from .models import SpectrumMeasurement, SpectrumField, SpectrumPeak
+from .models import UserProfile
+from .forms import CustomUserCreationForm, CustomAuthenticationForm
+from . import forms
+import numpy
+from PIL import Image
+from matplotlib import pyplot
 import json
 from io import BytesIO
 
@@ -10,12 +19,15 @@ from django.urls import reverse_lazy
 from plotly.offline import plot
 from plotly.graph_objs import Figure
 
+import pathlib
+import matplotlib
+matplotlib.use('Agg')
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 # class SubmitterView(ReadOnlyModelViewSet):
 #     queryset = Submitter.objects.all()
 #     serializer_class = SubmitterSerializer
-from . import forms
-from .forms import CustomUserCreationForm, CustomAuthenticationForm
-from .models import UserProfile
 # from .permissions import IsOwnerProfileOrReadOnly
 
 # class SubmitterView(ReadOnlyModelViewSet):
@@ -75,13 +87,64 @@ from .models import UserProfile
 # class MyObtainTokenPairView(TokenObtainPairView):
 #     permission_classes = (AllowAny,)
 #     serializer_class = MyTokenObtainPairSerializer
-from utils.uploader import UploadSpectrum
 
 
 # class Index(generic.ListView):
 #     model = UserProfile
 #     context_object_name = 'user'
 #     template_name = 'index.html'
+
+
+sources = {
+    0: "Не выбрано",
+    1: "Жидкостная хроматография (LC)",
+    2: "Газовая хроматография (GC)",
+    3: "Прямая инъекция/инфузия (DI)",
+    4: "Капиллярный электрофорез (CE)",
+}
+levels = {
+    0: "Не выбрано",
+    1: "MS",
+    2: "MS2",
+    3: "MS3",
+    4: "MS4",
+    5: "MS5",
+}
+ionzations = {
+    0: "Не выбрано",
+    1: "Химическая ионизация при атмосферном давлении (APCI)",
+    2: "Электронный удар (EI)",
+    3: "Химическая ионизация (CI)",
+    4: "Ионизация электрораспылением (ESI)",
+    5: "Быстрая атомная бомбардировка (FAB)",
+    6: "Лазерная десорбция ионизация с матрицей (MALDI)",
+}
+polarities = {
+    0: "Не выбрано",
+    1: "Положительный",
+    2: "Отрицательный",
+}
+
+
+def get_5_largest(intensity_list: list[float]) -> list[int]:
+    largest = [0, 0, 0, 0, 0]
+
+    print('intensity_list', intensity_list)
+
+    # Find out largest value
+    for idx, intensity in enumerate(intensity_list):
+        if intensity > intensity_list[largest[0]]:
+            largest[0] = idx
+
+    # Now find next four largest values
+    for j in [1, 2, 3, 4]:
+        for idx, intensity in enumerate(intensity_list):
+            # if intensity_list[i] > intensity_list[largest[j]] and intensity_list[i] < intensity_list[largest[j-1]]:
+            if intensity_list[largest[j]] < intensity < intensity_list[largest[j - 1]]:
+                largest[j] = idx
+    print('largest', largest)
+
+    return largest
 
 
 class SignUpView(BSModalCreateView):
@@ -103,29 +166,276 @@ def main(request):
 
 
 def upload_spectrum(request):
-    if request.method == 'GET':
-        return render(request, 'spectra/upload/basicUploader.html')
     if request.method == 'POST' and 'file' in request.FILES:
         file = request.FILES['file']
-        uploading_file = UploadSpectrum({'file': file})
-        print('test', type(uploading_file))
-        # filename = BytesIO(uploading_file.read())
-        # spectrum_dict = {}
-        # for i in filename:
-        #     item = i.decode('utf8').replace("'", '"').split(':')
-        #     d = {item[0]: item[1].rsplit()}
-        #     spectrum_dict.update(d)
-        #
-        # s = json.dumps(spectrum_dict, indent=4, sort_keys=True)
-        # if uploading_file:
-        #     messages.success(request, 'Файл успешно загружен')
-        # else:
-        #     messages.error(request, "Ошибка загрузки файла")
+        file_content = BytesIO(file.read())
 
-        # print('test', type(request.FILES.get('file')))
+        measurement = SpectrumMeasurement.objects.create()
+        measurement.save()
 
-        # return render(request, 'spectra/upload/basicUploader.html', context=s)
-        return render(request, 'spectra/upload/basicUploader.html')
+        for line in file_content:
+            item = line.decode('utf8').replace("'", '"').split(':')
+            key, value = item[0], item[1].strip()
+
+            if key.lower().startswith("peak"):
+                x, y = value.split(' ')
+                SpectrumPeak.objects.create(measurement=measurement, x=x, y=y)
+            else:
+                field = SpectrumField.objects.create(measurement=measurement)
+                field.key = key
+                field.value = value
+                field.save()
+
+        return redirect('upload_peaks', id=measurement.id)
+
+    return render(request, 'spectra/upload/upload_file.html')
+
+
+def upload_metadata(request, id):
+    def get_value(d: dict, name: str):
+        s = d.get(name, None)
+        if s is None:
+            return None
+        return int(s)
+
+    object = SpectrumMeasurement.objects.get(id=id)
+
+    if request.method == "POST":
+        object.source = get_value(request.POST, "source")
+        object.level = get_value(request.POST, "level")
+        object.ionization = get_value(request.POST, "ionization")
+        object.polarity = get_value(request.POST, "polarity")
+        object.save()
+        return redirect('upload_fields', id=id)
+
+    return render(request, 'spectra/upload/metadata.html', {"id": id, "obj": object})
+
+
+def upload_fields(request, id):
+    if request.method == "POST":
+        SpectrumField.objects.filter(measurement_id=id).delete()
+
+        for i in range(0, 100):
+            key = request.POST.get("key%d" % i, None)
+            if key is None:
+                continue
+            value = request.POST.get("value%d" % i, None)
+
+            field = SpectrumField.objects.create(measurement_id=id)
+            field.key = key
+            field.value = value
+            field.save()
+
+        return redirect('upload_review', id=id)
+
+    fields = SpectrumField.objects.filter(measurement_id=id)
+    return render(request, 'spectra/upload/fields.html', {'fields': fields, "id": id})
+
+
+def generate_plot(id):
+    peaks = SpectrumPeak.objects.filter(measurement_id=id)
+    x_axis = numpy.array(list(map(lambda p: p.x, peaks)))
+    y_axis = numpy.array(list(map(lambda p: p.y, peaks)))
+
+    fig = pyplot.figure()
+    pyplot.bar(x_axis, y_axis)
+    # fig.legend('')
+    # pyplot.axis('off')
+    filename = os.path.join(BASE_DIR, 'staticfiles/plots/plot-%d.png' % id)
+    fig.savefig(filename, bbox_inches='tight')
+
+
+def upload_peaks(request, id):
+    if request.method == "POST":
+        if request.POST.get('_method', None) == "DELETE":
+            SpectrumMeasurement.objects.get(id=id).delete()
+            return redirect('main')
+
+        SpectrumPeak.objects.filter(measurement_id=id).delete()
+        i = 0
+
+        while True:
+            x = request.POST.get("x%d" % i, None)
+            if x is None:
+                break
+            y = request.POST.get("y%d" % i, None)
+            comment = request.POST.get("comment%d" % i, "")
+            active = request.POST.get("active%d" % i)
+            if active != 'on':
+                i += 1
+                continue
+
+            x = x.replace(',', '.')
+            y = y.replace(',', '.')
+            peak = SpectrumPeak.objects.create(
+                measurement_id=id, x=float(x), y=float(y), comment=comment)
+            peak.save()
+
+            i += 1
+
+        generate_plot(id)
+
+        return redirect('upload_metadata', id=id)
+
+    peaks = SpectrumPeak.objects.filter(measurement_id=id)
+
+    trace1 = {
+        "x": list(map(lambda p: p.x, peaks)),
+        "y": list(map(lambda p: p.y, peaks)),
+    }
+
+    result = get_5_largest(trace1['y'])
+
+    test_data = []
+    for i in range(len(trace1['x'])):
+        test_data.append([trace1['x'][i], trace1['y'][i]])
+
+    layout = {
+        "plot_bgcolor": '#fff',
+        "xaxis": {
+            "title": "m/z, Da",
+            "ticklen": 5,
+            "tickwidth": 1,
+            "ticks": "outside",
+            "showgrid": True,
+            "linecolor": '#DCDCDC',
+            "gridcolor": '#F5F5F5',
+            "tickcolor": 'white',
+            "tickfont": {'color': '#696969'}
+        },
+        "yaxis": {
+            "title": "Intensity, cps",
+            "ticklen": 5,
+            "tickwidth": 1,
+            "ticks": "outside",
+            "showgrid": True,
+            "linecolor": '#DCDCDC',
+            "gridcolor": '#F5F5F5',
+            "tickcolor": 'white',
+            "tickfont": {'color': '#696969'}
+        },
+        "hoverlabel": {
+            "bgcolor": "white",
+            "font_size": 14,
+            "font_family": "sans-serif"
+        }
+    }
+
+    p = pymzml.plot.Factory()
+    test_plot = ''
+
+    p.new_plot()
+    test = p.add(test_data, color=(30, 144, 255), style="sticks", name="peaks")
+    test_plot = test
+
+    fig = Figure(data=test_plot, layout=layout)
+
+    for i in range(len(result)):
+        fig.add_annotation(x=trace1['x'][result[i]], y=trace1['y'][result[i]],
+                           text=trace1['x'][result[i]],
+                           showarrow=False,
+                           yshift=10)
+
+    plot_div = plot(fig, output_type='div', include_plotlyjs=True,
+                    show_link=False, link_text="")
+
+    return render(request, 'spectra/upload/peaks.html', {'plot_div': plot_div, 'peaks': peaks})
+
+
+def upload_review(request, id):
+    measurement = SpectrumMeasurement.objects.get(id=id)
+    peaks = SpectrumPeak.objects.filter(measurement_id=id)
+    fields = SpectrumField.objects.filter(measurement_id=id)
+
+    trace1 = {
+        "x": list(map(lambda p: p.x, peaks)),
+        "y": list(map(lambda p: p.y, peaks)),
+    }
+
+    result = get_5_largest(trace1['y'])
+
+    test_data = []
+    for i in range(len(trace1['x'])):
+        test_data.append([trace1['x'][i], trace1['y'][i]])
+
+    layout = {
+        "plot_bgcolor": '#fff',
+        "xaxis": {
+            "title": "m/z, Da",
+            "ticklen": 5,
+            "tickwidth": 1,
+            "ticks": "outside",
+            "showgrid": True,
+            "linecolor": '#DCDCDC',
+            "gridcolor": '#F5F5F5',
+            "tickcolor": 'white',
+            "tickfont": {'color': '#696969'}
+        },
+        "yaxis": {
+            "title": "Intensity, cps",
+            "ticklen": 5,
+            "tickwidth": 1,
+            "ticks": "outside",
+            "showgrid": True,
+            "linecolor": '#DCDCDC',
+            "gridcolor": '#F5F5F5',
+            "tickcolor": 'white',
+            "tickfont": {'color': '#696969'}
+        },
+        "hoverlabel": {
+            "bgcolor": "white",
+            "font_size": 14,
+            "font_family": "sans-serif"
+        }
+    }
+
+    p = pymzml.plot.Factory()
+    test_plot = ''
+
+    p.new_plot()
+    test = p.add(test_data, color=(30, 144, 255), style="sticks", name="peaks")
+    test_plot = test
+
+    fig = Figure(data=test_plot, layout=layout)
+
+    for i in range(len(result)):
+        fig.add_annotation(x=trace1['x'][result[i]], y=trace1['y'][result[i]],
+                           text=trace1['x'][result[i]],
+                           showarrow=False,
+                           yshift=10)
+
+    plot_div = plot(fig, output_type='div', include_plotlyjs=True,
+                    show_link=False, link_text="")
+
+    context = {
+        'plot_div': plot_div,
+        'peaks': peaks,
+        'fields': fields,
+        'id': id,
+        'source': sources[measurement.source],
+        'level': levels[measurement.level],
+        'ionization': ionzations[measurement.ionization],
+        'polarity': polarities[measurement.polarity],
+    }
+    return render(request, 'spectra/upload/review.html', context)
+
+
+def spectrum_list(request):
+    def map_measurement(measurement: SpectrumMeasurement):
+        name = "Spectrum #%d" % measurement.id
+        name_field = SpectrumField.objects.filter(
+            measurement=measurement, key="Name").first()
+        if name_field is not None:
+            name = name_field.value
+
+        return {
+            'name': name,
+            'id': measurement.id,
+            'image': "plots/plot-%d.png" % measurement.id
+        }
+
+    objects = list(map(map_measurement, SpectrumMeasurement.objects.all()))
+    return render(request, 'spectra/spectrum_list.html', {'objects': objects})
 
 
 def create_spectrum(request, data):
@@ -253,7 +563,8 @@ def create_spectrum(request, data):
                            showarrow=False,
                            yshift=10)
 
-    plot_div = plot(fig, output_type='div', include_plotlyjs=True, show_link=False, link_text="")
+    plot_div = plot(fig, output_type='div', include_plotlyjs=True,
+                    show_link=False, link_text="")
     return render(request, "spectra/display/viewSpectrum.html", context={'plot_div': plot_div})
 
 
@@ -341,9 +652,6 @@ def view_spectrum(request):
 
     # fig = Figure(data=data, layout=layout)
     # plot_div = py.plot(fig)
-    import pathlib
-
-    import pymzml
 
     """
     This script shows how to plot multiple spectra in one plot and
@@ -471,5 +779,6 @@ def view_spectrum(request):
     # fig.update_yaxes(showline=True, linewidth=1, linecolor='#DCDCDC', gridcolor='#F5F5F5', griddash='longdash', tickcolor='white', tickfont={'color': '#696969'})
 
     # plot_div = plot(fig, output_type='div', include_plotlyjs=True, show_link=False, link_text="", config=dict(displayModeBar=False))
-    plot_div = plot(fig, output_type='div', include_plotlyjs=True, show_link=False, link_text="")
+    plot_div = plot(fig, output_type='div', include_plotlyjs=True,
+                    show_link=False, link_text="")
     return render(request, "spectra/display/viewSpectrum.html", context={'plot_div': plot_div})
