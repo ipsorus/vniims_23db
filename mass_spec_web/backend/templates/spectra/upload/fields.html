@@ -26,16 +26,16 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header text-center">
-                Spectrum Metadata
+                Данные о масс-спектре
                 <a href="{% url 'upload_metadata' id=id %}" class="btn btn-link float-start">Назад</a>
                 <button type="button" class="btn btn-link float-end" onclick="submitForm();">Далее</button>
             </div>
             <div class="card-body">
-                <p>In addition to the recommended metadata, we encourage users to provide any other information available about this mass spectral record including:</p>
+                <p>В дополнение к рекомендуемым метаданным мы рекомендуем пользователям предоставлять любую другую доступную информацию об этой масс-спектральной записи, включая:</p>
                 <ul>
-                    <li>Sample properties</li>
-                    <li>Instrument manufacturer and model</li>
-                    <li>Analytical methods and conditions</li>
+                    <li>Свойства образца</li>
+                    <li>Производитель и модель прибора</li>
+                    <li>Аналитические методы и условия</li>
                 </ul>
                 <form method="post" id="fieldsForm">
                     {% csrf_token %}
@@ -47,7 +47,7 @@
                         </div>
                     {% endfor %}
                 </form>
-                <button class="btn btn-outline-secondary" onclick="addField();" type="button" id="button-add-field">Add field</button>
+                <button class="btn btn-outline-secondary" onclick="addField();" type="button" id="button-add-field">Добавить поле</button>
             </div>
             <div class="card-footer text-body-secondary">
                 <a href="{% url 'upload_metadata' id=id %}" class="btn btn-link float-start">Назад</a>

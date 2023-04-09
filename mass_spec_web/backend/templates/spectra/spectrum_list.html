@@ -10,7 +10,7 @@
 <hr />
 <div class="row row-cols-1 row-cols-md-3 g-4">
     {% for spec in objects %}
-        <a href="{% url 'upload_review' id=spec.id %}">
+        <a href="{% url 'viewSpectrum1' id=spec.id %}">
             <div class="col">
                 <div class="card">
                 <img src="{% static spec.image %}" class="card-img-top" alt="...">

@@ -10,12 +10,12 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header text-center">
-                Spectrum Metadata
+                Данные о масс-спектре
                 <a href="{% url 'upload_peaks' id=id %}" class="btn btn-link float-start">Назад</a>
                 <button type="button" class="btn btn-link float-end" onclick="submitForm();">Далее</button>
             </div>
             <div class="card-body">
-                <p>Metadata provides a more complete view of a mass spectrum and allows users to more easily find spectra of imprortance. It also improves the accuracy of the MoNA auto-curation and can boost the score of this spectrum record. The following are the list of <b>strongly recommended</b> metadata to provide.</p>
+                <p>Эти сведения обеспечивают более полное представление о масс-спектре и позволяют пользователям легче находить важные спектры. Ниже приведен список <b>настоятельно рекомендуемых</b> к предоставлению сведений.</p>
                 <form method="post" id="metadataForm">
                     {% csrf_token %}
                     <div class="mb-3">

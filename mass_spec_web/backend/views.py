@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
-from .models import SpectrumMeasurement, SpectrumField, SpectrumPeak
-from .models import UserProfile
+from .models import UserProfile, SpectrumMeasurement, SpectrumPeak, SpectrumField
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from . import forms
 import numpy
@@ -249,7 +248,7 @@ def upload_peaks(request, id):
     if request.method == "POST":
         if request.POST.get('_method', None) == "DELETE":
             SpectrumMeasurement.objects.get(id=id).delete()
-            return redirect('main')
+            return redirect('upload')
 
         SpectrumPeak.objects.filter(measurement_id=id).delete()
         i = 0
@@ -407,7 +406,14 @@ def upload_review(request, id):
     plot_div = plot(fig, output_type='div', include_plotlyjs=True,
                     show_link=False, link_text="")
 
+    name = "Spectrum #%d" % measurement.id
+    name_field = SpectrumField.objects.filter(
+        measurement=measurement, key="Name").first()
+    if name_field is not None:
+        name = name_field.value
+
     context = {
+        'name': name,
         'plot_div': plot_div,
         'peaks': peaks,
         'fields': fields,
@@ -419,6 +425,90 @@ def upload_review(request, id):
     }
     return render(request, 'spectra/upload/review.html', context)
 
+
+def view_spectrum(request, id):
+    measurement = SpectrumMeasurement.objects.get(id=id)
+    peaks = SpectrumPeak.objects.filter(measurement_id=id)
+    fields = SpectrumField.objects.filter(measurement_id=id)
+
+    trace1 = {
+        "x": list(map(lambda p: p.x, peaks)),
+        "y": list(map(lambda p: p.y, peaks)),
+    }
+
+    result = get_5_largest(trace1['y'])
+
+    test_data = []
+    for i in range(len(trace1['x'])):
+        test_data.append([trace1['x'][i], trace1['y'][i]])
+
+    layout = {
+        "plot_bgcolor": '#fff',
+        "xaxis": {
+            "title": "m/z, Da",
+            "ticklen": 5,
+            "tickwidth": 1,
+            "ticks": "outside",
+            "showgrid": True,
+            "linecolor": '#DCDCDC',
+            "gridcolor": '#F5F5F5',
+            "tickcolor": 'white',
+            "tickfont": {'color': '#696969'}
+        },
+        "yaxis": {
+            "title": "Intensity, cps",
+            "ticklen": 5,
+            "tickwidth": 1,
+            "ticks": "outside",
+            "showgrid": True,
+            "linecolor": '#DCDCDC',
+            "gridcolor": '#F5F5F5',
+            "tickcolor": 'white',
+            "tickfont": {'color': '#696969'}
+        },
+        "hoverlabel": {
+            "bgcolor": "white",
+            "font_size": 14,
+            "font_family": "sans-serif"
+        }
+    }
+
+    p = pymzml.plot.Factory()
+    test_plot = ''
+
+    p.new_plot()
+    test = p.add(test_data, color=(30, 144, 255), style="sticks", name="peaks")
+    test_plot = test
+
+    fig = Figure(data=test_plot, layout=layout)
+
+    for i in range(len(result)):
+        fig.add_annotation(x=trace1['x'][result[i]], y=trace1['y'][result[i]],
+                           text=trace1['x'][result[i]],
+                           showarrow=False,
+                           yshift=10)
+
+    plot_div = plot(fig, output_type='div', include_plotlyjs=True,
+                    show_link=False, link_text="")
+
+    name = "Spectrum #%d" % measurement.id
+    name_field = SpectrumField.objects.filter(
+        measurement=measurement, key="Name").first()
+    if name_field is not None:
+        name = name_field.value
+
+    context = {
+        'name': name,
+        'plot_div': plot_div,
+        'peaks': peaks,
+        'fields': fields,
+        'id': id,
+        'source': sources[measurement.source],
+        'level': levels[measurement.level],
+        'ionization': ionzations[measurement.ionization],
+        'polarity': polarities[measurement.polarity],
+    }
+    return render(request, 'spectra/display/viewSpectrum1.html', context)
 
 def spectrum_list(request):
     def map_measurement(measurement: SpectrumMeasurement):
@@ -568,7 +658,7 @@ def create_spectrum(request, data):
     return render(request, "spectra/display/viewSpectrum.html", context={'plot_div': plot_div})
 
 
-def view_spectrum(request):
+def view_spectrum1(request):
     def get_5_largest(intensity_list: list[float]) -> list[int]:
         """
         Returns the indices of the 5 largest ion intensities.
