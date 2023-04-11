@@ -31,7 +31,7 @@
         <div class="card">
             <div class="card-header text-center">
                 Spectrum Metadata
-                <button type="button" class="btn btn-link float-start" onclick="cancelUploading();">Отмена</a>
+                <button type="button" class="btn btn-link float-start" onclick="cancelUploading();">Отмена</button>
                 <button type="button" class="btn btn-link float-end" onclick="submitForm();">Далее</button>
             </div>
             <div class="card-body">
@@ -65,8 +65,8 @@
                                     <div class="form-check">
                                         <input class="form-check-input" id="active{{ forloop.counter0}}" name="active{{ forloop.counter0}}" type="checkbox" checked>
                                     </div>
-                                    <input id="x{{ forloop.counter0 }}" name="x{{ forloop.counter0 }}" type="text" class="form-control" placeholder="X" value="{{ peak.x }}">
-                                    <input id="y{{ forloop.counter0 }}" name="y{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Y" value="{{ peak.y }}">
+                                    <input id="x{{ forloop.counter0 }}" name="x{{ forloop.counter0 }}" type="text" class="form-control" placeholder="X" value="{{ peak.0 }}">
+                                    <input id="y{{ forloop.counter0 }}" name="y{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Y" value="{{ peak.1 }}">
                                     <input id="comment{{ forloop.counter0 }}" name="comment{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Комментарий" value="{{ peak.comment }}">
                                 </div>
                             {% endfor %}

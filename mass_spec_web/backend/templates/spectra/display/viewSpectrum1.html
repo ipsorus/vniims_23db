@@ -4,12 +4,19 @@
 <div class="row">
     <div class="col-md-12">
         <div class="card">
+            <div class="card-header">
+                  <div class="card-title">
+                    <h3 class="float-left">{{ name }} </h3>
+<!--                    <h3 class="float-left"> {{ id }}</h3>-->
+                    <h3 class="float-right"><spectrum-feedback-results-curation [spectrum]="spectrum"></spectrum-feedback-results-curation></h3>
+                  </div>
+                </div>
             <div class="card-body">
                 <div class="row">
 
                     <div class="col-md-12">
                         <div class="card">
-                            <h4 class="card-header">Масс-спектр {{ name }}</h4>
+                            <h4 class="card-header">Масс-спектр</h4>
                             <div class="card-body">
                                 {% autoescape off %}{{ plot_div }}{% endautoescape %}
                             </div>
@@ -33,8 +40,8 @@
                                     <tbody>
                                         {% for peak in peaks %}
                                         <tr>
-                                            <td>{{ peak.x }}</td>
-                                            <td>{{ peak.y }}</td>
+                                            <td>{{ peak.0 }}</td>
+                                            <td>{{ peak.1 }}</td>
                                             <td>{{ peak.comment }}</td>
                                         </tr>
                                         {% endfor %}
@@ -92,10 +99,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for field in fields %}
+                                        {% for field in fields.meta_data %}
                                             <tr>
-                                                <td>{{ field.key }}</td>
-                                                <td>{{ field.value }}</td>
+                                                <td>{{ field.0 }}</td>
+                                                <td>{{ field.1 }}</td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>

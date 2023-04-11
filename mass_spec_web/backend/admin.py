@@ -7,7 +7,8 @@ from django.contrib import admin
 
 # from backend.models import UserProfile
 
-from .models import SpectrumField, SpectrumMeasurement, SpectrumPeak
+from .models import SpectrumField, SpectrumMeasurement, SpectrumPeak, Spectrum
+
 
 # admin.site.register(UserProfile)
 
@@ -24,6 +25,26 @@ class SpectrumPeakAdmin(admin.ModelAdmin):
     pass
 
 
+
+class SpectrumFieldInline(admin.TabularInline):
+    model = SpectrumField
+
+
+class SpectrumMeasurementInline(admin.TabularInline):
+    model = SpectrumMeasurement
+
+
+class SpectrumPeakInline(admin.TabularInline):
+    model = SpectrumPeak
+
+
+class SpectrumAdmin(admin.ModelAdmin):
+    inlines = [
+        SpectrumPeakInline, SpectrumMeasurementInline, SpectrumFieldInline,
+    ]
+
+
 admin.site.register(SpectrumField, SpectrumFieldAdmin)
 admin.site.register(SpectrumMeasurement, SpectrumMeasurementAdmin)
 admin.site.register(SpectrumPeak, SpectrumPeakAdmin)
+admin.site.register(Spectrum, SpectrumAdmin)

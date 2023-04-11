@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from .models import UserProfile, SpectrumMeasurement, SpectrumPeak, SpectrumField
+from .models import SpectrumMeasurement, SpectrumPeak, SpectrumField, Spectrum
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from . import forms
 import numpy
@@ -169,23 +169,46 @@ def upload_spectrum(request):
         file = request.FILES['file']
         file_content = BytesIO(file.read())
 
-        measurement = SpectrumMeasurement.objects.create()
-        measurement.save()
+        # measurement = SpectrumMeasurement.objects.create()
+        spectrum = Spectrum.objects.create()
+        spectrum.save()
+        # measurement = Spectrum.measurement.objects.create()
+        # measurement.save()
 
+        peaks_values = dict()
+        peaks_x = []
+        peaks_y = []
+        metadata_list = []
         for line in file_content:
             item = line.decode('utf8').replace("'", '"').split(':')
             key, value = item[0], item[1].strip()
 
             if key.lower().startswith("peak"):
                 x, y = value.split(' ')
-                SpectrumPeak.objects.create(measurement=measurement, x=x, y=y)
-            else:
-                field = SpectrumField.objects.create(measurement=measurement)
-                field.key = key
-                field.value = value
-                field.save()
+                # peaks_list.append([float(x), float(y)])
+                peaks_x.append(float(x))
+                peaks_y.append(float(y))
+                d = {"x": peaks_x, "y": peaks_y}
 
-        return redirect('upload_peaks', id=measurement.id)
+                peaks_values.update(d)
+
+            else:
+                metadata_list.append([key, value])
+                # field = SpectrumField.objects.create(measurement=measurement)
+                # field = SpectrumField.objects.create()
+                # field.key = key
+                # field.value = value
+                # field.save()
+
+        if peaks_values:
+            SpectrumPeak.objects.create(spectrum=spectrum, peaks_data=peaks_values)
+        if metadata_list:
+            SpectrumField.objects.create(spectrum=spectrum, meta_data=metadata_list)
+            # field.meta_data = metadata_list
+            # field.save()
+
+        # return redirect('upload_peaks', id=measurement.id)
+        return redirect('upload_peaks', id=spectrum.id)
 
     return render(request, 'spectra/upload/upload_file.html')
 
@@ -197,9 +220,12 @@ def upload_metadata(request, id):
             return None
         return int(s)
 
-    object = SpectrumMeasurement.objects.get(id=id)
+    object = SpectrumMeasurement.objects.filter(spectrum_id=id)
 
     if request.method == "POST":
+        SpectrumMeasurement.objects.filter(spectrum_id=id).delete()
+        if not object:
+            object = SpectrumMeasurement.objects.create(spectrum_id=id)
         object.source = get_value(request.POST, "source")
         object.level = get_value(request.POST, "level")
         object.ionization = get_value(request.POST, "ionization")
@@ -212,47 +238,96 @@ def upload_metadata(request, id):
 
 def upload_fields(request, id):
     if request.method == "POST":
-        SpectrumField.objects.filter(measurement_id=id).delete()
+        # SpectrumField.objects.filter(measurement_id=id).delete()
+        SpectrumField.objects.filter(spectrum_id=id).delete()
+        metadata_list = []
 
+        field = SpectrumField.objects.create(spectrum_id=id)
         for i in range(0, 100):
             key = request.POST.get("key%d" % i, None)
             if key is None:
                 continue
             value = request.POST.get("value%d" % i, None)
 
-            field = SpectrumField.objects.create(measurement_id=id)
-            field.key = key
-            field.value = value
-            field.save()
+            # field = SpectrumField.objects.create(measurement_id=id)
+            # field = SpectrumField.objects.create(id=id)
+            metadata_list.append([key, value])
+            # field.key = key
+            # field.value = value
+        field.meta_data = metadata_list
+        field.save()
 
         return redirect('upload_review', id=id)
 
-    fields = SpectrumField.objects.filter(measurement_id=id)
-    return render(request, 'spectra/upload/fields.html', {'fields': fields, "id": id})
+    # fields = SpectrumField.objects.filter(measurement_id=id)
+    fields = SpectrumField.objects.filter(spectrum_id=id)
+    print('fields', fields[0])
+    return render(request, 'spectra/upload/fields.html', {'fields': fields[0].meta_data, "id": id})
 
 
 def generate_plot(id):
-    peaks = SpectrumPeak.objects.filter(measurement_id=id)
-    x_axis = numpy.array(list(map(lambda p: p.x, peaks)))
-    y_axis = numpy.array(list(map(lambda p: p.y, peaks)))
+    if not os.path.exists(os.path.join(BASE_DIR, 'staticfiles/plots')):
+        os.mkdir(os.path.join(BASE_DIR, 'staticfiles/plots'))
+    peaks = SpectrumPeak.objects.filter(spectrum_id=id)
+    peaks_list = peaks[0].peaks_data
 
-    fig = pyplot.figure()
-    pyplot.bar(x_axis, y_axis)
-    # fig.legend('')
-    # pyplot.axis('off')
+    test_data = []
+
+    for i in range(len(peaks_list['x'])):
+        test_data.append([peaks_list['x'][i], peaks_list['y'][i]])
+
+    layout = {
+        "plot_bgcolor": '#fff',
+        "xaxis": {
+            "ticklen": 5,
+            "tickwidth": 1,
+            "ticks": "outside",
+            "showgrid": False,
+            "linecolor": '#DCDCDC',
+            "gridcolor": '#F5F5F5',
+            "tickcolor": 'white',
+            "tickfont": {'color': '#696969'}
+        },
+        "yaxis": {
+            "ticklen": 5,
+            "tickwidth": 1,
+            "ticks": "outside",
+            "showgrid": False,
+            "linecolor": '#DCDCDC',
+            "gridcolor": '#F5F5F5',
+            "tickcolor": 'white',
+            "tickfont": {'color': '#696969'}
+        },
+        "hoverlabel": {
+            "bgcolor": "white",
+            "font_size": 14,
+            "font_family": "sans-serif"
+        }
+    }
+
+    p = pymzml.plot.Factory()
+    p.new_plot()
+    test = p.add(test_data, color=(30, 144, 255), style="sticks", name="peaks")
+
+    fig = Figure(data=test, layout=layout)
+
     filename = os.path.join(BASE_DIR, 'staticfiles/plots/plot-%d.png' % id)
-    fig.savefig(filename, bbox_inches='tight')
+    fig.write_image(format='png', file=filename)
 
 
 def upload_peaks(request, id):
     if request.method == "POST":
         if request.POST.get('_method', None) == "DELETE":
-            SpectrumMeasurement.objects.get(id=id).delete()
+            # SpectrumMeasurement.objects.get(id=id).delete()
+            Spectrum.objects.get(id=id).delete()
             return redirect('upload')
 
-        SpectrumPeak.objects.filter(measurement_id=id).delete()
+        # SpectrumPeak.objects.filter(measurement_id=id).delete()
+        SpectrumPeak.objects.filter(spectrum_id=id).delete()
         i = 0
-
+        peaks_values = dict()
+        peaks_x = []
+        peaks_y = []
         while True:
             x = request.POST.get("x%d" % i, None)
             if x is None:
@@ -266,28 +341,48 @@ def upload_peaks(request, id):
 
             x = x.replace(',', '.')
             y = y.replace(',', '.')
-            peak = SpectrumPeak.objects.create(
-                measurement_id=id, x=float(x), y=float(y), comment=comment)
-            peak.save()
+            # peak = SpectrumPeak.objects.create(
+            #     measurement_id=id, x=float(x), y=float(y), comment=comment)
+
+            # peak = spectrum.peaks.objects.create(peaks_data=float(x), y=float(y), comment=comment)
+            # peak.save()
+
+            peaks_x.append(float(x))
+            peaks_y.append(float(y))
+            d = {"x": peaks_x, "y": peaks_y}
+
+            peaks_values.update(d)
 
             i += 1
-
-        generate_plot(id)
+        peaks_items = SpectrumPeak.objects.create(spectrum_id=id, peaks_data=peaks_values)
+        peaks_items.save()
 
         return redirect('upload_metadata', id=id)
 
-    peaks = SpectrumPeak.objects.filter(measurement_id=id)
+    peaks = SpectrumPeak.objects.filter(spectrum_id=id)
 
-    trace1 = {
-        "x": list(map(lambda p: p.x, peaks)),
-        "y": list(map(lambda p: p.y, peaks)),
-    }
+    peaks_values = peaks[0].peaks_data
 
-    result = get_5_largest(trace1['y'])
+    peaks_list = []
+    for i in range(len(peaks_values['x'])):
+        peaks_list.append([peaks_values['x'][i], peaks_values['y'][i]])
+    # print('fddf', peaks_list)
+    #
+    # peaks_values = dict()
+    # peaks_x = []
+    # peaks_y = []
+    # for peak in peaks_list:
+    #     peaks_x.append(float(peak[0]))
+    #     peaks_y.append(float(peak[1]))
+    #     d = {"x": peaks_x, "y": peaks_y}
+    #
+    #     peaks_values.update(d)
+
+    result = get_5_largest(peaks_values['y'])
 
     test_data = []
-    for i in range(len(trace1['x'])):
-        test_data.append([trace1['x'][i], trace1['y'][i]])
+    for i in range(len(peaks_values['x'])):
+        test_data.append([peaks_values['x'][i], peaks_values['y'][i]])
 
     layout = {
         "plot_bgcolor": '#fff',
@@ -330,32 +425,38 @@ def upload_peaks(request, id):
     fig = Figure(data=test_plot, layout=layout)
 
     for i in range(len(result)):
-        fig.add_annotation(x=trace1['x'][result[i]], y=trace1['y'][result[i]],
-                           text=trace1['x'][result[i]],
+        fig.add_annotation(x=peaks_values['x'][result[i]], y=peaks_values['y'][result[i]],
+                           text=peaks_values['x'][result[i]],
                            showarrow=False,
                            yshift=10)
 
     plot_div = plot(fig, output_type='div', include_plotlyjs=True,
                     show_link=False, link_text="")
 
-    return render(request, 'spectra/upload/peaks.html', {'plot_div': plot_div, 'peaks': peaks})
+    return render(request, 'spectra/upload/peaks.html', {'plot_div': plot_div, 'peaks': peaks_list})
 
 
 def upload_review(request, id):
-    measurement = SpectrumMeasurement.objects.get(id=id)
-    peaks = SpectrumPeak.objects.filter(measurement_id=id)
-    fields = SpectrumField.objects.filter(measurement_id=id)
+    # measurement = SpectrumMeasurement.objects.get(id=id)
+    # peaks = SpectrumPeak.objects.filter(measurement_id=id)
+    # fields = SpectrumField.objects.filter(measurement_id=id)
+    spectrum = Spectrum.objects.get(id=id)
+    measurement = SpectrumMeasurement.objects.filter(spectrum_id=id)[0]
+    peaks = SpectrumPeak.objects.filter(spectrum_id=id)[0]
+    fields = SpectrumField.objects.filter(spectrum_id=id)[0]
 
-    trace1 = {
-        "x": list(map(lambda p: p.x, peaks)),
-        "y": list(map(lambda p: p.y, peaks)),
-    }
+    peaks_values = peaks.peaks_data
 
-    result = get_5_largest(trace1['y'])
+    peaks_list = []
+    for i in range(len(peaks_values['x'])):
+        peaks_list.append([peaks_values['x'][i], peaks_values['y'][i]])
+
+
+    result = get_5_largest(peaks_values['y'])
 
     test_data = []
-    for i in range(len(trace1['x'])):
-        test_data.append([trace1['x'][i], trace1['y'][i]])
+    for i in range(len(peaks_values['x'])):
+        test_data.append([peaks_values['x'][i], peaks_values['y'][i]])
 
     layout = {
         "plot_bgcolor": '#fff',
@@ -398,24 +499,23 @@ def upload_review(request, id):
     fig = Figure(data=test_plot, layout=layout)
 
     for i in range(len(result)):
-        fig.add_annotation(x=trace1['x'][result[i]], y=trace1['y'][result[i]],
-                           text=trace1['x'][result[i]],
+        fig.add_annotation(x=peaks_values['x'][result[i]], y=peaks_values['y'][result[i]],
+                           text=peaks_values['x'][result[i]],
                            showarrow=False,
                            yshift=10)
 
     plot_div = plot(fig, output_type='div', include_plotlyjs=True,
                     show_link=False, link_text="")
 
-    name = "Spectrum #%d" % measurement.id
-    name_field = SpectrumField.objects.filter(
-        measurement=measurement, key="Name").first()
+    name = "Spectrum #%d" % spectrum.id
+    name_field = fields.meta_data[0][1]
     if name_field is not None:
-        name = name_field.value
+        name = name_field
 
     context = {
         'name': name,
         'plot_div': plot_div,
-        'peaks': peaks,
+        'peaks': peaks_list,
         'fields': fields,
         'id': id,
         'source': sources[measurement.source],
@@ -423,24 +523,29 @@ def upload_review(request, id):
         'ionization': ionzations[measurement.ionization],
         'polarity': polarities[measurement.polarity],
     }
+    Spectrum.objects.filter(id=id).update(name=name, author=request.user)
+    generate_plot(id)
+
     return render(request, 'spectra/upload/review.html', context)
 
 
 def view_spectrum(request, id):
-    measurement = SpectrumMeasurement.objects.get(id=id)
-    peaks = SpectrumPeak.objects.filter(measurement_id=id)
-    fields = SpectrumField.objects.filter(measurement_id=id)
+    spectrum = Spectrum.objects.get(id=id)
+    measurement = SpectrumMeasurement.objects.filter(spectrum_id=id)[0]
+    peaks = SpectrumPeak.objects.filter(spectrum_id=id)[0]
+    fields = SpectrumField.objects.filter(spectrum_id=id)[0]
 
-    trace1 = {
-        "x": list(map(lambda p: p.x, peaks)),
-        "y": list(map(lambda p: p.y, peaks)),
-    }
+    peaks_values = peaks.peaks_data
 
-    result = get_5_largest(trace1['y'])
+    peaks_list = []
+    for i in range(len(peaks_values['x'])):
+        peaks_list.append([peaks_values['x'][i], peaks_values['y'][i]])
+
+    result = get_5_largest(peaks_values['y'])
 
     test_data = []
-    for i in range(len(trace1['x'])):
-        test_data.append([trace1['x'][i], trace1['y'][i]])
+    for i in range(len(peaks_values['x'])):
+        test_data.append([peaks_values['x'][i], peaks_values['y'][i]])
 
     layout = {
         "plot_bgcolor": '#fff',
@@ -474,7 +579,6 @@ def view_spectrum(request, id):
     }
 
     p = pymzml.plot.Factory()
-    test_plot = ''
 
     p.new_plot()
     test = p.add(test_data, color=(30, 144, 255), style="sticks", name="peaks")
@@ -483,24 +587,23 @@ def view_spectrum(request, id):
     fig = Figure(data=test_plot, layout=layout)
 
     for i in range(len(result)):
-        fig.add_annotation(x=trace1['x'][result[i]], y=trace1['y'][result[i]],
-                           text=trace1['x'][result[i]],
+        fig.add_annotation(x=peaks_values['x'][result[i]], y=peaks_values['y'][result[i]],
+                           text=peaks_values['x'][result[i]],
                            showarrow=False,
                            yshift=10)
 
     plot_div = plot(fig, output_type='div', include_plotlyjs=True,
                     show_link=False, link_text="")
 
-    name = "Spectrum #%d" % measurement.id
-    name_field = SpectrumField.objects.filter(
-        measurement=measurement, key="Name").first()
+    name = "Spectrum #%s" % spectrum.name
+    name_field = fields.meta_data[0][1]
     if name_field is not None:
-        name = name_field.value
+        name = name_field
 
     context = {
         'name': name,
         'plot_div': plot_div,
-        'peaks': peaks,
+        'peaks': peaks_list,
         'fields': fields,
         'id': id,
         'source': sources[measurement.source],
@@ -510,22 +613,38 @@ def view_spectrum(request, id):
     }
     return render(request, 'spectra/display/viewSpectrum1.html', context)
 
+
 def spectrum_list(request):
-    def map_measurement(measurement: SpectrumMeasurement):
-        name = "Spectrum #%d" % measurement.id
-        name_field = SpectrumField.objects.filter(
-            measurement=measurement, key="Name").first()
-        if name_field is not None:
-            name = name_field.value
+    def map_spectrum(spectrum: Spectrum):
+        # name = "Spectrum #%s" % spectrum.name
+        # # name_field = SpectrumField.objects.filter(
+        # #     measurement=measurement, key="Name").first()
+        # name_field = Spectrum.fields.objects.filter(
+        #     fields=spectrum.fields, key="Name").first()
+        # if name_field is not None:
+        #     name = name_field.value
 
         return {
-            'name': name,
-            'id': measurement.id,
-            'image': "plots/plot-%d.png" % measurement.id
+            'name': spectrum.name,
+            'id': spectrum.id,
+            'image': "plots/plot-%d.png" % spectrum.id
         }
 
-    objects = list(map(map_measurement, SpectrumMeasurement.objects.all()))
-    return render(request, 'spectra/spectrum_list.html', {'objects': objects})
+    # objects = list(map(map_measurement, SpectrumMeasurement.objects.all()))
+    # obj = Spectrum.objects.all()
+    obj = list(map(map_spectrum, Spectrum.objects.all()))
+    return render(request, 'spectra/spectrum_list.html', {'objects': obj})
+
+
+
+
+
+
+
+
+
+
+
 
 
 def create_spectrum(request, data):
