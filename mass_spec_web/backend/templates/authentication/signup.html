@@ -21,21 +21,101 @@
         </div>
       {% endfor %}
     </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+          <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+          {% render_field form.username class="form-control" %}
+          <div class="{% if form.username.errors %} invalid {% endif %}">
+            {% for error in form.username.errors %}
+              <p class="help-block">{{ error }}</p>
+            {% endfor %}
+          </div>
+      </div>
 
-    {% for field in form %}
-      <div class="form-group">
-        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-<!--        {% render_field field class="form-control" placeholder=field.label %}-->
-        {% render_field field class="form-control" %}
-        <div class="{% if field.errors %} invalid{% endif %}">
-          {% for error in field.errors %}
-            <p class="help-block">{{ error }}</p>
-          {% endfor %}
+     <div class="form-group col-md-6">
+        <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+         {% render_field form.email class="form-control" %}
+         <div class="{% if form.email.errors %} invalid {% endif %}">
+            {% for error in form.email.errors %}
+              <p class="help-block">{{ error }}</p>
+            {% endfor %}
+         </div>
+     </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+          {% render_field form.password1 class="form-control" %}
+          <div class="{% if form.password1.errors %} invalid {% endif %}">
+            {% for error in form.password1.errors %}
+              <p class="help-block">{{ error }}</p>
+            {% endfor %}
+          </div>
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+          {% render_field form.password2 class="form-control" %}
+          <div class="{% if form.password2.errors %} invalid {% endif %}">
+            {% for error in form.password2.errors %}
+              <p class="help-block">{{ error }}</p>
+            {% endfor %}
+          </div>
+      </div>
+
+    </div>
+      <hr>
+      <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+          {% render_field form.first_name class="form-control" %}
+          <div class="{% if form.first_name.errors %} invalid {% endif %}">
+            {% for error in form.first_name.errors %}
+              <p class="help-block">{{ error }}</p>
+            {% endfor %}
         </div>
       </div>
-    {% endfor %}
-  </div>
 
+      <div class="form-group col-md-6">
+        <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+          {% render_field form.last_name class="form-control" %}
+          <div class="{% if form.last_name.errors %} invalid {% endif %}">
+            {% for error in form.last_name.errors %}
+              <p class="help-block">{{ error }}</p>
+            {% endfor %}
+          </div>
+      </div>
+    </div>
+       <div class="form-group">
+      <label for="{{ form.organization.id_for_label }}">{{ form.organization.label }}</label>
+           {% render_field form.organization class="form-control" %}
+           <div class="{% if form.organization.errors %} invalid {% endif %}">
+            {% for error in form.organization.errors %}
+              <p class="help-block">{{ error }}</p>
+            {% endfor %}
+            </div>
+       </div>
+      <div class="form-group">
+      <label for="{{ form.position.id_for_label }}">{{ form.position.label }}</label>
+         {% render_field form.position class="form-control" %}
+         <div class="{% if form.position.errors %} invalid {% endif %}">
+            {% for error in form.position.errors %}
+              <p class="help-block">{{ error }}</p>
+            {% endfor %}
+        </div>
+      </div>
+     <div class="form-group">
+      <label for="{{ form.work_experience.id_for_label }}">{{ form.work_experience.label }}</label>
+         {% render_field form.work_experience class="form-control" %}
+         <div class="{% if form.work_experience.errors %} invalid {% endif %}">
+            {% for error in form.work_experience.errors %}
+              <p class="help-block">{{ error }}</p>
+            {% endfor %}
+         </div>
+    </div>
+
+  </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
     <button type="submit" class="btn btn-primary" formnovalidate="formnovalidate">Зарегистрировать</button>

@@ -1,0 +1,54 @@
+{% load static %}
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">
+            {% if spec.spectrum.is_etalon %}<span class="badge bg-secondary float-left">Эталон ВНИИМС</span>{% endif %}
+            <span class="float-right">Автор: {{ spec.author.last_name }} {{ spec.author.first_name }}</span>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="card-group">
+            <div class="col-lg-6 col-md-7 col-sm-6">
+                <div class="card-columns">
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="masspec-medium">
+                          <span class="float-middle">Название масс-спектра:  <a style="cursor: pointer" href="{% url 'spectrum_detail_url' id=spec.id %}">{{ spec.name }}</a></span>
+                          {% autoescape off %}{{ spec.plot_div }}{% endautoescape %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-6 col-md-5 col-sm-6">
+                {% for fields in spec.fields %}
+                    {% for field in fields %}
+                    <div class="row top5">
+                        <div class="col-lg-5 col-md-5 col-sm-6">
+                                <b>{{ field.name }}</b>
+                        </div>
+                        <div class="col-lg-7 col-md-7 col-sm-6">
+                            {{ field.value|truncatechars:20 }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <div class="float-left mr-1" *ngFor="let tag of spectrum.tags">
+          <tag-query [ruleBased]="tag.ruleBased" [tag]="tag" [type]="spectrum"></tag-query>
+            <span class="float-left mr-2"> Дата создания записи: {{ spec.create_date}} </span>
+        </div>
+
+      <a class="btn btn-success float-right" href="{% url 'spectrum_detail_url' id=spec.id %}">
+        <fa-icon [icon]="faExternalLinkAlt"></fa-icon> Просмотр записи
+      </a>
+    </div>
+</div>
+<div class="top17">&nbsp;</div>

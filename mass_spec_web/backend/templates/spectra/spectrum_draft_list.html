@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<!--<script type="text/javascript">-->
+<!--    function addField() {-->
+<!--        alert("add");-->
+<!--    }-->
+<!--</script>-->
+<h1>Масс-спектры на проверку (всего {{ count }}):</h1>
+<hr />
+<div class="row top17">
+    <div class="col-md-12">
+      <p>
+          <strong>В разделе собраны загруженные пользователями масс-спектры, не прошедшие проверку экспертом</strong>
+      </p>
+    </div>
+    <!-- display spectra as list -->
+    <div class="col-md-12" *ngIf="pagination.table !== true">
+        <div *ngFor="let spectrum of spectra" class="m-md-3">
+            {% for spec in page_object.object_list %}
+              {% include 'spectra/display/spectrum_card_draft_template.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

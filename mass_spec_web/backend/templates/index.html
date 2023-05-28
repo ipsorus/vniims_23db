@@ -11,7 +11,7 @@
               База данных масс-спектров ФГБУ "ВНИИМС" - это ориентированное на метаданные хранилище с автоматическим управлением,
               предназначенное для эффективного хранения и запроса записей масс-спектров. Он призван служить основой для
               централизованной совместной базы данных масс-спектров метаболитов, метаданных и связанных с ними соединений.
-              В настоящее время MoNA содержит масс-спектральные записи из экспериментальных библиотек и библиотек in-silico,
+              В настоящее время база данных масс-спектров ФГБУ "ВНИИМС" содержит масс-спектральные записи из экспериментальных библиотек и библиотек in-silico,
               а также из материалов пользователей.
             </p>
 
@@ -21,8 +21,8 @@
             <br />
 
             <p style="text-align: center">
-                <a [routerLink]="['/spectra/search']" class="btn btn-info btn-lg mr-1"><fa-icon [icon]="faSearch"></fa-icon> Поиск спектров</a>
-              <a href="{% url 'spectrum_list' %}" class="btn btn-info btn-lg mr-1 ml-1"><fa-icon [icon]="faChartBar"></fa-icon> Просмотр спектров</a>
+                <a href="{% url 'spectrum_search' %}" class="btn btn-secondary btn-lg mr-1"><i class="fa fa-search" aria-hidden="true"></i> Поиск спектров</a>
+              <a href="{% url 'spectrum_list' %}" class="btn btn-success btn-lg mr-1 ml-1"><i class="fa fa-flask" aria-hidden="true"></i> Просмотр спектров</a>
 
             </p>
         </div>
@@ -31,61 +31,18 @@
     <div class="bor-bot"></div><br />
 
     <div class="row">
-        <div class="col-md-6 float-left">
+        <div class="col-md-12 float-left">
             <h3 class="font-weight-bold">Новости</h3>
             <hr/>
-
-          <div class="card">
-  <div class="card-header">
-    Featured
-  </div>
-  <div class="card-body">
-    <h5 class="card-title">Special title treatment</h5>
-    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-    <a href="#" class="btn btn-primary">Go somewhere</a>
-  </div>
-</div>
-          <hr/>
-          <div class="card">
-  <div class="card-header">
-    Featured
-  </div>
-  <div class="card-body">
-    <h5 class="card-title">Special title treatment</h5>
-    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-    <a href="#" class="btn btn-primary">Go somewhere</a>
-  </div>
-</div>
-          <hr/>
-        </div>
-        <div class="col-md-6 float-right">
-            <h3 class="font-weight-bold">Submitter High Scores</h3>
-
-            <spectra-top-scores-for-users limit="10">Please wait while we load the data for you...</spectra-top-scores-for-users>
+            {% for post in page_object.object_list %}
+              {% include 'includes/post_card_template.html' %}
+            {% endfor %}
+     <hr/>
         </div>
     </div>
 
     <div class="bor-bot"></div>
 
-    <div class="row">
-        <div class="col-md-12">
-            <h3 class="font-weight-bold">Top Rated Spectral Records</h3>
-            <br />
-
-            <ngb-carousel id="carousel-override" [interval]="7000" [showNavigationArrows]="false" [showNavigationIndicators]="true">
-                <ng-template ngbSlide *ngFor="let spectrum of showcaseSpectra">
-                    <div class="picsum-img-wrapper">
-                      <display-spectra-panel class="text-left" [spectrum]="spectrum"></display-spectra-panel>
-                    </div>
-                </ng-template>
-                <ng-template ngbSlide *ngIf="showcaseSpectra.length === 0">
-                    <div class="text-center">
-                      <h4 class="spinner"><fa-icon [icon]="faSpinner" [spin]="true"></fa-icon> Loading Showcase Spectra...</h4>
-                    </div>
-                </ng-template>
-            </ngb-carousel>
-        </div>
-    </div>
 </div>
 
 {% endblock %}

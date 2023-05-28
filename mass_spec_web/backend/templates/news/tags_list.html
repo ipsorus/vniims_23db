@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% for tag in tags %}
+<div class="card">
+  <h5 class="card-header">--</h5>
+  <div class="card-body">
+    <h5 class="card-title"><a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a></h5>
+    <p class="card-text">--</p>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

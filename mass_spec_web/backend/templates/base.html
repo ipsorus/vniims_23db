@@ -33,6 +33,39 @@
                     {% block content %}{% endblock %}
                 </div>
             </div>
+
+
+            <div class="row">
+                <div class="col-lg-8 ml-auto">
+                    {% if is_paginated %}
+                        <nav aria-label="...">
+                            <ul class="pagination">
+                            <li class="page-item {% if not prev_url %} disabled {% endif %}">
+                                    <a class="page-link" href="{{ prev_url}}" tabindex="-1" aria-disabled="true">Назад</a>
+                            </li>
+
+                            {% for n in page_object.paginator.page_range %}
+                                    {% if page_object.number == n %}
+                                        <li class="page-item active">
+                                            <a class="page-link" href="?page={{ n }}">{{ n }}<span class="sr-only">(current)</span></a></a>
+                                        </li>
+                                    {% elif n > page_object.number|add:-3 and n < page_object.number|add:3 %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ n }}">{{ n }}</a>
+                                    </li>
+                                    {% endif %}
+                            {% endfor %}
+
+                            <li class="page-item {% if not next_url %} disabled {% endif %}">
+                                    <a class="page-link" href="{{ next_url}}" tabindex="-1" aria-disabled="true">Вперед</a>
+                            </li>
+                            </ul>
+                        </nav>
+                    {% endif %}
+                </div>
+            </div>
+
+
         </div>
     </div>
 <!-- JavaScript -->
@@ -45,31 +78,38 @@
     {% endblock scripts %}
     {% include "_modal.html" %}
     {% block extrascripts %}
-  <script type="text/javascript">
-      $(function () {
-          // Login
-          $("#login-btn").modalForm({
-            formURL: "{% url 'login' %}?next={{ request.path }}"
+      <script type="text/javascript">
+          $(function () {
+              // Login
+              $("#login-btn").modalForm({
+                formURL: "{% url 'login' %}?next={{ request.path }}"
+              });
+
+              // Login
+              $("#login-btn_upload_page").modalForm({
+                formURL: "{% url 'login' %}?next={{ request.path }}"
+              });
+
+              //  Signup
+              $("#signup-btn").modalForm({
+                formURL: "{% url 'signup' %}?next={{ request.path }}"
+              });
+
+              // Hide message
+    <!--          $(".alert").fadeTo(2000, 500).slideUp(500, function () {-->
+    <!--              $(".alert").slideUp(500);-->
+    <!--          });-->
+
+              $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                   $("#success-alert").slideUp(500);
+              });
+
+              $("#error-alert").fadeTo(2000, 500).slideUp(500, function(){
+                   $("#error-alert").slideUp(500);
+              });
+
           });
-
-          // Login
-          $("#login-btn_upload_page").modalForm({
-            formURL: "{% url 'login' %}?next={{ request.path }}"
-          });
-
-          //  Signup
-          $("#signup-btn").modalForm({
-            formURL: "{% url 'signup' %}?next={{ request.path }}"
-          });
-
-          // Hide message
-          $(".alert").fadeTo(2000, 500).slideUp(500, function () {
-              $(".alert").slideUp(500);
-          });
-
-
-      });
-  </script>
-{% endblock extrascripts %}
+      </script>
+    {% endblock extrascripts %}
 </body>
 </html>

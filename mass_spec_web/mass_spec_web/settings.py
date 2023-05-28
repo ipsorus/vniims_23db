@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django.contrib.postgres',
+
     'backend',
     # 'corsheaders',
     'sass_processor',
@@ -45,6 +47,8 @@ INSTALLED_APPS = [
     'bootstrap_modal_forms',
     'widget_tweaks',
 ]
+
+AUTH_USER_MODEL = 'backend.CustomUser'
 
 MIDDLEWARE = [
     # 'corsheaders.middleware.CorsMiddleware',
@@ -129,8 +133,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# LOGIN_REDIRECT_URL = '/'
-# LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = 'main_page_url'
+LOGOUT_URL = 'main_page_url'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/

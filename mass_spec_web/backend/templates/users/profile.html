@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-xs-offset-0 col-sm-offset-0 col-md-offset-2 col-lg-offset-2 toppad">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><fa-icon [icon]="faUser"></fa-icon> Профиль пользователя</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-3 col-lg-3" align="center">
+                            <img alt="User Pic" src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=100" class="img-circle">
+                            <br />
+                        </div>
+
+                        <div class=" col-md-9 col-lg-9">
+                            <table class="table table-user-information borderless">
+                                <tbody>
+                                <tr>
+                                    <td>Имя:</td>
+                                    <td>{{user.first_name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Фамилия:</td>
+                                    <td>{{user.last_name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Адрес электронной почты:</td>
+                                    <td>{{user.email}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Организация:</td>
+                                    <td>{{user.organization}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Должность:</td>
+                                    <td>{{user.position}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Опыт работы:</td>
+                                    <td>{{user.work_experience}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-footer">
+                    <a href="{{ admin_object.get_update_url }}" class="btn btn-primary">Редактировать</a>
+                    <!--
+                    <a data-original-title="Broadcast Message" data-toggle="tooltip" type="button" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-envelope"></i></a>
+                    <span class="pull-right">
+                        <a href="edit.html" data-original-title="Edit this user" data-toggle="tooltip" type="button" class="btn btn-sm btn-warning"><i class="glyphicon glyphicon-edit"></i></a>
+                    </span>
+                    -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr />
+<div class="row top17">
+    <div class="col-md-12">
+      <p>
+        <ngb-alert type="warning" [dismissible]="false">
+          <strong>Масс-спектры, загруженные пользователем</strong>
+        </ngb-alert>
+      </p>
+    </div>
+    <!-- display spectra as list -->
+    <div class="col-md-12">
+        <div class="m-md-3">
+            {% for spec in page_object.object_list %}
+              {% include 'spectra/display/spectrum_card_draft_template.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

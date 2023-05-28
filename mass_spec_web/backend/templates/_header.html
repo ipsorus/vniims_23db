@@ -5,12 +5,15 @@
   <div>
     {% if messages %}
       {% for message in messages %}
-        <div style="border-radius:0;" {% if message.tags %} class="alert alert-icon alert-{{ message.tags }} alert-dismissible fade show mb-0" role="alert" {% endif %}>
-          {{ message }}
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
+        {% if message.tags == 'success' %}
+          <div id="success-alert" style="border-radius:0;" class="alert alert-icon alert-success alert-dismissible fade show mb-0" role="alert">
+            {{ message }}
+          </div>
+        {% else %}
+          <div id="error-alert" style="border-radius:0;" class="alert alert-icon alert-danger alert-dismissible fade show mb-0" role="alert">
+            {{ message }}
+          </div>
+        {% endif %}
       {% endfor %}
     {% endif %}
   </div>

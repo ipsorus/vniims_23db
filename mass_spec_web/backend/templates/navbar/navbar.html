@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-xl fixed-top navbar-dark">
 <!-- navbar dropdowns -->
     <div class="navbar-header">
-        <a class="navbar-brand" href="/">ФГБУ ВНИИМС<span class="title-full"> - База масс-спектров</span></a>
+        <a class="navbar-brand" href="{% url 'main_page_url' %}">ФГБУ ВНИИМС<span class="title-full"> - База масс-спектров</span></a>
     </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -9,7 +9,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" href="/">Главная</a>
+          <a class="nav-link" href="{% url 'main_page_url' %}">Главная</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/upload">Загрузить</a>
@@ -28,25 +28,32 @@
           </a>
 
           <ul class="dropdown-menu" aria-labelledby="navbarDropdownLogin">
-              {% if user.is_superuser %}
+              {% if user.is_superuser or user.is_staff %}
               <li><a class="dropdown-item" href="/admin" target="_blank">Админпанель</a></li>
+              <li><a class="dropdown-item" href="{% url 'post_create_url' %}">Создать статью</a></li>
+              <li><a class="dropdown-item" href="{% url 'users_list' %}">Список пользователей</a></li>
+              <li><a class="dropdown-item" href="{% url 'spectrum_draft_list' %}">Записи на проверку</a></li>
               {% endif %}
               {% if user.is_authenticated %}
-              <li><a class="dropdown-item" href="/user_profile">Профиль {{ user }}</a></li>
-              <li><a class="dropdown-item" href="{% url 'logout' %}?next={{ request.path }}">Выход</a></li>
+              <li><a class="dropdown-item" href="{% url 'user-profile' username=user.username %}">Профиль {{ user }}</a></li>
+                  {% if request.path == '/user_profile/' %}
+                  <li><a class="dropdown-item" href="{% url 'logout' %}?next={% url 'main_page_url' %}">Выход</a></li>
+                  {% else %}
+                  <li><a class="dropdown-item" href="{% url 'logout' %}?next={{ request.path }}">Выход</a></li>
+                  {% endif %}
               {% else %}
-              <li><a id="login-btn" class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Авторизация</a></li>
-              <li><a id="signup-btn" class="dropdown-item" href="#">Регистрация</a></li>
+                  <li><a id="login-btn" class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Авторизация</a></li>
+                  <li><a id="signup-btn" class="dropdown-item" href="#">Регистрация</a></li>
               {% endif %}
 
           </ul>
         </li>
       </ul>
-        <form name="searchBox" class="nav navbar-form navbar-right ng-pristine ng-valid" role="search">
+        <form name="search" class="nav navbar-form navbar-right ng-pristine ng-valid" role="search" action="{% url 'main_page_url' %}">
             <div class="input-group custom-search-form">
-                <input type="text" class="form-control ng-pristine ng-valid ng-touched" [(ngModel)]="searchBoxQuery"
-                       placeholder="Поиск..." triggers="focus"
-                       placement="bottom" name="search-box"/>
+                <input type="text" class="form-control ng-pristine ng-valid ng-touched"
+                       placeholder="Поиск статей" triggers="focus"
+                       placement="bottom" name="search"/>
 
                 <span class="input-group-btn">
                     <button data-toggle="collapse" data-target=".navbar-collapse.show" class="btn btn-repeat" type="submit" (click)="performSimpleQuery(searchBoxQuery)">

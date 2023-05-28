@@ -3,7 +3,42 @@
 
 {% block content %}
 
-<div ng-value="error"></div>
+<script type="text/javascript">
+    function addField() {
+        var form = $("#fieldsForm");
+        var index = Number(form.children().last().attr("index")) + 1;
+        form.append(
+            '<div class="input-group mb-3" id="peakField' + index + '" index="' + index + '" }}>' +
+                '<input name="x' + index + '" type="text" class="form-control" placeholder="Key" value="">' +
+                '<input name="y' + index + '" type="text" class="form-control" placeholder="Value" value="">' +
+                '<button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="removeField(' + index + ');">Remove</button>' +
+            '</div>'
+        );
+    }
+
+    function removeField(id) {
+        $("#peakField" + id).remove();
+    }
+
+    function submitPeaksForm() {
+        $("#peaksForm").submit();
+    }
+
+    function submitMethodForm() {
+        $("#methodForm").submit();
+    }
+
+    function submitMetadataForm() {
+        $("#metadataForm").submit();
+    }
+
+    function submitSummaryForm() {
+        $("#summaryForm").submit();
+    }
+
+    function cancelUploading() {
+        $("#cancelUploading").submit();
+</script>
 
 <div class="row">
     <div class="col-md-12">
@@ -18,9 +53,8 @@
         </div>
         {% endif %}
 
-
         <!-- Select files to upload -->
-        <div *ngIf="page === 0" class="card">
+        <div class="card">
             <div class="card-header"><strong style="font-size: 1.2em;">Отправьте масс-спектр для загрузки</strong></div>
 
             <div class="card-body">
@@ -35,23 +69,24 @@
               <label><strong>Загрузка файла:</strong></label>
                 <form method="POST" action="" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <!-- Выводим каждое поле формы в отдельном параграфе -->
                     <div class="input-group mb-3">
-                    <input class="form-control" type="file" id="formFile" name="file">
-                    <button class="btn btn-primary mb" type="submit">Загрузка</button>
+                    <input class="form-control" type="file" id="formFile" name="file" required="required">
+                    <button class="btn btn-primary mb" type="submit">Загрузить файл</button>
                     </div>
                 </form>
-                <span class="help-block">Поддерживаемый формат (.txt)</span>
+                <span class="help-block">Поддерживает файлы масс-спектральных данных в форматах .MSP и .txt</span>
 
                 <br />
                 <br />
                 <br />
-
+        <form method="POST" action="">
+            {% csrf_token %}
                 <div class="input-group" [ngClass]="{'has-error': pasteError}">
                   <div class="input-group">
                     <label><strong>Вставить масс-спектр в виде текста:</strong></label>
                   </div>
-                  <textarea class="form-control" [rows]="10" [(ngModel)]="pastedSpectrum"></textarea>
+
+                  <textarea name="pastedSpectrum" class="form-control" rows="10" required="required"></textarea>
                   <div class="input-group">
                     <span class="text-left">
                       Поддерживается загрузка в одну строку <code>[m/z]:[intensity] [m/z]:[intensity] ...</code> или многострочно:<br />
@@ -60,11 +95,12 @@
                       <code>...</code><br />
                     </span>
                   </div>
+                    <button class="btn btn-primary" type="submit" (click)="parsePastedSpectrum(pastedSpectrum)">Загрузить спектр</button>
                 </div>
-              <button class="btn btn-primary" (click)="parsePastedSpectrum(pastedSpectrum)">Загрузить спектр</button>
+              </form>
             </div>
         </div>
-        <!-- Loading message -->
     </div>
 </div>
+
 {% endblock %}

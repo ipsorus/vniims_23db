@@ -6,8 +6,12 @@ from django.apps import AppConfig
 #     name = 'backend'
 
 
-class AccountsConfig(AppConfig):
-    name = 'backend'
+# class AccountsConfig(AppConfig):
+#     name = 'backend'
+#
+#     def ready(self):
+#         import backend.signals
 
-    def ready(self):
-        import backend.signals
+class UsersConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "backend"

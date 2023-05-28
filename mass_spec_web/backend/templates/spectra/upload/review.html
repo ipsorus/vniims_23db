@@ -5,9 +5,9 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header text-center">
-                Spectrum Metadata
+                Сводная таблица данных о масс-спектре
                 <a href="{% url 'upload_fields' id=id %}" type="button" class="btn btn-link float-start">Назад</a>
-                <a href="{% url 'main' %}" class="btn btn-link float-end">Сохранить</a>
+                <a href="{% url 'main_page_url' %}" class="btn btn-link float-end">Сохранить</a>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -38,8 +38,8 @@
                                     <tbody>
                                         {% for peak in peaks %}
                                         <tr>
-                                            <td>{{ peak.0 }}</td>
-                                            <td>{{ peak.1 }}</td>
+                                            <td>{{ peak.x }}</td>
+                                            <td>{{ peak.y }}</td>
                                             <td>{{ peak.comment }}</td>
                                         </tr>
                                         {% endfor %}
@@ -97,10 +97,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for field in fields.meta_data %}
+                                        {% for field in fields %}
                                             <tr>
-                                                <td>{{ field.0 }}</td>
-                                                <td>{{ field.1 }}</td>
+                                                <td>{{ field.key }}</td>
+                                                <td>{{ field.value }}</td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
@@ -112,7 +112,7 @@
             </div>
             <div class="card-footer text-body-secondary">
                 <a href="{% url 'upload_fields' id=id %}" type="button" class="btn btn-link float-start">Назад</a>
-                <a href="{% url 'main' %}" class="btn btn-link float-end">Сохранить</a>
+                <a href="{% url 'main_page_url' %}" class="btn btn-link float-end">Сохранить</a>
             </div>
         </div>
     </div>
