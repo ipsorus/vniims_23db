@@ -71,11 +71,11 @@
   }
 }
 .grid-filter li a:hover {
-  color: #00288b;
+  color: #005370;
 }
 .grid-filter li.activeFilter a {
   color: #FFF;
-  background-color: #00288b;
+  background-color: #005370;
   margin: 0;
   font-weight: bold;
 }
@@ -125,8 +125,8 @@
   border: 1px solid transparent;
 }
 .grid-filter.style-3 li.activeFilter a {
-  color: #00288b !important;
-  border-color: #00288b;
+  color: #005370 !important;
+  border-color: #005370;
   background-color: transparent;
   margin: 0;
 }
@@ -159,7 +159,7 @@
 .grid-filter.style-4 li.activeFilter a::after {
   width: 100%;
   left: 0%;
-  background-color: #00288b;
+  background-color: #005370;
 }
 
 /* Portfolio - Shuffle Icon
@@ -178,7 +178,7 @@
   transition: all .2s linear;
 }
 .grid-shuffle:hover {
-  background-color: #00288b;
+  background-color: #005370;
   color: #FFF;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 }
@@ -242,7 +242,7 @@ body:not(.device-touch) .portfolio {
   color: #222222;
 }
 .portfolio-desc h3 a:hover {
-  color: #00288b;
+  color: #005370;
 }
 .portfolio-desc span {
   display: block;
@@ -833,7 +833,7 @@ body:not(.device-touch) .portfolio {
   margin-left: 0;
 }
 #portfolio-navigation a:hover {
-  color: #00288b;
+  color: #005370;
 }
 #portfolio-navigation a i {
   position: relative;

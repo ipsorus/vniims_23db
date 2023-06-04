@@ -194,7 +194,7 @@
 .irs-bar {
     height: 8px;
     top: 25px;
-    background-color: #00288b;
+    background-color: #005370;
     background-color: var(--themecolor);
     border-radius: 100px
 }
@@ -240,7 +240,7 @@
     line-height: 1.333;
     text-shadow: none;
     padding: 3px;
-    background: #00288b;
+    background: #005370;
     background: var(--themecolor);
     -moz-border-radius: 2px;
     border-radius: 2px;
@@ -257,7 +257,7 @@
     margin-left: -3px;
     overflow: hidden;
     border: 3px solid transparent;
-    border-top-color: #00288b;
+    border-top-color: #005370;
     border-top-color: var(--themecolor);
 }
 

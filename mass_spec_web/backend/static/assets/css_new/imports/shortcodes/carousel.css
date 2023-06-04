@@ -273,7 +273,7 @@
 }
 
 .owl-carousel .owl-nav [class*=owl-]:hover {
-	background-color: #00288b !important;
+	background-color: #005370 !important;
 	color: #fff !important;
 	text-decoration: none;
 }
@@ -292,7 +292,7 @@
 	height: 8px;
 	margin: 30px 4px 0 4px;
 	border-radius: 50%;
-	background-color: #00288b;
+	background-color: #005370;
 	-webkit-transition: all .3s ease;
 	-o-transition: all .3s ease;
 	transition: all .3s ease;
@@ -389,7 +389,7 @@
 .owl-carousel .owl-dots .owl-dot {
 	width: var(--owl-dots-sizes);
 	height: var(--owl-dots-sizes);
-	background-color: #00288b;
+	background-color: #005370;
 	margin-left: var(--owl-dots-gutters);
 	margin-right: var(--owl-dots-gutters);
 	transition: all .3s;
@@ -406,7 +406,7 @@
 .owl-carousel.owl-dots-border .owl-dots .owl-dot:not(.active) {
 	opacity: 1;
 	background-color: transparent;
-	border: 1px solid #00288b;
+	border: 1px solid #005370;
 }
 
 .owl-carousel.owl-dots-border .owl-dots .owl-dot.active {
@@ -519,7 +519,7 @@
 }
 
 .owl-carousel .owl-nav [class*=owl-]:hover {
-	background-color: #00288b !important;
+	background-color: #005370 !important;
 }
 
 .slider-element .owl-nav [class*=owl-],
