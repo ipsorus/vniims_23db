@@ -20,13 +20,12 @@
 	<link rel="stylesheet" href="{% static 'assets/css_new/magnific-popup.css' %}" type="text/css" />
 	<link rel="stylesheet" href="{% static 'assets/css_new/custom.css' %}" type="text/css" />
 
-	<link rel="stylesheet" href="{% static 'assets/css_new/responsive.css' %}" type="text/css" />
-
 	<link href="{% static 'assets/css/search.css' %}" rel="stylesheet" type="text/css"/>
 	<link href="{% static 'assets/css/autocomplete.css' %}" rel="stylesheet" type="text/css"/>
 	<!-- Bootstrap File Upload CSS -->
 	<link rel="stylesheet" href="{% static 'assets/css_new/components/bs-filestyle.css' %}" type="text/css" />
-
+	<!-- Font awesome CSS -->
+	<link rel="stylesheet" href="{% static 'assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
     {% endblock stylesheets %}
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<!--[if lt IE 9]>
@@ -44,13 +43,72 @@
 	<!-- Document Wrapper
 	============================================= -->
 	<div id="wrapper" class="clearfix">
-		{% include 'navbar/navbar1.html'%}
+		{% include 'navbar/navbar2.html'%}
+		{% if request.path == '/' %}
+		<section id="slider" class="slider-element slider-parallax min-vh-60 min-vh-md-100 dark include-header" style="background: url({% static 'assets/images/logo-img1.png' %}) center center no-repeat; background-attachment: fixed; background-size: cover">
+			<div class="slider-inner">
 
+				<div class="vertical-middle slider-element-fade">
+					<div class="container-fluid py-5">
+						<br/>
+						<br/>
+						<div class="content-wrap">
+						<div class="row clearfix align-items-stretch bottommargin-lg landing-wide-form">
+
+							<div class="col-lg-3 col-md-6 dark left col-padding" style="background-color: #88C3D8;">
+								<h3>Библиотека масс-спектров сильнодействующих, наркотических и психоактивных веществ</h3>
+							</div>
+
+							<div class="col-lg-3 col-md-6 dark center col-padding">
+								<i class="i-plain i-xlarge mx-auto icon-line2-check"></i>
+								<div class="counter counter-lined"><span data-from="0" data-to="51" data-refresh-interval="15" data-speed="2000"></span></div>
+								<h5>Загружено аттестованных масс-спектров</h5>
+							</div>
+
+							<div class="col-lg-3 col-md-6 dark center col-padding">
+								<i class="i-plain i-xlarge mx-auto icon-line2-bar-chart"></i>
+								<div class="counter counter-lined"><span data-from="0" data-to="133" data-refresh-interval="15" data-speed="2000"></span></div>
+								<h5>Загружено масс-спектров пользователями</h5>
+							</div>
+
+							<div class="col-lg-3 col-md-6 dark center col-padding">
+								<i class="i-plain i-xlarge mx-auto icon-line2-user"></i>
+								<div class="counter counter-lined"><span data-from="0" data-to="87" data-refresh-interval="15" data-speed="2000"></span></div>
+								<h5>Зарегистрировано пользователей</h5>
+							</div>
+						</div></div>
+					</div>
+				</div>
+				<a href="#" data-scrollto="#content" data-offset="100" class="one-page-arrow dark"><i class="icon-angle-down infinite animated fadeInDown"></i></a>
+			</div>
+		</section>
+		{% endif %}
 		<!-- Content
 		============================================= -->
 		{% block content %}{% endblock %}
 		<!-- #content end -->
+		{% if is_paginated %}
+		<ul class="pagination justify-content-center">
+			<li class="page-item {% if not prev_url %} disabled {% endif %}">
+				<a class="page-link" href="{{ prev_url}}" tabindex="-1" aria-disabled="true">Назад</a>
+			</li>
+			  {% for n in page_object.paginator.page_range %}
+					{% if page_object.number == n %}
+						<li class="page-item active">
+							<a class="page-link" href="?page={{ n }}">{{ n }}<span class="sr-only"></span></a></a>
+						</li>
+					{% elif n > page_object.number|add:-3 and n < page_object.number|add:3 %}
+					<li class="page-item">
+						<a class="page-link" href="?page={{ n }}">{{ n }}</a>
+					</li>
+					{% endif %}
+			{% endfor %}
 
+			<li class="page-item {% if not next_url %} disabled {% endif %}">
+					<a class="page-link" href="{{ next_url}}" tabindex="-1" aria-disabled="true">Вперед</a>
+			</li>
+			</ul>
+		{% endif %}
 		{% include "_footer.html" %}
 
 	</div>
@@ -63,79 +121,14 @@
     {% block scripts %}
 	<!-- External JavaScripts
 	============================================= -->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<!--    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>-->
 	<script type="text/javascript" src="{% static 'assets/js/js_new/jquery.js' %}"></script>
 	<script type="text/javascript" src="{% static 'assets/js/js_new/plugins.js' %}"></script>
-	<!-- Bootstrap File Upload Plugin -->
-	<script type="text/javascript" src="{% static 'assets/js/js_new/components/bs-filestyle.js' %}"></script>
 
 	<!-- Footer Scripts
 	============================================= -->
 	<script type="text/javascript" src="{% static 'assets/js/js_new/functions.js' %}"></script>
 
-	<script  type="text/javascript">
-		$(document).on('ready', function() {
-			$("#input-5").fileinput({showCaption: false});
-
-			$("#input-6").fileinput({
-				showUpload: true,
-				maxFileCount: 10,
-				mainClass: "input-group-lg",
-				showCaption: true
-			});
-
-			$("#input-8").fileinput({
-				mainClass: "input-group-md",
-				showUpload: true,
-				previewFileType: "image",
-				browseClass: "btn btn-success",
-				browseLabel: "Pick Image",
-				browseIcon: "<i class=\"icon-picture\"></i> ",
-				removeClass: "btn btn-danger",
-				removeLabel: "Delete",
-				removeIcon: "<i class=\"icon-trash\"></i> ",
-				uploadClass: "btn btn-info",
-				uploadLabel: "Upload",
-				uploadIcon: "<i class=\"icon-upload\"></i> "
-			});
-
-			$("#input-9").fileinput({
-				previewFileType: "text",
-				allowedFileExtensions: ["txt", "md", "ini", "text"],
-				previewClass: "bg-warning",
-				browseClass: "btn btn-primary",
-				removeClass: "btn btn-default",
-				uploadClass: "btn btn-default",
-			});
-
-			$("#input-10").fileinput({
-				showUpload: false,
-				layoutTemplates: {
-					main1: "{preview}\n" +
-					"<div class=\'input-group {class}\'>\n" +
-					"   <div class=\'input-group-btn\'>\n" +
-					"       {browse}\n" +
-					"       {upload}\n" +
-					"       {remove}\n" +
-					"   </div>\n" +
-					"   {caption}\n" +
-					"</div>"
-				}
-			});
-
-			$("#input-11").fileinput({
-				maxFileCount: 10,
-				allowedFileTypes: ["image", "video"]
-			});
-
-			$("#input-12").fileinput({
-				showPreview: false,
-				allowedFileExtensions: ["zip", "rar", "gz", "tgz"],
-				elErrorContainer: "#errorBlock"
-			});
-		});
-
-	</script>
     {% endblock scripts %}
 
 </body>

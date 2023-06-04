@@ -11,3 +11,8 @@ plotly~=5.13.1
 pymzml~=2.5.2
 pySPLASH~=0.0.1
 
+
+djangorestframework~=3.14.0
+numpy~=1.24.2
+matplotlib~=3.7.1
+Pillow~=9.5.0

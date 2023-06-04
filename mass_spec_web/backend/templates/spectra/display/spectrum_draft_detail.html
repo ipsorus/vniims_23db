@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load static %}
 {% block content %}
 <div>
@@ -7,8 +7,8 @@
             <div class="card">
                 <div class="card-header">
                   <div class="card-title">
-                    <h3 class="col-md-5 float-left">Название: {{ spectrum.name }}</h3>
-                      <h3 class="float-right">Статус:
+                    <h3 class="col-md-5 float-start">Название: {{ spectrum.name }}</h3>
+                      <h3 class="float-end">Статус:
                           {% if spectrum.draft and spectrum.reject_reason == '' %}На рассмотрении
                           {% elif spectrum.reject_reason != '' %}<span style="color:red;">Отклонено</span>
                           {% else %}<span style="color:green;">Опубликовано</span>

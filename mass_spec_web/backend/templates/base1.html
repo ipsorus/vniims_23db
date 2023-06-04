@@ -1,115 +1,145 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html dir="ltr" lang="ru-RU">
 <head>
-    <meta charset="utf-8">
-    <title>База данных ВНИИМС</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="ipsorus" content="VNIIMS23DB" />
+
+	<!-- Stylesheets
+	============================================= -->
     {% block stylesheets %}
-      <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-      <link href="{% static 'assets/css/main.css' %}" rel="stylesheet" type="text/css"/>
-      <link href="{% static 'assets/css/search.css' %}" rel="stylesheet" type="text/css"/>
-      <link href="{% static 'assets/css/theme.css' %}" rel="stylesheet" type="text/css"/>
-      <link href="{% static 'assets/css/autocomplete.css' %}" rel="stylesheet" type="text/css"/>
-      <!-- Bootstrap CSS -->
-      <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
-      <!-- Font awesome CSS -->
-      <link rel="stylesheet" href="{% static 'assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+	<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/bootstrap.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/style.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/swiper.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/dark.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/font-icons.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/animate.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/magnific-popup.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/custom.css' %}" type="text/css" />
+
+	<link rel="stylesheet" href="{% static 'assets/css_new/responsive.css' %}" type="text/css" />
+
+	<link href="{% static 'assets/css/search.css' %}" rel="stylesheet" type="text/css"/>
+	<link href="{% static 'assets/css/autocomplete.css' %}" rel="stylesheet" type="text/css"/>
+	<!-- Bootstrap File Upload CSS -->
+	<link rel="stylesheet" href="{% static 'assets/css_new/components/bs-filestyle.css' %}" type="text/css" />
+
     {% endblock stylesheets %}
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<!--[if lt IE 9]>
+		<script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+	<![endif]-->
+
+	<!-- Document Title
+	============================================= -->
+	<title>Библиотека масс-спектров сильнодействующих, наркотических и психоактивных веществ</title>
+
 </head>
-<body class="dashboard">
-<div id="wrapper">
-    {% include 'navbar/navbar.html'%}
 
-        <div id="page-wrapper">
-            <div class="row">
-                <div class="col-lg-12 top17">
-                    <p></p>
-                    {% include "_header.html" %}
-                    {% block content %}{% endblock %}
-                </div>
-            </div>
+<body class="stretched" style="background-image: url({% static 'assets/images/pattern.png' %}); background-attachment: fixed;">
 
+	<!-- Document Wrapper
+	============================================= -->
+	<div id="wrapper" class="clearfix">
+		{% include 'navbar/navbar1.html'%}
 
-            <div class="row">
-                <div class="col-lg-8 ml-auto">
-                    {% if is_paginated %}
-                        <nav aria-label="...">
-                            <ul class="pagination">
-                            <li class="page-item {% if not prev_url %} disabled {% endif %}">
-                                    <a class="page-link" href="{{ prev_url}}" tabindex="-1" aria-disabled="true">Назад</a>
-                            </li>
+		<!-- Content
+		============================================= -->
+		{% block content %}{% endblock %}
+		<!-- #content end -->
 
-                            {% for n in page_object.paginator.page_range %}
-                                    {% if page_object.number == n %}
-                                        <li class="page-item active">
-                                            <a class="page-link" href="?page={{ n }}">{{ n }}<span class="sr-only">(current)</span></a></a>
-                                        </li>
-                                    {% elif n > page_object.number|add:-3 and n < page_object.number|add:3 %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ n }}">{{ n }}</a>
-                                    </li>
-                                    {% endif %}
-                            {% endfor %}
+		{% include "_footer.html" %}
 
-                            <li class="page-item {% if not next_url %} disabled {% endif %}">
-                                    <a class="page-link" href="{{ next_url}}" tabindex="-1" aria-disabled="true">Вперед</a>
-                            </li>
-                            </ul>
-                        </nav>
-                    {% endif %}
-                </div>
-            </div>
+	</div>
+	<!-- #wrapper end -->
 
+	<!-- Go To Top
+	============================================= -->
+	<div id="gotoTop" class="icon-angle-up"></div>
 
-        </div>
-    </div>
-<!-- JavaScript -->
     {% block scripts %}
-      <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
-      <script src="{% static 'assets/js/popper.min.js' %}"></script>
-      <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
-      <!-- You can alternatively load the minified version -->
-      <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+	<!-- External JavaScripts
+	============================================= -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script type="text/javascript" src="{% static 'assets/js/js_new/jquery.js' %}"></script>
+	<script type="text/javascript" src="{% static 'assets/js/js_new/plugins.js' %}"></script>
+	<!-- Bootstrap File Upload Plugin -->
+	<script type="text/javascript" src="{% static 'assets/js/js_new/components/bs-filestyle.js' %}"></script>
+
+	<!-- Footer Scripts
+	============================================= -->
+	<script type="text/javascript" src="{% static 'assets/js/js_new/functions.js' %}"></script>
+
+	<script  type="text/javascript">
+		$(document).on('ready', function() {
+			$("#input-5").fileinput({showCaption: false});
+
+			$("#input-6").fileinput({
+				showUpload: true,
+				maxFileCount: 10,
+				mainClass: "input-group-lg",
+				showCaption: true
+			});
+
+			$("#input-8").fileinput({
+				mainClass: "input-group-md",
+				showUpload: true,
+				previewFileType: "image",
+				browseClass: "btn btn-success",
+				browseLabel: "Pick Image",
+				browseIcon: "<i class=\"icon-picture\"></i> ",
+				removeClass: "btn btn-danger",
+				removeLabel: "Delete",
+				removeIcon: "<i class=\"icon-trash\"></i> ",
+				uploadClass: "btn btn-info",
+				uploadLabel: "Upload",
+				uploadIcon: "<i class=\"icon-upload\"></i> "
+			});
+
+			$("#input-9").fileinput({
+				previewFileType: "text",
+				allowedFileExtensions: ["txt", "md", "ini", "text"],
+				previewClass: "bg-warning",
+				browseClass: "btn btn-primary",
+				removeClass: "btn btn-default",
+				uploadClass: "btn btn-default",
+			});
+
+			$("#input-10").fileinput({
+				showUpload: false,
+				layoutTemplates: {
+					main1: "{preview}\n" +
+					"<div class=\'input-group {class}\'>\n" +
+					"   <div class=\'input-group-btn\'>\n" +
+					"       {browse}\n" +
+					"       {upload}\n" +
+					"       {remove}\n" +
+					"   </div>\n" +
+					"   {caption}\n" +
+					"</div>"
+				}
+			});
+
+			$("#input-11").fileinput({
+				maxFileCount: 10,
+				allowedFileTypes: ["image", "video"]
+			});
+
+			$("#input-12").fileinput({
+				showPreview: false,
+				allowedFileExtensions: ["zip", "rar", "gz", "tgz"],
+				elErrorContainer: "#errorBlock"
+			});
+		});
+
+	</script>
     {% endblock scripts %}
-    {% include "_modal.html" %}
-    {% block extrascripts %}
-      <script type="text/javascript">
-          $(function () {
-              // Login
-              $("#login-btn").modalForm({
-                formURL: "{% url 'login' %}?next={{ request.path }}"
-              });
 
-              // Login
-              $("#login-btn_upload_page").modalForm({
-                formURL: "{% url 'login' %}?next={{ request.path }}"
-              });
-
-              //  Signup
-              $("#signup-btn").modalForm({
-                formURL: "{% url 'signup' %}?next={{ request.path }}"
-              });
-
-              // Hide message
-    <!--          $(".alert").fadeTo(2000, 500).slideUp(500, function () {-->
-    <!--              $(".alert").slideUp(500);-->
-    <!--          });-->
-
-              $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
-                   $("#success-alert").slideUp(500);
-              });
-
-              $("#error-alert").fadeTo(2000, 500).slideUp(500, function(){
-                   $("#error-alert").slideUp(500);
-              });
-
-          });
-      </script>
-    {% endblock extrascripts %}
 </body>
 </html>
+
+
+

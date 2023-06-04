@@ -245,7 +245,7 @@
                     {% csrf_token %}
                     <!-- Выводим каждое поле формы в отдельном параграфе -->
                     <div class="input-group mb-3">
-                    <input class="form-control" type="file" id="formFile" name="file">
+                    <input class="form-control" type="file" id="formFile" name="file" required="required">
                     <button class="btn btn-primary mb" type="submit">Загрузка</button>
                     </div>
                 </form>
@@ -261,7 +261,7 @@
                     <label><strong>Вставить масс-спектр в виде текста:</strong></label>
                   </div>
 
-                  <textarea name="pastedSpectrum" class="form-control" rows="10"></textarea>
+                  <textarea name="pastedSpectrumSearch" class="form-control" rows="10" required="required"></textarea>
                   <div class="input-group">
                     <span class="text-left">
                       Поддерживается загрузка в одну строку <code>[m/z]:[intensity] [m/z]:[intensity] ...</code> или многострочно:<br />
@@ -270,7 +270,7 @@
                       <code>...</code><br />
                     </span>
                   </div>
-                    <button class="btn btn-primary" type="submit" (click)="parsePastedSpectrum(pastedSpectrum)">Загрузить спектр</button>
+                    <button class="btn btn-primary" name="similarity_search" type="submit">Начать поиск</button>
                 </div>
               </form>
             </div>

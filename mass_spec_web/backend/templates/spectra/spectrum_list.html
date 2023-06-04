@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load static %}
 {% block content %}
 <!--<script type="text/javascript">-->
@@ -6,21 +6,58 @@
 <!--        alert("add");-->
 <!--    }-->
 <!--</script>-->
-<h1>Масс-спектры в базе данных (всего {{ count }}):</h1>
-<hr />
-<div class="row top17">
-    <div class="col-md-12">
-      <p>
-          <strong>В разделе странице собраны подтвержденные масс-спектры</strong>
-      </p>
+
+<!-- Page Title
+============================================= -->
+<section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
+
+    <div class="container clearfix">
+        <h1>Масс-спектры в базе данных (всего {{ count }}):</h1>
+        <p class="mb-0 mt-2">В разделе странице собраны подтвержденные масс-спектры</p>
     </div>
-    <!-- display spectra as list -->
-    <div class="col-md-12">
-        <div class="m-md-3">
-            {% for spec in page_object.object_list %}
-              {% include 'spectra/display/spectrum_card_template.html' %}
-            {% endfor %}
+
+</section><!-- #page-title end -->
+
+<!-- Content============================================= -->
+<section id="content">
+	<div class="content-wrap">
+		<div class="container clearfix">
+
+			<div class="row gutter-40 col-mb-80">
+				<!-- Post Content
+				============================================= -->
+				<div class="postcontent mx-auto col-lg-9">
+                    {% for spec in page_object.object_list %}
+                      {% include 'spectra/display/spectrum_card_template.html' %}
+                    {% endfor %}
+                </div><!-- #posts end -->
+            </div>
         </div>
     </div>
-</div>
+</section>
+
+
+
+
+
+
+
+
+<!--<h1>Масс-спектры в базе данных (всего {{ count }}):</h1>-->
+<!--<hr />-->
+<!--<div class="row top17">-->
+<!--    <div class="col-md-12">-->
+<!--      <p>-->
+<!--          <strong>В разделе странице собраны подтвержденные масс-спектры</strong>-->
+<!--      </p>-->
+<!--    </div>-->
+<!--    &lt;!&ndash; display spectra as list &ndash;&gt;-->
+<!--    <div class="col-md-12">-->
+<!--        <div class="m-md-3">-->
+<!--            {% for spec in page_object.object_list %}-->
+<!--              {% include 'spectra/display/spectrum_card_template.html' %}-->
+<!--            {% endfor %}-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 {% endblock %}

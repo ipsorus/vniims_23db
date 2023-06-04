@@ -166,12 +166,12 @@ input.invalid {
                             <div class="input-group mb-3" id="metadataField{{ forloop.counter0 }}" index={{ forloop.counter0 }}>
                                 <div class="col-sm-5 form-group"><input maxlength="255" id="key{{ forloop.counter0 }}" name="key{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Имя поля" value="{{ field.name|title }}"></div>
                                 <div class="col-sm-5 form-group"><input maxlength="255" id="value{{ forloop.counter0 }}" name="value{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Значение" value="{{ field.value }}"></div>
-                                <div class="col-sm-2 form-group"><button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="removeField({{ forloop.counter0 }});">Удалить</button></div>
+                                <div class="col-sm-2 form-group"><button class="btn btn-danger" type="button" id="button-addon2" onclick="removeField({{ forloop.counter0 }});">Удалить</button></div>
                             </div>
                         {% endfor %}
                     </div>
                 </div>
-                <button class="btn btn-outline-secondary" onclick="addField();" type="button" id="button-add-field">Добавить поле</button>
+                <button class="btn btn-primary" onclick="addField();" type="button" id="button-add-field">Добавить поле</button>
                         </div>
                     </div>
                 </div>
@@ -282,7 +282,7 @@ function addField() {
             '<div class="input-group mb-3" id="metadataField' + index + '" index="' + index + '">' +
                 '<div class="col-sm-5 form-group"><input maxlength="255" name="key' + index + '" type="text" class="form-control" placeholder="Имя поля" value=""></div>' +
                 '<div class="col-sm-5 form-group"><input maxlength="255" name="value' + index + '" type="text" class="form-control" placeholder="Значение" value=""></div>' +
-                '<div class="col-sm-2 form-group"><button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="removeField(' + index + ');">Удалить</button></div>' +
+                '<div class="col-sm-2 form-group"><button class="btn btn-danger" type="button" id="button-addon2" onclick="removeField(' + index + ');">Удалить</button></div>' +
             '</div>'
         );
     }

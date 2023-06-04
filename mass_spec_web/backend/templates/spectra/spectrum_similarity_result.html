@@ -1,35 +1,20 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<h1>Результаты поиска:</h1>
+<h1>Результаты поиска по совпадению mz/intensity:</h1>
 <hr />
 <div class="row top17">
-    <div class="col-md-12">
-      <p>
-        <ngb-alert type="warning" [dismissible]="false">
-          <strong>Поиск по запросу: </strong>
-        </ngb-alert>
-          {% if search_queryes %}
-            {% for key, value in search_queryes.items %}
-                <span class="badge bg-primary">{{ key }}: {{ value }}</span>
-            {% endfor %}
-          {% else %}
-            Параметры поиска не заданы
-          {% endif %}
-
-      </p>
-    </div>
     <!-- display spectra as list -->
-    <div class="col-md-12" *ngIf="pagination.table !== true">
-        <div *ngFor="let spectrum of spectra" class="m-md-3">
+    <div class="col-md-12">
+        <div class="m-md-3">
             {% if objects %}
                 {% for spec in objects %}
-                    {% include 'spectra/display/spectrum_card_template.html' %}
+                    {% include 'spectra/display/spectrum_card_similarity_template.html' %}
                 {% endfor %}
             {% else %}
                 Результатов не найдено.
             {% endif %}
-</div>
-</div>
+        </div>
+    </div>
 </div>
 {% endblock %}

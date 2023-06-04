@@ -1,16 +1,9 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load static %}
 
 {% block content %}
 
 <style>
-* {
-  box-sizing: border-box;
-}
-
-h1 {
-  text-align: center;
-}
 
 input {
   padding: 10px;
@@ -30,170 +23,190 @@ input.invalid {
 
 </style>
 
-<div class="row">
-    <div class="col-md-12">
-        <form method="post" id="cancelUploading" action="">
-            {% csrf_token %}
-            <input type="hidden" name="_method" value="DELETE">
-        </form>
-        <form method="post" id="regForm" action="">
-            {% csrf_token %}
-            <input type="hidden" name="_method" value="CREATE">
-            <!-- Display spectrum -->
-            <div class="card">
-                <div class="card-header">
-                    <nav class="navbar navbar-expand-md" style="width: 100%;">
-                      <div class="navbar-collapse collapse w-80 order-1 order-md-0 dual-collapse2">
-                        <ul class="navbar-nav mr-auto" style="margin: 0px !important;">
-                          <li class="previous"><button type="button" class="fakeRef" id="prevBtn" onclick="nextPrev(-1)"><fa-icon [icon]="faArrowLeft"></fa-icon> Назад</button></li>
-                        </ul>
-                      </div>
-                      <div class="mx-auto order-0">
-                        <ul class="navbar-nav mx-auto">
-                          <li><strong style="font-size: 1.2em;">Менеджер создания записи</strong></li>
-                        </ul>
-                      </div>
-                      <div class="navbar-collapse collapse w-80 order-3 dual-collapse2">
-                        <ul class="navbar-nav ml-auto">
-                          <li class="next"><button type="button" class="fakeRef" id="nextBtn" onclick="nextPrev(1)">Далее <fa-icon [icon]="faArrowRight"></fa-icon></button></li>
-                        </ul>
-                      </div>
-                    </nav>
-                </div>
+<!-- Page Title
+		============================================= -->
+		<section id="page-title" style="background-image: url({% static 'assets/images/main_image1.png' %}); background-attachment: fixed;">
 
-                <div class="card-body">
-                    <p class="lead">
-                        <small>Ниже представлен загруженный Вами масс-спектр.<br /> Пожалуйста, убедитесь, что он выглядит так, как вы ожидаете</small>
-                    </p>
+			<div class="container clearfix">
+				<h1>Мастер создания записи</h1>
+			</div>
 
-                    <div class="col-md-12">
-                        {% autoescape off %}
-                        {{ plot_div }}
-                        {% endautoescape %}
-                    </div>
-                    <br />
-                    <br />
-                    <br />
+		</section><!-- #page-title end -->
 
-                    <div style="height: 500px; overflow: auto; margin-top: 10px;">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>&nbsp;</th>
-                                <th>Ион</th>
-                                <th>Интенсивность</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                {% for peak in peaks_list %}
-                                    <tr>
-                                        <td><input id="active{{ forloop.counter0 }}" name="active{{ forloop.counter0 }}" type="checkbox" checked></td>
-                                        <td><input id="x{{ forloop.counter0 }}" name="x{{ forloop.counter0 }}" type="hidden" class="form-control" value="{{ peak.0 }}">{{ peak.0 }}</td>
-                                        <td><input id="y{{ forloop.counter0 }}" name="y{{ forloop.counter0 }}" type="hidden" class="form-control" value="{{ peak.1 }}">{{ peak.1 }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+<!-- Content============================================= -->
+<section id="content">
+	<div class="content-wrap">
+		<div class="container clearfix">
 
-                <div class="card-body">
-                    <p>Эти сведения обеспечивают более полное представление о масс-спектре и позволяют пользователям легче находить важные спектры. Ниже приведен список <b>настоятельно рекомендуемых</b> к предоставлению сведений.</p>
-                        <div class="mb-3">
-                            <label for="sourceSelect" class="form-label">Название спектра:</label>
-                            <input maxlength="50" id="Name" name="Name" type="text" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label for="sourceSelect" class="form-label">Регистрационный номер / Лицензия:</label>
-                            <input maxlength="64" id="Number" name="Number" type="text" class="form-control">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="sourceSelect" class="form-label">Введение источника / Тип хроматографии:</label>
-                            <select id="sourceSelect" name="source" class="form-select" aria-label="Default select example">
-                                <option value="0" {% if obj.source == 0 %}selected{% endif %}>Выбрать один вариант</option>
-                                <option value="1" {% if obj.source == 1 %}selected{% endif %}>Жидкостная хроматография (LC)</option>
-                                <option value="2" {% if obj.source == 2 %}selected{% endif %}>Газовая хроматография (GC)</option>
-                                <option value="3" {% if obj.source == 3 %}selected{% endif %}>Прямая инъекция/инфузия (DI)</option>
-                                <option value="4" {% if obj.source == 4 %}selected{% endif %}>Капиллярный электрофорез (CE)</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="levelSelect" class="form-label">Тип / уровень MS:</label>
-                            <select id="levelSelect" name="level" class="form-select" aria-label="Default select example">
-                                <option value="0" {% if obj.level == 0 %}selected{% endif %}>Выбрать один вариант</option>
-                                <option value="1" {% if obj.level == 1 %}selected{% endif %}>MS</option>
-                                <option value="2" {% if obj.level == 2 %}selected{% endif %}>MS2</option>
-                                <option value="3" {% if obj.level == 3 %}selected{% endif %}>MS3</option>
-                                <option value="4" {% if obj.level == 4 %}selected{% endif %}>MS4</option>
-                                <option value="5" {% if obj.level == 5 %}selected{% endif %}>MS5</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="ionizationSelect" class="form-label">Метод ионизации:</label>
-                            <select id="ionizationSelect" name="ionization" class="form-select" aria-label="Default select example">
-                                <option value="0" {% if obj.ionization == 0 %}selected{% endif %}>Выбрать один вариант</option>
-                                <option value="1" {% if obj.ionization == 1 %}selected{% endif %}>Химическая ионизация при атмосферном давлении (APCI)</option>
-                                <option value="2" {% if obj.ionization == 2 %}selected{% endif %}>Электронный удар (EI)</option>
-                                <option value="3" {% if obj.ionization == 3 %}selected{% endif %}>Химическая ионизация (CI)</option>
-                                <option value="4" {% if obj.ionization == 4 %}selected{% endif %}>Ионизация электрораспылением (ESI)</option>
-                                <option value="5" {% if obj.ionization == 5 %}selected{% endif %}>Быстрая атомная бомбардировка (FAB)</option>
-                                <option value="6" {% if obj.ionization == 6 %}selected{% endif %}>Лазерная десорбция ионизация с матрицей (MALDI)</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="polaritySelect" class="form-label">Полярность / Ионный режим:</label>
-                            <select id="polaritySelect" name="polarity" class="form-select" aria-label="Default select example">
-                                <option value="0" {% if obj.polarity == 0 %}selected{% endif %}>Выбрать один вариант</option>
-                                <option value="1" {% if obj.polarity == 1 %}selected{% endif %}>Положительный</option>
-                                <option value="2" {% if obj.polarity == 2 %}selected{% endif %}>Отрицательный</option>
-                            </select>
-                        </div>
-                </div>
-
-                <div class="card-body">
-                    <p>В дополнение к рекомендуемым метаданным мы рекомендуем пользователям предоставлять любую другую доступную информацию об этой масс-спектральной записи, включая:</p>
-                    <ul>
-                        <li>Свойства образца</li>
-                        <li>Производитель и модель прибора</li>
-                        <li>Аналитические методы и условия</li>
-                    </ul>
-                    <div id="metadata_editor" style="margin-top: 10px;">
-                        <div>
-                          <div class="row">
-                        <div id="metadataFields">
-                        {% for key, value in metadata.items %}
-                            <div class="input-group mb-3" id="metadataField{{ forloop.counter0 }}" index={{ forloop.counter0 }}>
-                                <div class="col-sm-5 form-group"><input maxlength="255" id="key{{ forloop.counter0 }}" name="key{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Имя поля" value="{{ key|title }}"></div>
-                                <div class="col-sm-5 form-group"><input maxlength="255" id="value{{ forloop.counter0 }}" name="value{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Значение" value="{{ value }}"></div>
-                                <div class="col-sm-2 form-group"><button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="removeField({{ forloop.counter0 }});">Удалить</button></div>
+			<div class="row gutter-40 col-mb-80">
+				<!-- Post Content
+				============================================= -->
+				<div class="postcontent mx-auto col-lg-9">
+                    <form method="post" id="cancelUploading" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="_method" value="DELETE">
+                    </form>
+                    <form method="post" id="regForm" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="_method" value="CREATE">
+                        <!-- Display spectrum -->
+                        <div class="card">
+                            <div class="card-header">
+                                <nav class="navbar navbar-expand-md" style="width: 100%;">
+                                  <div class="w-80 order-1 order-md-0 dual-collapse2">
+                                    <ul class="navbar-nav mr-auto" style="margin: 0px !important;">
+                                      <li class="previous"><button type="button" class="fakeRef" id="prevBtn" onclick="nextPrev(-1)"><fa-icon [icon]="faArrowLeft"></fa-icon> Назад</button></li>
+                                    </ul>
+                                  </div>
+                                  <div class="mx-auto order-0">
+                                    <ul class="navbar-nav mx-auto">
+                                      <li><strong style="font-size: 1.2em;">Форма создания записи</strong></li>
+                                    </ul>
+                                  </div>
+                                  <div class="w-80 order-3 dual-collapse2">
+                                    <ul class="navbar-nav ml-auto">
+                                      <li class="next"><button type="button" class="fakeRef" id="nextBtn" onclick="nextPrev(1)">Далее <fa-icon [icon]="faArrowRight"></fa-icon></button></li>
+                                    </ul>
+                                  </div>
+                                </nav>
                             </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <button class="btn btn-outline-secondary" onclick="addField();" type="button" id="button-add-field">Добавить поле</button>
+
+                            <div class="card-body">
+                                <p class="lead">
+                                    <small>Ниже представлен загруженный Вами масс-спектр.<br /> Пожалуйста, убедитесь, что он выглядит так, как вы ожидаете</small>
+                                </p>
+
+                                <div class="promo promo-border promo-mini p-5 mx-auto vertical-middle row clearfix bottommargin-lg">
+                                    {% autoescape off %}
+                                    {{ plot_div }}
+                                    {% endautoescape %}
+                                </div>
+                                <div class="table-responsive" style="height: 500px; overflow: auto; margin-top: 10px;">
+                                    <table class="table table-bordered mb-0">
+                                        <thead>
+                                        <tr>
+                                            <th>&nbsp;</th>
+                                            <th>Ион</th>
+                                            <th>Интенсивность</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for peak in peaks_list %}
+                                                <tr>
+                                                    <td><input id="active{{ forloop.counter0 }}" name="active{{ forloop.counter0 }}" type="checkbox" checked></td>
+                                                    <td><input id="x{{ forloop.counter0 }}" name="x{{ forloop.counter0 }}" type="hidden" class="form-control" value="{{ peak.0 }}">{{ peak.0 }}</td>
+                                                    <td><input id="y{{ forloop.counter0 }}" name="y{{ forloop.counter0 }}" type="hidden" class="form-control" value="{{ peak.1 }}">{{ peak.1 }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <p>Эти сведения обеспечивают более полное представление о масс-спектре и позволяют пользователям легче находить важные спектры. Ниже приведен список <b>настоятельно рекомендуемых</b> к предоставлению сведений.</p>
+                                    <div class="mb-3">
+                                        <label for="Name" class="form-label">Название спектра:</label>
+                                        <input maxlength="50" id="Name" name="Name" type="text" class="form-control">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="Number" class="form-label">Регистрационный номер / Лицензия:</label>
+                                        <input maxlength="64" id="Number" name="Number" type="text" class="form-control">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="sourceSelect" class="form-label">Введение источника / Тип хроматографии:</label>
+                                        <select id="sourceSelect" name="source" class="form-select" aria-label="Default select example">
+                                            <option value="0" {% if obj.source == 0 %}selected{% endif %}>Выбрать один вариант</option>
+                                            <option value="1" {% if obj.source == 1 %}selected{% endif %}>Жидкостная хроматография (LC)</option>
+                                            <option value="2" {% if obj.source == 2 %}selected{% endif %}>Газовая хроматография (GC)</option>
+                                            <option value="3" {% if obj.source == 3 %}selected{% endif %}>Прямая инъекция/инфузия (DI)</option>
+                                            <option value="4" {% if obj.source == 4 %}selected{% endif %}>Капиллярный электрофорез (CE)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="levelSelect" class="form-label">Тип / уровень MS:</label>
+                                        <select id="levelSelect" name="level" class="form-select" aria-label="Default select example">
+                                            <option value="0" {% if obj.level == 0 %}selected{% endif %}>Выбрать один вариант</option>
+                                            <option value="1" {% if obj.level == 1 %}selected{% endif %}>MS</option>
+                                            <option value="2" {% if obj.level == 2 %}selected{% endif %}>MS2</option>
+                                            <option value="3" {% if obj.level == 3 %}selected{% endif %}>MS3</option>
+                                            <option value="4" {% if obj.level == 4 %}selected{% endif %}>MS4</option>
+                                            <option value="5" {% if obj.level == 5 %}selected{% endif %}>MS5</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="ionizationSelect" class="form-label">Метод ионизации:</label>
+                                        <select id="ionizationSelect" name="ionization" class="form-select" aria-label="Default select example">
+                                            <option value="0" {% if obj.ionization == 0 %}selected{% endif %}>Выбрать один вариант</option>
+                                            <option value="1" {% if obj.ionization == 1 %}selected{% endif %}>Химическая ионизация при атмосферном давлении (APCI)</option>
+                                            <option value="2" {% if obj.ionization == 2 %}selected{% endif %}>Электронный удар (EI)</option>
+                                            <option value="3" {% if obj.ionization == 3 %}selected{% endif %}>Химическая ионизация (CI)</option>
+                                            <option value="4" {% if obj.ionization == 4 %}selected{% endif %}>Ионизация электрораспылением (ESI)</option>
+                                            <option value="5" {% if obj.ionization == 5 %}selected{% endif %}>Быстрая атомная бомбардировка (FAB)</option>
+                                            <option value="6" {% if obj.ionization == 6 %}selected{% endif %}>Лазерная десорбция ионизация с матрицей (MALDI)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="polaritySelect" class="form-label">Полярность / Ионный режим:</label>
+                                        <select id="polaritySelect" name="polarity" class="form-select" aria-label="Default select example">
+                                            <option value="0" {% if obj.polarity == 0 %}selected{% endif %}>Выбрать один вариант</option>
+                                            <option value="1" {% if obj.polarity == 1 %}selected{% endif %}>Положительный</option>
+                                            <option value="2" {% if obj.polarity == 2 %}selected{% endif %}>Отрицательный</option>
+                                        </select>
+                                    </div>
+                            </div>
+
+                            <div class="card-body">
+                                <p>В дополнение к рекомендуемым метаданным мы рекомендуем пользователям предоставлять любую другую доступную информацию об этой масс-спектральной записи, включая:</p>
+                                <ul class="iconlist d-none d-md-block">
+                                    <li><i class="icon-line-check"></i>Свойства образца</li>
+                                    <li><i class="icon-line-check"></i>Производитель и модель прибора</li>
+                                    <li><i class="icon-line-check"></i>Аналитические методы и условия</li>
+                                </ul>
+                                <div id="metadata_editor" style="margin-top: 10px;">
+                                    <div>
+                                      <div class="row">
+                                    <div id="metadataFields">
+                                    {% for key, value in metadata.items %}
+                                        <div class="input-group mb-3" id="metadataField{{ forloop.counter0 }}" index={{ forloop.counter0 }}>
+                                            <div class="col-sm-5 form-group"><input maxlength="255" id="key{{ forloop.counter0 }}" name="key{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Имя поля" value="{{ key|title }}"></div>
+                                            <div class="col-sm-5 form-group"><input maxlength="255" id="value{{ forloop.counter0 }}" name="value{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Значение" value="{{ value }}"></div>
+                                            <div class="col-sm-2 form-group"><button class="btn btn-danger" type="button" id="button-addon2" onclick="removeField({{ forloop.counter0 }});">Удалить</button></div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="addField();" type="button" id="button-add-field">Добавить поле</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <nav class="navbar navbar-expand-md" style="width: 100%;">
+                                    <div class="w-80 order-1 order-md-0 dual-collapse2">
+                                      <ul class="navbar-nav mr-auto" style="margin: 0px !important;">
+                                        <li class="previous"><button type="button" class="fakeRef" id="prevBtn1" onclick="nextPrev(-1)"><fa-icon [icon]="faArrowLeft"></fa-icon> Назад</button></li>
+                                      </ul>
+                                    </div>
+                                    <div class="mx-auto order-0">
+                                        <ul class="navbar-nav mx-auto">
+                                          <li> </li>
+                                        </ul>
+                                      </div>
+                                    <div class="w-80 order-3 dual-collapse2">
+                                      <ul class="navbar-nav ml-auto">
+                                        <li class="next"><button type="button" class="fakeRef" id="nextBtn1" onclick="nextPrev(1)">Далее <fa-icon [icon]="faArrowRight"></fa-icon></button></li>
+                                      </ul>
+                                    </div>
+                              </nav>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="card-footer" style="overflow:auto;">
-                    <nav class="navbar navbar-expand-md" style="width: 100%;">
-                    <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-                      <ul class="navbar-nav mr-auto" style="margin: 0px !important;">
-                        <li class="previous"><button type="button" class="fakeRef" id="prevBtn1" onclick="nextPrev(-1)"><fa-icon [icon]="faArrowLeft"></fa-icon> Назад</button></li>
-                      </ul>
-                    </div>
-                    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
-                      <ul class="navbar-nav ml-auto">
-                        <li class="next"><button type="button" class="fakeRef" id="nextBtn1" onclick="nextPrev(1)">Далее <fa-icon [icon]="faArrowRight"></fa-icon></button></li>
-                      </ul>
-                    </div>
-                  </nav>
+                    </form>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
-</div>
-
+</section><!-- #content end -->
 <script type="text/javascript">
 var currentTab = 0; // Current tab is set to be the first tab (0)
 showTab(currentTab); // Display the current tab
@@ -282,7 +295,7 @@ function addField() {
             '<div class="input-group mb-3" id="metadataField' + index + '" index="' + index + '">' +
                 '<div class="col-sm-5 form-group"><input maxlength="255" name="key' + index + '" type="text" class="form-control" placeholder="Имя поля" value=""></div>' +
                 '<div class="col-sm-5 form-group"><input maxlength="255" name="value' + index + '" type="text" class="form-control" placeholder="Значение" value=""></div>' +
-                '<div class="col-sm-2 form-group"><button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="removeField(' + index + ');">Удалить</button></div>' +
+                '<div class="col-sm-2 form-group"><button class="btn btn-danger" type="button" id="button-addon2" onclick="removeField(' + index + ');">Удалить</button></div>' +
             '</div>'
         );
     }

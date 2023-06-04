@@ -10,6 +10,7 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
 from django.views import View
+from matchms.similarity import CosineGreedy
 
 from .models import SpectrumMeasurement, Spectrum, Post, Tag, Metadata, CustomUser
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, TagForm, PostForm, CustomUserChangeForm
@@ -36,10 +37,11 @@ from .utils import ObjectDetailMixin, ObjectCreateMixin, ObjectUpdateMixin, Obje
     UserUpdateMixin, generate_spectrum_mini_plot, generate_spectrum_plot, save_object, SpectrumMixin, \
     SpectrumUpdateMixin, SpectrumDeleteMixin
 
+from .utils import map_spectrum as map_spec
+
 matplotlib.use('Agg')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 sources = {
     0: "Не выбрано",
@@ -77,7 +79,7 @@ def check_admin(user):
 
 
 def main(request):
-    return render(request, 'index.html')
+    return render(request, 'index1.html')
 
 
 class SignUpView(BSModalCreateView):
@@ -138,6 +140,8 @@ def users_list(request):
 def posts_list(request):
     search_query = request.GET.get('search', '')
 
+    print('request.path', request.path)
+
     if search_query:
         posts = Post.objects.filter(Q(title__icontains=search_query) | Q(body__icontains=search_query))
     else:
@@ -164,7 +168,7 @@ def posts_list(request):
         'prev_url': prev_url,
         'next_url': next_url
     }
-    return render(request, 'index.html', context=context)
+    return render(request, 'index1.html', context=context)
 
 
 class PostDetail(ObjectDetailMixin, View):
@@ -232,6 +236,31 @@ class TagDelete(LoginRequiredMixin, ObjectDeleteMixin, View):
     template = 'news/tag_delete_form.html'
     redirect_url = 'tags_list_url'
     raise_exception = True
+
+
+def map_spectrum(spectrum: Spectrum):
+    precursor_type = Metadata.objects.filter(spectrum_id=spectrum.id, name='Precursor_type')
+    spectrum_type = Metadata.objects.filter(spectrum_id=spectrum.id, name='Spectrum_type')
+    precursor_mz = Metadata.objects.filter(spectrum_id=spectrum.id, name='PrecursorMZ')
+    instrument_type = Metadata.objects.filter(spectrum_id=spectrum.id, name='Instrument_type')
+    ion_mode = Metadata.objects.filter(spectrum_id=spectrum.id, name='Ion_mode')
+    collision_energy = Metadata.objects.filter(spectrum_id=spectrum.id, name='Collision_energy')
+    formula = Metadata.objects.filter(spectrum_id=spectrum.id, name='Formula')
+
+    fields = [precursor_type, spectrum_type, precursor_mz, instrument_type, ion_mode, collision_energy,
+              formula]
+    peaks_list = spectrum.spectrum_json
+
+    plot_div = generate_spectrum_mini_plot(peaks_list=peaks_list)
+
+    return {
+        'plot_div': plot_div,
+        'name': spectrum.name,
+        'id': spectrum.id,
+        'author': spectrum.author,
+        'create_date': spectrum.date_created,
+        'fields': fields
+    }
 
 
 def spectrum_search(request):
@@ -311,6 +340,101 @@ def spectrum_search(request):
         else:
             return render(request, 'spectra/spectrum_search_result.html',
                           context={'objects': res, 'search_queryes': search_queryes})
+
+    elif request.method == 'POST' and 'similarity_search' in request.POST:
+        metadata = {}
+        peaks_list = []
+        if 'similarity_search' in request.POST:
+            if request.POST.get('pastedSpectrumSearch'):
+
+                # spectrums = Spectrum.objects.filter(draft=False)
+                spectrums = Spectrum.objects.all()
+
+                import numpy as np
+                from matchms import calculate_scores
+                from matchms import Spectrum as Spec
+                from matchms.similarity import MetadataMatch
+
+                references = []
+                total_matches = []
+
+                for spectrum in spectrums:
+                    mz = []
+                    intensity = []
+                    sorted_etalon_peaks = sorted(spectrum.spectrum_json, key=lambda peak: float(peak[0]))
+                    for item in sorted_etalon_peaks:
+                        mz.append(float(item[0]))
+                        intensity.append(float(item[1]))
+
+                    formula = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Formula')
+                    print('mz', mz)
+
+                    spectrum_test = Spec(mz=np.array(mz),
+                                         intensities=np.array(intensity),
+                                         metadata={"id": spectrum.id})
+
+                    references.append(spectrum_test)
+
+                mz_query = []
+                intensity_query = []
+
+                peaks = [item.split(":") for item in request.POST.get('pastedSpectrumSearch').split(' ') if item != '']
+                sorted_peaks = sorted(peaks, key=lambda peak: float(peak[0]))
+                for item in sorted_peaks:
+                    mz_query.append(float(item[0]))
+                    intensity_query.append(float(item[1]))
+
+                spectrum_query = Spec(mz=np.array(mz_query),
+                                      intensities=np.array(intensity_query))
+
+                for reference in references:
+                    cosine_greedy = CosineGreedy(tolerance=0.2)
+
+                    score = cosine_greedy.pair(reference, spectrum_query)
+                    print(
+                        f"Cosine score is {score['score']:.2f} with {score['matches']} matched peaks, id: {reference.get('id')}")
+                    if float(f"{score['score']:.2f}") >= 0.7:
+                        total_matches.append({'id': reference.get('id'),
+                                              'score': float(f"{score['score']:.2f}"),
+                                              'matched_peaks': int(f"{score['matches']}")})
+
+                print('total', total_matches, len(total_matches))
+
+                res = []
+
+                if total_matches:
+                    for item in total_matches:
+                        res.append(Spectrum.objects.get(id=item['id']))
+                    objects = list(map(map_spec, res))
+                    messages.success(request, 'Получен результат')
+                    return render(request, 'spectra/spectrum_similarity_result.html',
+                                  context={'objects': objects})
+                else:
+                    messages.error(request, 'Нет результатов')
+                    return render(request, 'spectra/spectrum_similarity_result.html',
+                                  context={'objects': res})
+
+
+                # peaks = request.POST.get('pastedSpectrumSearch').split(' ')
+                # print('peaks', peaks)
+                # for item in peaks:
+                #
+                #     ion = item.split(':')
+                #     print(ion)
+                #     peaks_list.append([float(ion[0]), float(ion[1])])
+                #
+                plot_div = generate_spectrum_plot(peaks_list=peaks_list)
+                #
+                # context = {'peaks_list': peaks_list,
+                #            'plot_div': plot_div,
+                #            'metadata': metadata}
+                messages.success(request, 'Данные загружены, нужен редирект. Вставлю позже')
+                # return render(request, 'spectra/upload/spectrum_create_form.html', context=context)
+
+            else:
+                messages.error(request, 'Невозможно загрузить масс-спектр. Проверьте передаваемые данные')
+                return redirect('spectrum_search')
+
     return render(request, 'spectra/query/search.html', context={'context': context})
 
 

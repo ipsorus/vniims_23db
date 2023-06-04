@@ -327,6 +327,7 @@ class SpectrumDeleteMixin:
 
 class SpectrumMixin:
     def get(self, request):
+        print('request.path', request.path)
         return render(request, 'spectra/upload/upload_file.html')
 
     def post(self, request):
@@ -380,13 +381,17 @@ class SpectrumMixin:
 
         if 'pastedSpectrum' in request.POST:
             if request.POST.get('pastedSpectrum'):
-                peaks = request.POST.get('pastedSpectrum').split(' ')
-                print('peaks', peaks)
-                for item in peaks:
+                peaks = [item.split(":") for item in request.POST.get('pastedSpectrum').split(' ') if item != '']
+                sorted_peaks = sorted(peaks, key=lambda peak: float(peak[0]))
+                for item in sorted_peaks:
+                    peaks_list.append([float(item[0]), float(item[1])])
 
-                    ion = item.split(':')
-                    print(ion)
-                    peaks_list.append([float(ion[0]), float(ion[1])])
+                # peaks = request.POST.get('pastedSpectrum').split(' ')
+                # for item in peaks:
+                #
+                #     ion = item.split(':')
+                #     print(ion)
+                #     peaks_list.append([float(ion[0]), float(ion[1])])
 
                 plot_div = generate_spectrum_plot(peaks_list=peaks_list)
 
@@ -481,6 +486,7 @@ def get_5_largest(intensity_list: list[float]) -> list[int]:
                 largest[j] = idx
     return largest
 
+
 def generate_spectrum_plot(peaks_list: list, id: str | int = None, save_image: bool = False):
     layout = {
         "plot_bgcolor": '#fff',
@@ -543,6 +549,7 @@ def generate_spectrum_plot(peaks_list: list, id: str | int = None, save_image: b
 
         return plot_div
 
+
 def generate_spectrum_mini_plot(peaks_list: list):
     layout = {
         "plot_bgcolor": '#fff',
@@ -572,7 +579,31 @@ def generate_spectrum_mini_plot(peaks_list: list):
     fig.update_layout(width=400, height=300, margin={"l": 0, "r": 0, "t": 0, "b": 0})
 
     plot_div = plot(fig, output_type='div', include_plotlyjs=True,
-                    show_link=False, link_text="", config=dict(displayModeBar=False))
+                    show_link=False, link_text="", config=dict(displayModeBar=False, staticPlot=True))
 
     return plot_div
 
+
+def map_spectrum(spectrum: Spectrum):
+    precursor_type = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Precursor_type')
+    spectrum_type = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Spectrum_type')
+    precursor_mz = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='PrecursorMZ')
+    instrument_type = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Instrument_type')
+    ion_mode = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Ion_mode')
+    collision_energy = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Collision_energy')
+    formula = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Formula')
+
+    fields = [precursor_type, spectrum_type, precursor_mz, instrument_type, ion_mode, collision_energy,
+              formula]
+    peaks_list = spectrum.spectrum_json
+
+    plot_div = generate_spectrum_mini_plot(peaks_list=peaks_list)
+
+    return {
+        'plot_div': plot_div,
+        'name': spectrum.name,
+        'id': spectrum.id,
+        'author': spectrum.author,
+        'create_date': spectrum.date_created,
+        'fields': fields
+    }

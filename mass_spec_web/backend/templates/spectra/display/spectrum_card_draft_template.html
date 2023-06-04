@@ -2,11 +2,11 @@
 <div class="card">
     <div class="card-header">
         <div class="card-title">
-            {% if spec.spectrum.is_etalon %}<span class="badge bg-secondary float-left">Эталон ВНИИМС</span>&nbsp;&nbsp;{% endif %}
-            {% if spec.spectrum.draft == False %}<span class="badge bg-success float-left">Опубликовано</span>{% endif %}
-            {% if spec.spectrum.draft == True and spec.spectrum.reject_reason == '' %}<span class="badge bg-warning float-left">Не опубликовано</span>{% endif %}
-            {% if spec.spectrum.reject_reason != '' %}<span class="badge bg-danger float-left">Отклонено</span>{% endif %}
-            <span class="float-right">Автор: {{ spec.author.last_name }} {{ spec.author.first_name }}</span>
+            {% if spec.spectrum.is_etalon %}<span class="badge bg-secondary float-start">Эталон ВНИИМС</span>&nbsp;&nbsp;{% endif %}
+            {% if spec.spectrum.draft == False %}<span class="badge bg-success float-start">Опубликовано</span>{% endif %}
+            {% if spec.spectrum.draft == True and spec.spectrum.reject_reason == '' %}<span class="badge bg-warning float-start">Не опубликовано</span>{% endif %}
+            {% if spec.spectrum.reject_reason != '' %}<span class="badge bg-danger float-start">Отклонено</span>{% endif %}
+            <span class="float-end">Автор: {{ spec.author.last_name }} {{ spec.author.first_name }}</span>
         </div>
     </div>
 
@@ -17,8 +17,9 @@
                   <div class="row">
                     <div class="col-12">
                       <div class="masspec-medium">
-                          <span class="float-middle">Название масс-спектра:  <a style="cursor: pointer" href="{% url 'spectrum_review_detail' id=spec.id %}">{{ spec.name }}</a></span>
-                          {% autoescape off %}{{ spec.plot_div }}{% endautoescape %}
+                          <span>Название: <a style="cursor: pointer" href="{% url 'spectrum_detail_url' id=spec.id %}">{{ spec.name }}</a></span>
+                          <br/><br/>
+                          <div style="display: inline-block;">{% autoescape off %}{{ spec.plot_div }}{% endautoescape %}</div>
                       </div>
                     </div>
                   </div>
@@ -44,14 +45,10 @@
     </div>
 
     <div class="card-footer">
-        <div class="float-left mr-1" *ngFor="let tag of spectrum.tags">
-          <tag-query [ruleBased]="tag.ruleBased" [tag]="tag" [type]="spectrum"></tag-query>
-            <span class="float-left mr-2"> Дата создания записи: {{ spec.create_date}} </span>
+        <div class="float-start mr-1">
+            <span class="float-start mr-2"> Дата создания записи: {{ spec.create_date}} </span>
         </div>
-
-      <a class="btn btn-success float-right" href="{% url 'spectrum_review_detail' id=spec.id %}">
-        <fa-icon [icon]="faExternalLinkAlt"></fa-icon> Просмотр записи
-      </a>
+          <a class="btn btn-success float-end" href="{% url 'spectrum_review_detail' id=spec.id %}">Просмотр записи</a>
     </div>
 </div>
 <div class="top17">&nbsp;</div>
