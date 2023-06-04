@@ -4,13 +4,6 @@
 {% block content %}
 
 <style>
-* {
-  box-sizing: border-box;
-}
-
-h1 {
-  text-align: center;
-}
 
 input {
   padding: 10px;
@@ -29,15 +22,16 @@ input.invalid {
 }
 
 </style>
+
 <!-- Page Title
-		============================================= -->
-		<section id="page-title" style="background-image: url({% static 'assets/images/main_image1.png' %}); background-attachment: fixed;">
+============================================= -->
+<section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %}); background-attachment: fixed;">
 
-			<div class="container clearfix">
-				<h1>Мастер редактирования записи</h1>
-			</div>
+    <div class="container clearfix">
+        <h1>Мастер редактирования записи</h1>
+    </div>
 
-		</section><!-- #page-title end -->
+</section><!-- #page-title end -->
 
 <!-- Content============================================= -->
 <section id="content">
@@ -169,10 +163,10 @@ input.invalid {
 
                             <div class="card-body">
                                 <p>В дополнение к рекомендуемым метаданным мы рекомендуем пользователям предоставлять любую другую доступную информацию об этой масс-спектральной записи, включая:</p>
-                                <ul>
-                                    <li>Свойства образца</li>
-                                    <li>Производитель и модель прибора</li>
-                                    <li>Аналитические методы и условия</li>
+                                <ul class="iconlist d-none d-md-block">
+                                    <li><i class="icon-line-check"></i>Свойства образца</li>
+                                    <li><i class="icon-line-check"></i>Производитель и модель прибора</li>
+                                    <li><i class="icon-line-check"></i>Аналитические методы и условия</li>
                                 </ul>
                                 <div id="metadata_editor" style="margin-top: 10px;">
                                     <div>
