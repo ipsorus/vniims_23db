@@ -1,0 +1,171 @@
+{% load static %}
+<!-- Header
+============================================= -->
+<!--{% if request.path == '/' %}-->
+<!--    <header id="header" class="transparent-header full-header dark" data-sticky-class="not-dark">-->
+<!--{% else %}-->
+<!--    <header id="header" class="transparent-header full-header" data-sticky-class="not-dark">-->
+<!--{% endif %}-->
+<header id="header" class="transparent-header full-header" data-sticky-class="not-dark">
+    <div id="header-wrap">
+            <div class="container">
+				<div class="header-row">
+                    <!-- Logo
+                    ============================================= -->
+                    <div id="logo">
+                        <a href="{% url 'main_page_url' %}" class="standard-logo" data-dark-logo="{% static 'assets/images/logo-rst.png' %}"><img src="{% static 'assets/images/logo-rst.png' %}" alt="База Данных ВНИИМС"></a>
+                        <a href="{% url 'main_page_url' %}" class="retina-logo" data-dark-logo="{% static 'assets/images/logo-rst.png' %}"><img src="{% static 'assets/images/logo-rst.png' %}" alt="База Данных ВНИИМС"></a>
+                    </div><!-- #logo end -->
+                    <div class="header-misc">
+                        <!-- Top Search
+                        ============================================= -->
+                        <div id="top-search" class="header-misc-icon">
+                            <a href="#" id="top-search-trigger"><i class="icon-line-search"></i><i class="icon-line-cross"></i></a>
+                        </div><!-- #top-search end -->
+                    </div>
+                    <div id="primary-menu-trigger">
+                        <svg class="svg-trigger" viewBox="0 0 100 100"><path d="m 30,33 h 40 c 3.722839,0 7.5,3.126468 7.5,8.578427 0,5.451959 -2.727029,8.421573 -7.5,8.421573 h -20"></path><path d="m 30,50 h 40"></path><path d="m 70,67 h -40 c 0,0 -7.5,-0.802118 -7.5,-8.365747 0,-7.563629 7.5,-8.634253 7.5,-8.634253 h 20"></path></svg>
+                    </div>
+
+                    <!-- Primary Navigation
+                    ============================================= -->
+
+            <nav id="primary-menu">
+
+                <ul class="menu-container">
+                    <li class="menu-item">
+                      <a class="nav-link" href="{% url 'main_page_url' %}">Главная</a>
+                    </li>
+                    <li class="menu-item">
+                      <a class="nav-link" href="{% url 'main_page_url' %}">Новости</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        База данных
+                      </a>
+                      <ul class="sub-menu-container" aria-labelledby="navbarDropdownMenuLink">
+                        <li class="menu-item"><a class="menu-link" href="/">Эталоны ВНИИМС</a></li>
+                        <li class="menu-item"><a class="menu-link" href="/">Реестр масс-спектров</a></li>
+                        <li class="menu-item"><a class="menu-link" href="#">Поиск масс-спектров</a></li>
+                      </ul>
+                    </li>
+                    <li class="menu-item">
+                      <a class="nav-link" href="{% url 'upload' %}">Загрузить спектр</a>
+                    </li>
+                    <li class="menu-item">
+                      <a class="nav-link" href="{% url 'spectrum_search' %}">Поиск спектров</a>
+                    </li>
+                    <li class="menu-item">
+                      <a class="nav-link" href="/">Контакты</a>
+                    </li>
+                      <li class="nav-item dropdown">
+
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownLogin" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          {% if user.is_authenticated %}
+                          Панель управления
+                          {% else %}
+                          Вход / Регистрация
+                          {% endif %}
+                      </a>
+
+                      <ul class="sub-menu-container" aria-labelledby="navbarDropdownLogin">
+                          {% if user.is_superuser or user.is_staff %}
+                          <li class="menu-item"><a class="dropdown-item" href="/admin" target="_blank">Админпанель</a></li>
+                          <li class="menu-item"><a class="dropdown-item" href="{% url 'post_create_url' %}">Создать статью</a></li>
+                          <li class="menu-item"><a class="dropdown-item" href="{% url 'users_list' %}">Список пользователей</a></li>
+                          <li class="menu-item"><a class="dropdown-item" href="{% url 'spectrum_draft_list' %}">Записи на проверку</a></li>
+                          {% endif %}
+                          {% if user.is_authenticated %}
+                          <li class="menu-item"><a class="dropdown-item" href="{% url 'user-profile' username=user.username %}">Профиль {{ user }}</a></li>
+                              {% if request.path == '/user_profile/' %}
+                              <li class="menu-item"><a class="dropdown-item" href="{% url 'logout' %}?next={% url 'main_page_url' %}">Выход</a></li>
+                              {% else %}
+                              <li class="menu-item"><a class="dropdown-item" href="{% url 'logout' %}?next={{ request.path }}">Выход</a></li>
+                              {% endif %}
+                          {% else %}
+                              <li class="menu-item"><a id="login-btn" class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Авторизация</a></li>
+                              <li class="menu-item"><a id="signup-btn" class="dropdown-item" href="#">Регистрация</a></li>
+                          {% endif %}
+
+                      </ul>
+                    </li>
+                  </ul>
+<!--                &lt;!&ndash; Top Cart-->
+<!--						============================================= &ndash;&gt;-->
+<!--                <div id="top-cart">-->
+<!--                    <a href="#" id="top-cart-trigger">-->
+<!--                        {% if user.is_authenticated %}-->
+<!--                          <i class="icon-user"></i>-->
+<!--                          {% else %}-->
+<!--                          <i class="icon-lock3"></i>-->
+<!--                        {% endif %}</a>-->
+<!--                    <div class="top-cart-content">-->
+<!--                        <div class="top-cart-title">-->
+<!--                            {% if user.is_authenticated %}-->
+<!--                              <h4>Панель управления</h4>-->
+<!--                              {% else %}-->
+<!--                              <h4>Вход / Регистрация</h4>-->
+<!--                            {% endif %}-->
+<!--                        </div>-->
+<!--                        <div class="top-cart-items">-->
+<!--                            {% if user.is_superuser or user.is_staff %}-->
+<!--                          <div class="top-cart-item clearfix">-->
+<!--                              <div class="top-cart-item-desc">-->
+<!--                                <a href="/admin" target="_blank">Админпанель</a>-->
+<!--                              </div>-->
+<!--                          </div>-->
+<!--                          <div class="top-cart-item clearfix">-->
+<!--                              <div class="top-cart-item-desc">-->
+<!--                                <a href="{% url 'post_create_url' %}">Создать статью</a>-->
+<!--                              </div>-->
+<!--                          </div>-->
+<!--                          <div class="top-cart-item clearfix">-->
+<!--                              <div class="top-cart-item-desc">-->
+<!--                                <a href="{% url 'users_list' %}">Список пользователей</a>-->
+<!--                              </div>-->
+<!--                          </div>-->
+<!--                          <div class="top-cart-item clearfix">-->
+<!--                              <div class="top-cart-item-desc">-->
+<!--                                <a href="{% url 'spectrum_draft_list' %}">Записи на проверку</a>-->
+<!--                              </div>-->
+<!--                          </div>-->
+<!--                          {% endif %}-->
+<!--                          {% if user.is_authenticated %}-->
+<!--                          <div class="top-cart-item clearfix">-->
+<!--                              <div class="top-cart-item-desc">-->
+<!--                                  <a href="{% url 'user-profile' username=user.username %}">Профиль {{ user }}</a>-->
+<!--                              </div>-->
+<!--                          </div>-->
+<!--                          {% else %}-->
+<!--                              <div class="top-cart-item clearfix">-->
+<!--                                <div class="top-cart-item-desc">-->
+<!--                                    <a id="login-btn" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Авторизация</a>-->
+<!--                                </div>-->
+<!--                              </div>-->
+<!--                              <div class="top-cart-item clearfix">-->
+<!--                                <div class="top-cart-item-desc">-->
+<!--                                    <a id="signup-btn" href="#">Регистрация</a>-->
+<!--                                </div>-->
+<!--                              </div>-->
+<!--                          {% endif %}-->
+<!--                        </div>-->
+<!--                        <div class="top-cart-action clearfix">-->
+<!--                            {% if user.is_authenticated and request.path == '/user_profile/' %}-->
+<!--                                <a class="button button-3d button-red button-xlarge nobottommargin" href="{% url 'logout' %}?next={% url 'main_page_url' %}">Выход</a>-->
+<!--                            {% elif user.is_authenticated %}-->
+<!--                                <a class="button button-3d button-red button-xlarge nobottommargin" href="{% url 'logout' %}?next={{ request.path }}">Выход</a>-->
+<!--                            {% endif %}-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>&lt;!&ndash; #top-cart end &ndash;&gt;-->
+            </nav><!-- #primary-menu end -->
+
+            <form name="search" class="nav navbar-form navbar-right ng-pristine ng-valid" role="search" action="{% url 'main_page_url' %}">
+                <input type="text" name="q" class="form-control" value="" placeholder="Поиск статей" triggers="focus" placement="bottom" name="search"/>
+            </form>
+
+        </div>
+        </div>
+    </div>
+    <div class="header-wrap-clone"></div>
+</header><!-- #header end -->

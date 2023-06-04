@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% csrf_token %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+          <span class="news-title fon"><h2 class="font-weight-bold">База данных масс-спектров ФГБУ "ВНИИМС"</h2></span>
+
+            <p>
+              База данных масс-спектров ФГБУ "ВНИИМС" - это ориентированное на метаданные хранилище с автоматическим управлением,
+              предназначенное для эффективного хранения и запроса записей масс-спектров. Он призван служить основой для
+              централизованной совместной базы данных масс-спектров метаболитов, метаданных и связанных с ними соединений.
+              В настоящее время база данных масс-спектров ФГБУ "ВНИИМС" содержит масс-спектральные записи из экспериментальных библиотек и библиотек in-silico,
+              а также из материалов пользователей.
+            </p>
+
+            <p>
+                Масс-спектр - это данные, полученные напрямую с оборудования и представляющие количество обнаруженных ионов с определенным отношением массы к заряду (m/z). Спектр отображается как график со значениями m/z по оси х и интенсивностью (имп/с) по оси у.
+            </p>
+            <br />
+
+            <p style="text-align: center">
+                <a href="{% url 'spectrum_search' %}" class="btn btn-secondary btn-lg mr-1"><i class="fa fa-search" aria-hidden="true"></i> Поиск спектров</a>
+              <a href="{% url 'spectrum_list' %}" class="btn btn-success btn-lg mr-1 ml-1"><i class="fa fa-flask" aria-hidden="true"></i> Просмотр спектров</a>
+
+            </p>
+        </div>
+    </div>
+
+    <div class="bor-bot"></div><br />
+
+    <div class="row">
+        <div class="col-md-12 float-left">
+            <h3 class="font-weight-bold">Новости</h3>
+            <hr/>
+            {% for post in page_object.object_list %}
+              {% include 'includes/post_card_template.html' %}
+            {% endfor %}
+     <hr/>
+        </div>
+    </div>
+
+    <div class="bor-bot"></div>
+
+</div>
+
+{% endblock %}
