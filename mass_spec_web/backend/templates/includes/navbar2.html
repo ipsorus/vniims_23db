@@ -2,7 +2,7 @@
 <!-- Header
 ============================================= -->
 
-<header id="header" class="{% if request.path == '/' %}transparent-header page-section dark{% else %}full-header page-section{% endif %}" data-sticky-class="not-dark" data-menu-padding="28" data-sticky-menu-padding="10">
+<header id="header" class="{% if request.path == '/' %}transparent-header full-header page-section dark{% else %}full-header page-section{% endif %}" data-sticky-class="not-dark" data-menu-padding="28" data-sticky-menu-padding="10">
     <div id="header-wrap">
         <div class="container">
             <div class="header-row">
@@ -10,7 +10,7 @@
                 <!-- Logo
                 ============================================= -->
                 <div id="logo">
-                    <a href="{% url 'main_page_url' %}" class="standard-logo" data-dark-logo="{% static 'assets/images/logo-rst.png' %}"><img src="{% static 'assets/images/logo-rst.png' %}" alt="База Данных ВНИИМС"></a>
+                    <a href="{% url 'main_page_url' %}" class="standard-logo" data-dark-logo="{% static 'assets/images/logo.png' %}"><img src="{% static 'assets/images/logo.png' %}" alt="База Данных ВНИИМС"></a>
                     <a href="{% url 'main_page_url' %}" class="retina-logo" data-dark-logo="{% static 'assets/images/logo-rst.png' %}"><img src="{% static 'assets/images/logo-rst.png' %}" alt="База Данных ВНИИМС"></a>
                 </div><!-- #logo end -->
 
