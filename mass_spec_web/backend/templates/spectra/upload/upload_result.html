@@ -1,21 +1,40 @@
 {% extends "base2.html" %}
 {% load static %}
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <div>
-            <h3>Загрузка записи масс-спектра выполнена успешно!</h3>
+<!-- Page Title
+============================================= -->
+<section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
 
-            <p>После проверки экспертом, Ваша запись будет опубликована.</p>
+    <div class="container clearfix">
+        <h1>Результат записи масс-спектра</h1>
+    </div>
 
-            <p>Вы можете загрузить другие записи</p>
-            <br/><br/>
+</section><!-- #page-title end -->
 
-            <hr/>
-            <a class="btn btn-primary" href="/upload">Загрузить еще масс-спектры</a>
-            <br />
+<!-- Content============================================= -->
+<section id="content">
+	<div class="content-wrap">
+		<div class="container clearfix">
+
+			<div class="row gutter-40 col-mb-80">
+				<!-- Post Content
+				============================================= -->
+				<div class="postcontent mx-auto col-lg-9">
+                    <div>
+                        <h3>Загрузка записи масс-спектра выполнена успешно!</h3>
+
+                        <p>После проверки экспертом, Ваша запись будет опубликована.</p>
+
+                        <p>Вы можете загрузить другие записи</p>
+                        <br/><br/>
+
+                        <hr/>
+                        <a class="btn btn-primary" href="/upload">Загрузить еще масс-спектры</a>
+                        <br />
+                    </div>
+                </div><!-- #posts end -->
+            </div>
         </div>
     </div>
-</div>
-
+</section>
 {% endblock %}

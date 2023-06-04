@@ -91,7 +91,8 @@
                                         </li>
                                       {% else %}
                                         <li class="menu-item">
-                                            <a class="menu-link" href="{% url 'logout' %}?next={{ request.path }}"><div>Выход</div></a>
+                                            <a class="menu-link" href="{% url 'logout' %}?next={% url 'main_page_url' %}"><div>Выход</div></a>
+<!--                                            <a class="menu-link" href="{% url 'logout' %}?next={{ request.path }}"><div>Выход</div></a>-->
                                         </li>
                                       {% endif %}
                                 {% else %}

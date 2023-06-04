@@ -13,7 +13,7 @@
 
     <div class="container clearfix">
         <h1>Масс-спектры в базе данных (всего {{ count }}):</h1>
-        <p class="mb-0 mt-2">В разделе странице собраны подтвержденные масс-спектры</p>
+        <p class="mb-0 mt-2">В разделе собраны подтвержденные масс-спектры</p>
     </div>
 
 </section><!-- #page-title end -->
@@ -26,7 +26,7 @@
 			<div class="row gutter-40 col-mb-80">
 				<!-- Post Content
 				============================================= -->
-				<div class="postcontent mx-auto col-lg-9">
+				<div class="postcontent mx-auto col-lg-10 col-md-9">
                     {% for spec in page_object.object_list %}
                       {% include 'spectra/display/spectrum_card_template.html' %}
                     {% endfor %}

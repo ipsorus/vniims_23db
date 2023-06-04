@@ -128,9 +128,44 @@
 	<!-- Footer Scripts
 	============================================= -->
 	<script type="text/javascript" src="{% static 'assets/js/js_new/functions.js' %}"></script>
-
+	<!-- You can alternatively load the minified version -->
+	<script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
     {% endblock scripts %}
+	{% include "includes/_modal.html" %}
+    {% block extrascripts %}
+      <script type="text/javascript">
+          $(function () {
+              // Login
+              $("#login-btn").modalForm({
+                formURL: "{% url 'login' %}?next={{ request.path }}"
+              });
 
+              // Login
+              $("#login-btn_upload_page").modalForm({
+                formURL: "{% url 'login' %}?next={{ request.path }}"
+              });
+
+              //  Signup
+              $("#signup-btn").modalForm({
+                formURL: "{% url 'signup' %}?next={{ request.path }}"
+              });
+
+              // Hide message
+    <!--          $(".alert").fadeTo(2000, 500).slideUp(500, function () {-->
+    <!--              $(".alert").slideUp(500);-->
+    <!--          });-->
+
+              $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                   $("#success-alert").slideUp(500);
+              });
+
+              $("#error-alert").fadeTo(2000, 500).slideUp(500, function(){
+                   $("#error-alert").slideUp(500);
+              });
+
+          });
+      </script>
+    {% endblock extrascripts %}
 </body>
 </html>
 

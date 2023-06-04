@@ -1,26 +1,32 @@
 {% extends "base2.html" %}
 {% load static %}
 {% block content %}
-<!--<script type="text/javascript">-->
-<!--    function addField() {-->
-<!--        alert("add");-->
-<!--    }-->
-<!--</script>-->
-<h1>Масс-спектры на проверку (всего {{ count }}):</h1>
-<hr />
-<div class="row top17">
-    <div class="col-md-12">
-      <p>
-          <strong>В разделе собраны загруженные пользователями масс-спектры, не прошедшие проверку экспертом</strong>
-      </p>
+<!-- Page Title
+============================================= -->
+<section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
+
+    <div class="container clearfix">
+        <h1>Масс-спектры на проверку (всего {{ count }}):</h1>
+        <p class="mb-0 mt-2">В разделе собраны загруженные пользователями масс-спектры, не прошедшие проверку экспертом</p>
     </div>
-    <!-- display spectra as list -->
-    <div class="col-md-12" *ngIf="pagination.table !== true">
-        <div *ngFor="let spectrum of spectra" class="m-md-3">
-            {% for spec in page_object.object_list %}
-              {% include 'spectra/display/spectrum_card_draft_template.html' %}
-            {% endfor %}
+
+</section><!-- #page-title end -->
+
+<!-- Content============================================= -->
+<section id="content">
+	<div class="content-wrap">
+		<div class="container clearfix">
+
+			<div class="row gutter-40 col-mb-80">
+				<!-- Post Content
+				============================================= -->
+				<div class="postcontent mx-auto col-lg-10 col-md-9">
+                    {% for spec in page_object.object_list %}
+                      {% include 'spectra/display/spectrum_card_draft_template.html' %}
+                    {% endfor %}
+                </div><!-- #posts end -->
+            </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}

@@ -1,39 +1,53 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load static %}
 {% block content %}
-<div class="clearfix"><br/></div>
-<div class="col-md-12 mb-3">
-  <p><h4>Список пользователей (всего {{ count }}):</h4></p>
-</div>
-<div class="clearfix"><br/></div>
-<div class="table-responsive">
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Имя</th>
-          <th scope="col">Фамилия</th>
-          <th scope="col">Организация</th>
-          <th scope="col">Должность</th>
-          <th scope="col">Персонал</th>
-          <th scope="col">Статус</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for user in page_object.object_list %}
-        <tr>
-          <th scope="row">{{ forloop.counter }}</th>
-          <td>{{ user.first_name }}</td>
-          <td>{{ user.last_name }}</td>
-          <td>{{ user.organization }}</td>
-          <td>{{ user.position }}</td>
-          <td>{% if user.is_staff %}<i style="color:green" class="fa fa-check-circle" aria-hidden="true"></i>{% else %}<i style="color:red" class="fa fa-times-circle-o" aria-hidden="true"></i>{% endif %}</td>
-          <td>{% if user.is_active %}<i style="color:green" class="fa fa-check-circle" aria-hidden="true"></i>{% else %}<i style="color:red" class="fa fa-times-circle-o" aria-hidden="true"></i>{% endif %}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-</div>
+<!-- Bootstrap Data Table Plugin -->
+	<link rel="stylesheet" href="{% static 'assets/css_new/components/bs-datatable.css' %}" type="text/css" />
+		<!-- Page Title
+		============================================= -->
+		<section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
+			<div class="container clearfix">
+				<h1>Список пользователей (всего {{ count }}):</h1>
+			</div>
+		</section><!-- #page-title end -->
+
+		<!-- Content
+		============================================= -->
+		<section id="content">
+			<div class="content-wrap">
+				<div class="container clearfix">
+
+					<div class="table-responsive">
+						<table id="datatable1" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                            <thead>
+                              <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Имя</th>
+                                <th scope="col">Фамилия</th>
+                                <th scope="col">Организация</th>
+                                <th scope="col">Должность</th>
+                                <th scope="col">Персонал</th>
+                                <th scope="col">Статус</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                            {% for user in page_object.object_list %}
+                              <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ user.first_name }}</td>
+                                <td>{{ user.last_name }}</td>
+                                <td>{{ user.organization }}</td>
+                                <td>{{ user.position }}</td>
+                                <td>{% if user.is_staff %}<i style="color:green" class="fa fa-check-circle" aria-hidden="true"></i>{% else %}<i style="color:red" class="fa fa-times-circle-o" aria-hidden="true"></i>{% endif %}</td>
+                                <td>{% if user.is_active %}<i style="color:green" class="fa fa-check-circle" aria-hidden="true"></i>{% else %}<i style="color:red" class="fa fa-times-circle-o" aria-hidden="true"></i>{% endif %}</td>
+                              </tr>
+                            {% endfor %}
+                            </tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section><!-- #content end -->
 <!--<div class="accordion" id="accordionPanelsStayOpenExample">-->
 <!--    {% for user in page_object.object_list %}-->
 <!--  <div class="accordion-item">-->
@@ -96,4 +110,14 @@
 <!--                [icon]="faUser"></fa-icon>Добавить пользователя-->
 <!--        </button>-->
 <!--</div>-->
+
+<!-- Bootstrap Data Table Plugin -->
+<script src="{% static 'assets/js/js_new/components/bs-datatable.js' %}"></script>
+<script>
+
+    $(document).ready(function() {
+        $('#datatable1').dataTable();
+    });
+
+</script>
 {% endblock %}

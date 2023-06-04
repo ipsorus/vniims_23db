@@ -1,20 +1,39 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load static %}
 {% block content %}
-<h1>Результаты поиска по совпадению mz/intensity:</h1>
-<hr />
-<div class="row top17">
-    <!-- display spectra as list -->
-    <div class="col-md-12">
-        <div class="m-md-3">
-            {% if objects %}
-                {% for spec in objects %}
-                    {% include 'spectra/display/spectrum_card_similarity_template.html' %}
-                {% endfor %}
-            {% else %}
-                Результатов не найдено.
-            {% endif %}
+<!-- Page Title
+============================================= -->
+<section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
+
+    <div class="container clearfix">
+        <h1>Результаты поиска по совпадению mz/intensity:</h1>
+    </div>
+
+</section><!-- #page-title end -->
+
+<!-- Content============================================= -->
+<section id="content">
+	<div class="content-wrap">
+		<div class="container clearfix">
+
+			<div class="row gutter-40 col-mb-80">
+				<!-- Post Content
+				============================================= -->
+				<div class="postcontent mx-auto col-lg-10 col-md-9">
+                    <div class="m-md-3">
+                        {% if objects %}
+                            {% for spec in objects %}
+                                {% include 'spectra/display/spectrum_card_similarity_template.html' %}
+                            {% endfor %}
+                        {% else %}
+                            <div class="fancy-title title-border title-center">
+                                <h1>Результатов не найдено.</h1>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div><!-- #posts end -->
+            </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}
