@@ -1,21 +1,48 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load static %}
 {% block content %}
-<div class="card">
-  <h5 class="card-header">{{ post.date_pub }}</h5>
-  <div class="card-body">
-    <h5 class="card-title">{{ post.title }}</h5>
-    <p class="card-text">{{ post.body }}</p>
-  </div>
-    <div class="card-footer text-muted">
-    Теги:
-    {% for tag in post.tags.all %}
-      <a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a>
-    {% endfor %}
-  </div>
-  <div class="card-footer text-muted">
-      <a href="{{ admin_object.get_delete_url }}" class="btn btn-danger">Удалить</a>
-      <a href="{{ admin_object.get_update_url }}" class="btn btn-light">Редактировать</a>
-  </div>
-</div>
+<!-- Page Title
+============================================= -->
+<section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
+
+    <div class="container clearfix">
+        <h1>Статья {{ post.title }}</h1>
+    </div>
+
+</section><!-- #page-title end -->
+
+<!-- Content============================================= -->
+<section id="content">
+	<div class="content-wrap">
+		<div class="container clearfix">
+
+			<div class="row gutter-40 col-mb-80">
+				<!-- Post Content
+				============================================= -->
+				<div class="postcontent mx-auto col-lg-9">
+                    <div class="card">
+                      <h5 class="card-header">{{ post.date_pub }}</h5>
+                      <div class="card-body">
+                        <h5 class="card-title">{{ post.title }}</h5>
+                        <p class="card-text">{{ post.body }}</p>
+                      </div>
+                        {% if post.tags.all %}
+                            <div class="card-footer text-muted">
+                                Теги:
+                                {% for tag in post.tags.all %}
+
+                                      <a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                      <div class="card-footer text-muted">
+                          <a href="{{ admin_object.get_delete_url }}" class="btn btn-danger">Удалить</a>
+                          <a href="{{ admin_object.get_update_url }}" class="btn btn-light">Редактировать</a>
+                      </div>
+                    </div>
+                </div><!-- #posts end -->
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

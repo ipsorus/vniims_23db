@@ -1,28 +1,53 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load static %}
 {% block title %}
     Редактирование статьи для сайта {{ post.title|title }}
 {% endblock %}
 {% block content %}
-<div class="card">
-    <div class="card-body">
-        <form action="{{ post.get_update_url }}" method="post">
-          {% csrf_token %}
-            {% for field in form %}
-            <div class="form-group">
-                {% if field.errors %}
-                <div class="alert alert-danger">
-                    {{ field.errors }}
-                </div>
-                {% endif %}
-            <div class="mb-3">
-                <label class="form-label">{{ field.label }}</label>
-                {{ field }}
-            </div>
-            </div>
-            {% endfor %}
-          <button type="submit" class="btn btn-success">Сохранить новость</button>
-        </form>
+<!-- Page Title
+============================================= -->
+<section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
+
+    <div class="container clearfix">
+        <h1>Редактирование статьи</h1>
     </div>
-</div>
+
+</section><!-- #page-title end -->
+
+<!-- Content============================================= -->
+<section id="content">
+	<div class="content-wrap">
+		<div class="container clearfix">
+
+			<div class="row gutter-40 col-mb-80">
+				<!-- Post Content
+				============================================= -->
+				<div class="postcontent mx-auto col-lg-9">
+                    <div class="card">
+                        <div class="card-body">
+                            <form action="{{ post.get_update_url }}" method="post">
+                              {% csrf_token %}
+                                {% for field in form %}
+                                <div class="form-group">
+                                    {% if field.errors %}
+                                    <div class="alert alert-danger">
+                                        {{ field.errors }}
+                                    </div>
+                                    {% endif %}
+                                <div class="mb-3">
+                                    <label class="form-label">{{ field.label }}</label>
+                                    {{ field }}
+                                </div>
+                                </div>
+                                {% endfor %}
+                              <button type="submit" class="btn btn-success">Сохранить новость</button>
+                                <a href="{{ post.get_absolute_url }}" class="btn btn-primary">Отмена</a>
+                            </form>
+                        </div>
+                    </div>
+                </div><!-- #posts end -->
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

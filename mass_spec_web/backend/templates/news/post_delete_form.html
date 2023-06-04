@@ -1,18 +1,42 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load static %}
 {% block content %}
-<form action="{{ post.get_delete_url }}" method="post">
-  {% csrf_token %}
-    <div class="card">
-          <div class="card-header">
-            Удаление статьи {{ post.title|title }}
-          </div>
-          <div class="card-body">
-            <h5 class="card-title">Внимание!</h5>
-            <p class="card-text">Вы уверены, что хотите выполнить удаление?</p>
-              <a href="{{ post.get_absolute_url }}" class="btn btn-primary">Отмена</a>
-            <button type="submit" class="btn btn-danger">Удалить</button>
-          </div>
+<!-- Page Title
+============================================= -->
+<section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
+
+    <div class="container clearfix">
+        <h1>Удаление статьи</h1>
     </div>
-</form>
+
+</section><!-- #page-title end -->
+
+<!-- Content============================================= -->
+<section id="content">
+	<div class="content-wrap">
+		<div class="container clearfix">
+
+			<div class="row gutter-40 col-mb-80">
+				<!-- Post Content
+				============================================= -->
+				<div class="postcontent mx-auto col-lg-9">
+                    <form action="{{ post.get_delete_url }}" method="post">
+                      {% csrf_token %}
+                        <div class="card">
+                              <div class="card-header">
+                                {{ post.title|title }}
+                              </div>
+                              <div class="card-body">
+                                <h5 class="card-title">Внимание!</h5>
+                                <p class="card-text">Вы уверены, что хотите выполнить удаление?</p>
+                                  <a href="{{ post.get_absolute_url }}" class="btn btn-primary">Отмена</a>
+                                <button type="submit" class="btn btn-danger">Удалить</button>
+                              </div>
+                        </div>
+                    </form>
+                </div><!-- #posts end -->
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

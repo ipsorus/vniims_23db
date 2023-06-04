@@ -1,13 +1,37 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load static %}
 {% block content %}
-{% for tag in tags %}
-<div class="card">
-  <h5 class="card-header">--</h5>
-  <div class="card-body">
-    <h5 class="card-title"><a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a></h5>
-    <p class="card-text">--</p>
-  </div>
-</div>
-{% endfor %}
+<!-- Page Title
+============================================= -->
+<section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
+
+    <div class="container clearfix">
+        <h1>Список тегов</h1>
+    </div>
+
+</section><!-- #page-title end -->
+
+<!-- Content============================================= -->
+<section id="content">
+	<div class="content-wrap">
+		<div class="container clearfix">
+
+			<div class="row gutter-40 col-mb-80">
+				<!-- Post Content
+				============================================= -->
+				<div class="postcontent mx-auto col-lg-9">
+                    {% for tag in tags %}
+                    <div class="card">
+                      <h5 class="card-header">--</h5>
+                      <div class="card-body">
+                        <h5 class="card-title"><a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a></h5>
+                        <p class="card-text">--</p>
+                      </div>
+                    </div>
+                    {% endfor %}
+                </div><!-- #posts end -->
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
