@@ -21,308 +21,241 @@
 				<!-- Post Content
 				============================================= -->
 				<div class="postcontent mx-auto col-lg-10 col-md-9">
-        <div id="search-box">
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Быстрый поиск</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Поиск совпадений</button>
-          </li>
-        </ul>
-        <div class="tab-content" id="myTabContent">
-          <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-              <h3>Поиск по параметрам</h3>
 
-        <form method="POST" action="">
-            {% csrf_token %}
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="table-responsive">
-                        <table class="table header-fixed table-borderless">
-                            <thead>
-                            <tr>
-                                <th>Критерии поиска</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td colspan="2">
-                                    <input type="text"
-                                           name="Name"
-                                           class="form-control"
-                                           placeholder="Название">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <input type="text"
-                                           name="Formula"
-                                           class="form-control"
-                                           placeholder="Молекулярная формула">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="number"
-                                           name="ExactMass"
-                                           class="form-control"
-                                           placeholder="Точная масса">
-                                </td>
-                                <td>
-                                    <div class="input-group">
-                                      <div class="input-group-prepend"><span class="input-group-text">&#177;</span></div>
-                                        <input type="number"
-                                               name="MassTolerance"
-                                               class="form-control"
-                                               value="0.5">
-                                        <div class="input-group-prepend"><span class="input-group-text">Da</span></div>
+                    <div class="tabs tabs-bordered clearfix" id="tab-2">
+
+                        <ul class="tab-nav clearfix">
+                            <li><a href="#tabs-5">Поиск по параметрам</a></li>
+                            <li><a href="#tabs-6">Поиск совпадений</a></li>
+                        </ul>
+
+                        <div class="tab-container">
+
+                            <div class="tab-content clearfix" id="tabs-5">
+                                <form method="POST" action="">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="table-responsive">
+                                                <table class="table header-fixed table-borderless">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Критерии поиска</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <input type="text"
+                                                                   name="Name"
+                                                                   class="form-control"
+                                                                   placeholder="Название">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <input type="text"
+                                                                   name="Formula"
+                                                                   class="form-control"
+                                                                   placeholder="Молекулярная формула">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input type="number"
+                                                                   name="ExactMass"
+                                                                   class="form-control"
+                                                                   placeholder="Точная масса">
+                                                        </td>
+                                                        <td>
+                                                            <div class="input-group">
+                                                              <div class="input-group-prepend"><span class="input-group-text">&#177;</span></div>
+                                                                <input type="number"
+                                                                       name="MassTolerance"
+                                                                       class="form-control"
+                                                                       value="0.5">
+                                                                <div class="input-group-prepend"><span class="input-group-text">Da</span></div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+
+                                            <div class="form-group row">
+                                                <div class="col-sm-12">
+                                                    <div class="table-responsive">
+                                                        <table class="table header-fixed">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>Метод ионизации</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    {% for x in context.ionizationMethod %}
+                                                                     <span>
+                                                                         <input type="checkbox" name="ionizationMethod" value="{{x.name}}"> {{x.name}} {{x.abv}}
+                                                                         <br/>
+                                                                     </span>
+                                                                    {% endfor %}
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-md-6">
+                                            <div class="form-group row">
+                                                <div class="col-sm-12">
+                                                    <div class="table-responsive">
+                                                        <table class="table header-fixed">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>Источник / Тип хроматографии</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    {% for x in context.sourceIntroduction %}
+                                                                     <span>
+                                                                         <input type="checkbox" name="sourceIntro" value="{{x.name}}"> {{x.name}} ({{x.abv}})
+                                                                         <br/>
+                                                                     </span>
+                                                                    {% endfor %}
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-sm-12">
+                                                    <div class="table-responsive">
+                                                        <table class="table header-fixed">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>Полярность / Ионный режим</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    {% for x in context.ionMode %}
+                                                                     <span>
+                                                                         <input type="checkbox" name="sourceIntro" value="{{x.name}}"> {{x.name}}
+                                                                         <br/>
+                                                                     </span>
+                                                                    {% endfor %}
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- MS Type -->
+                                            <div class="form-group row">
+                                                <div class="col-sm-12">
+                                                    <div class="table-responsive">
+                                                        <table class="table header-fixed">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>Тип / уровень MS</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    {% for x in context.msType %}
+                                                                     <span>
+                                                                         <input type="checkbox" name="msSelected" value="{{x.name}}"> {{x.name}}
+                                                                         <br/>
+                                                                     </span>
+                                                                    {% endfor %}
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
 
-                    <div class="form-group row">
-                        <div class="col-sm-12">
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <th>Полярность / Ионный режим</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        {% for x in context.ionMode %}
-                                        <td>
-                                            <input type="checkbox" name="ionSelected" value="{{x.name}}"> {{x.name}}
-                                        </td>
-                                        {% endfor %}
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-12">
-                            <div class="table-responsive">
-                                <table class="table header-fixed">
-                                    <thead>
-                                    <tr>
-                                        <th>Метод ионизации</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            {% for x in context.ionizationMethod %}
-                                             <span>
-                                                 <input type="checkbox" name="ionizationMethod" value="{{x.name}}"> {{x.name}} {{x.abv}}
-                                                 <br/>
-                                             </span>
-                                            {% endfor %}
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="col-md-6">
-                    <div class="form-group row">
-                        <div class="col-sm-12">
-                            <div class="table-responsive">
-                                <table class="table header-fixed">
-                                    <thead>
-                                    <tr>
-                                        <th>Источник / Тип хроматографии</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            {% for x in context.sourceIntroduction %}
-                                             <span>
-                                                 <input type="checkbox" name="sourceIntro" value="{{x.name}}"> {{x.name}} ({{x.abv}})
-                                                 <br/>
-                                             </span>
-                                            {% endfor %}
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- MS Type -->
-                    <div class="form-group row">
-                        <div class="col-sm-12">
-                            <div class="table-responsive">
-                                <table class="table table-condensed">
-                                    <thead>
-                                    <tr>
-                                        <th>Тип / уровень MS</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        {% for x in context.msType %}
-                                        <td>
-                                            <input type="checkbox" name="msSelected" value="{{x.name}}"> {{x.name}}
-                                        </td>
-                                        {% endfor %}
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group row">
-                        <div class="col-sm-2">
-                            <button type="submit" class="btn btn-primary" name="keyword_search">Поиск</button>
-                        </div>
-                        <div class="col-sm-5">
-                            <button type="reset" class="btn btn-secondary">Сброс</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-          </div>
-          <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-              <form method="POST" action="">
-                  {% csrf_token %}
-                  <div class="row">
-                <div class="col-md-12">
-                  <h3><i class="fa fa-search" aria-hidden="true"></i> Поиск по спектру</h3>
-                    <br />
-
-                    <!-- Spectrum selection page -->
-                    <div class="card">
-            <div class="card-header"><strong style="font-size: 1.2em;">Отправьте масс-спектр для загрузки</strong></div>
-
-            <div class="card-body">
-                <p class="lead">
-                    <small>Пожалуйста, выберите масс-спектр для поиска. Вы можете загрузить файл или вставить масс-спектр в текстовом формате
-                    </small>
-                </p>
-                <br />
-
-              <label><strong>Загрузка файла:</strong></label>
-                <form method="POST" action="" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <!-- Выводим каждое поле формы в отдельном параграфе -->
-                    <div class="input-group mb-3">
-                    <input class="form-control" type="file" id="formFile" name="file" required="required">
-                    <button class="btn btn-primary mb" type="submit">Загрузка</button>
-                    </div>
-                </form>
-                <span class="help-block">Поддерживает файлы масс-спектральных данных в форматах .MSP и .txt</span>
-
-                <br />
-                <br />
-                <br />
-        <form method="POST" action="">
-            {% csrf_token %}
-                <div class="input-group">
-                  <div class="input-group">
-                    <label><strong>Вставить масс-спектр в виде текста:</strong></label>
-                  </div>
-
-                  <textarea name="pastedSpectrumSearch" class="form-control" rows="10" required="required"></textarea>
-                  <div class="input-group">
-                    <span class="text-left">
-                      Поддерживается загрузка в одну строку <code>[m/z]:[intensity] [m/z]:[intensity] ...</code> или многострочно:<br />
-                      <code>[m/z] [intensity]</code><br />
-                      <code>[m/z] [intensity]</code><br />
-                      <code>...</code><br />
-                    </span>
-                  </div>
-
-                </div>
-                    <button class="btn btn-primary" name="similarity_search" type="submit">Начать поиск</button>
-              </form>
-            </div>
-        </div>
-
-                    <!-- Loading page -->
-                    <div *ngIf="page === 1">
-                        <span class="spinner">
-                          <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
-                            Please wait while your file is loaded and processed...
-                        </span>
-                    </div>
-
-                    <!-- Viewer + submit page -->
-                    <div *ngIf="page === 2">
-                        <p class="lead">
-                            <small>
-                                Please verify your mass spectrum and set your search parameters.  Note that this search returns
-                                only the 25 highest similarity matches.
-                            </small>
-                        </p>
-                        <br />
-
-                        <div class="masspec-modal">
-                            <lib-ng-mass-spec-plotter [spectrum]="spectrum" [id]="'massspec-plot'"></lib-ng-mass-spec-plotter>
-                        </div>
-                        <br />
-
-                        <div class="form-group">
-                            <label class="control-label">Minimum Similarity (default: 500):</label>
-                            <input type="text" [(ngModel)]="minSimilarity"
-                                   name="minSimilarity"
-                                   class="form-control"
-                                   placeholder="500">
-                        </div>
-
-
-                        <label class="control-label">Precursor m/z (optional):</label>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <input type="text" name="precursorMZ" [(ngModel)]="precursorMZ" class="form-control" placeholder="Precursor m/z">
-                            </div>
-
-                            <div class="col-sm-6">
-                                <div class="input-group">
-                                  <div class="input-group-prepend"><span class="input-group-text">&#177;</span></div>
-                                    <input type="number" name="precursorMZTolerance" [(ngModel)]="precursorMZTolerance" class="form-control">
-                                    <div class="input-group-prepend" ngbDropdown>
-                                        <button type="button" class="btn btn-outline-secondary" ngbDropdownToggle>
-                                            {{precursorToleranceUnit}} <span class="caret"></span>
-                                        </button>
-                                        <ul class="dropdown-menu pull-right" ngbDropdownMenu>
-                                            <li><button ngbDropdownItem (click)="precursorToleranceUnit = 'PPM'">PPM</button></li>
-                                            <li><button ngbDropdownItem (click)="precursorToleranceUnit = 'Da'">Da</button></li>
-                                        </ul>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group row">
+                                                <div class="col-sm-2">
+                                                    <button type="submit" class="btn btn-primary" name="keyword_search">Поиск</button>
+                                                </div>
+                                                <div class="col-sm-5">
+                                                    <button type="reset" class="btn btn-secondary">Сброс</button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+                                </form>
+                            </div>
+                            <div class="tab-content clearfix" id="tabs-6">
+                                <div class="card">
+                                <div class="card-header"><strong style="font-size: 1.2em;">Отправьте масс-спектр для поиска</strong></div>
+
+                                <div class="card-body">
+                                    <p class="lead">
+                                        <small>Пожалуйста, выберите масс-спектр для поиска. Вы можете загрузить файл или вставить масс-спектр в текстовом формате</small>
+                                    </p>
+                                    <br />
+
+                                    <label><strong>Загрузка файла:</strong></label>
+                                    <form method="POST" action="" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <!-- Выводим каждое поле формы в отдельном параграфе -->
+                                        <div class="input-group mb-3">
+                                        <input class="form-control" type="file" id="formFile" name="file" required="required">
+                                        <button class="btn btn-primary mb" type="submit">Загрузка</button>
+                                        </div>
+                                    </form>
+                                    <span class="help-block">Поддерживает файлы масс-спектральных данных в форматах .MSP и .txt</span>
+
+                                    <br />
+                                    <br />
+                                    <br />
+                                    <form method="POST" action="">
+                                        {% csrf_token %}
+                                        <div class="input-group">
+                                            <div class="input-group">
+                                                <label><strong>Вставить масс-спектр в виде текста:</strong></label>
+                                            </div>
+
+                                            <textarea name="pastedSpectrumSearch" class="form-control" rows="10" required="required"></textarea>
+                                              <div class="input-group">
+                                                <span class="text-left">
+                                                  Поддерживается загрузка в одну строку <code>[m/z]:[intensity] [m/z]:[intensity] ...</code> или многострочно:<br />
+                                                  <code>[m/z] [intensity]</code><br />
+                                                  <code>[m/z] [intensity]</code><br />
+                                                  <code>...</code><br />
+                                                </span>
+                                              </div>
+
+                                        </div>
+                                        <button class="btn btn-primary" name="similarity_search" type="submit">Начать поиск</button>
+                                    </form>
                                 </div>
                             </div>
+                            </div>
                         </div>
-                        <br />
-
-                        <button class="btn btn-warning mr-1" (click)="fileUpload = null; filenames = null; page = 0">Reset</button>
-                        <button class="btn btn-primary ml-1" type="submit">
-                            Search for Similar Spectra
-                        </button>
                     </div>
-                </div>
-            </div>
-        </form>
-          </div>
-        </div>
                 </div><!-- #posts end -->
             </div>
         </div>
