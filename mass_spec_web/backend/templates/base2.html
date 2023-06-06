@@ -56,7 +56,7 @@
 						<div class="row clearfix align-items-stretch bottommargin-lg landing-wide-form">
 
 							<div class="col-lg-3 col-md-6 dark left col-padding" style="background-color: #88C3D8;">
-								<h3>Библиотека масс-спектров сильнодействующих, наркотических и психоактивных веществ</h3>
+								<h3>Библиотека масс-спектров сильнодействующих, наркотических и психоактивных веществ VNIIMS_23DB</h3>
 							</div>
 
 							<div class="col-lg-3 col-md-6 dark center col-padding">
@@ -85,7 +85,8 @@
 		{% endif %}
 		<!-- Content
 		============================================= -->
-		{% block content %}{% endblock %}
+		{% block content %}
+		{% endblock %}
 		<!-- #content end -->
 		{% if is_paginated %}
 		<ul class="pagination justify-content-center">
@@ -95,7 +96,7 @@
 			  {% for n in page_object.paginator.page_range %}
 					{% if page_object.number == n %}
 						<li class="page-item active">
-							<a class="page-link" href="?page={{ n }}">{{ n }}<span class="sr-only"></span></a></a>
+							<a class="page-link" href="?page={{ n }}">{{ n }}<span class="sr-only"></span></a>
 						</li>
 					{% elif n > page_object.number|add:-3 and n < page_object.number|add:3 %}
 					<li class="page-item">

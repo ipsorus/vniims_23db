@@ -18,9 +18,7 @@ from django.urls import reverse
 from plotly.offline import plot
 from plotly.graph_objs import Figure
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 sources = {
     0: "Не выбрано",
@@ -138,8 +136,8 @@ class ObjectDetailMixin:
     model = None
     template = None
 
-    def get(self, request, slug):
-        obj = get_object_or_404(self.model, slug__iexact=slug)
+    def get(self, request, id):
+        obj = get_object_or_404(self.model, id=id)
         return render(request, self.template, context={self.model.__name__.lower(): obj, 'admin_object': obj})
 
 
@@ -165,13 +163,13 @@ class ObjectUpdateMixin:
     model_form = None
     template = None
 
-    def get(self, request, slug):
-        obj = self.model.objects.get(slug__iexact=slug)
+    def get(self, request, id):
+        obj = self.model.objects.get(id=id)
         bound_form = self.model_form(instance=obj)
         return render(request, self.template, context={'form': bound_form, self.model.__name__.lower(): obj})
 
-    def post(self, request, slug):
-        obj = self.model.objects.get(slug__iexact=slug)
+    def post(self, request, id):
+        obj = self.model.objects.get(id=id)
         bound_form = self.model_form(request.POST, instance=obj)
 
         if bound_form.is_valid():
@@ -185,12 +183,12 @@ class ObjectDeleteMixin:
     template = None
     redirect_url = None
 
-    def get(self, request, slug):
-        obj = self.model.objects.get(slug__iexact=slug)
+    def get(self, request, id):
+        obj = self.model.objects.get(id=id)
         return render(request, self.template, context={self.model.__name__.lower(): obj})
 
-    def post(self, request, slug):
-        obj = self.model.objects.get(slug__iexact=slug)
+    def post(self, request, id):
+        obj = self.model.objects.get(id=id)
         obj.delete()
         return redirect(reverse(self.redirect_url))
 
@@ -381,26 +379,32 @@ class SpectrumMixin:
 
         if 'pastedSpectrum' in request.POST:
             if request.POST.get('pastedSpectrum'):
-                peaks = [item.split(":") for item in request.POST.get('pastedSpectrum').split(' ') if item != '']
-                sorted_peaks = sorted(peaks, key=lambda peak: float(peak[0]))
-                for item in sorted_peaks:
-                    peaks_list.append([float(item[0]), float(item[1])])
+                try:
+                    peaks = [item.split(":") for item in request.POST.get('pastedSpectrum').split(' ') if item != '' and
+                             (re.match(r'([0-9]*\.?[0-9]+)\s*:\s*([0-9]*\.?[0-9]+)', item) or re.match(
+                                 r'([0-9]+\.?[0-9]*)[ \t]+([0-9]*\.?[0-9]+)(?:\s*(?:[;\n])|(?:"?(.+)"?\n?))?', item))]
+                    sorted_peaks = sorted(peaks, key=lambda peak: float(peak[0]))
+                    for item in sorted_peaks:
+                        peaks_list.append([float(item[0]), float(item[1])])
 
-                # peaks = request.POST.get('pastedSpectrum').split(' ')
-                # for item in peaks:
-                #
-                #     ion = item.split(':')
-                #     print(ion)
-                #     peaks_list.append([float(ion[0]), float(ion[1])])
+                    # peaks = request.POST.get('pastedSpectrum').split(' ')
+                    # for item in peaks:
+                    #
+                    #     ion = item.split(':')
+                    #     print(ion)
+                    #     peaks_list.append([float(ion[0]), float(ion[1])])
 
-                plot_div = generate_spectrum_plot(peaks_list=peaks_list)
+                    plot_div = generate_spectrum_plot(peaks_list=peaks_list)
 
-                context = {'peaks_list': peaks_list,
-                           'plot_div': plot_div,
-                           'metadata': metadata}
+                    context = {'peaks_list': peaks_list,
+                               'plot_div': plot_div,
+                               'metadata': metadata}
 
-                return render(request, 'spectra/upload/spectrum_create_form.html', context=context)
+                    return render(request, 'spectra/upload/spectrum_create_form.html', context=context)
 
+                except:
+                    messages.error(request, 'Невозможно загрузить масс-спектр. Проверьте передаваемые данные')
+                    return redirect('upload')
 
             else:
                 messages.error(request, 'Невозможно загрузить масс-спектр. Проверьте передаваемые данные')
