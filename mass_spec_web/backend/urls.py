@@ -4,10 +4,11 @@ from .views import tags_list, TagDetail, SpectrumDetail, spectrum_list, TagCreat
     spectrum_search, UserDetail, UserUpdate, users_list, upload_result, \
     UploadSpectrum, spectrum_draft_list, SpectrumReviewDetail, SpectrumUpdate, SpectrumDelete, \
     spectrum_similarity_search, main_page, news_page, NewsCreate, NewsDetail, NewsUpdate, NewsDelete, SupportCreate, \
-    SupportDetail, SupportUpdate, SupportDelete, SignUpView
+    SupportDetail, SupportUpdate, SupportDelete, SignUpView, support_page
 
 urlpatterns = [
     path('', main_page, name='main_page_url'),
+    path('support_notifications/', support_page, name='support_page_url'),
     path('news/', news_page, name='news_page_url'),
     path('support/create/', SupportCreate.as_view(), name='support_create_url'),
     path('news/create/', NewsCreate.as_view(), name='news_create_url'),

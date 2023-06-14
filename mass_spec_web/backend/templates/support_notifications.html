@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Page Title
+============================================= -->
+<section id="page-title" class="dark" style="background-image: url({% static 'assets/images/pattern2.png' %});">
+
+    <div class="container clearfix">
+        <h1>Уведомления техподдержки</h1>
+    </div>
+
+</section><!-- #page-title end -->
+{% include 'includes/_header.html'%}
+<!-- Content============================================= -->
+<section id="content">
+    <div class="content-wrap">
+        <div class="container clearfix">
+            <!-- Posts
+            ============================================= -->
+            <div class="container clearfix">
+                <div id="posts" class="row mx-auto col-lg-9">
+                    {% for post in page_object.object_list %}
+                      {% include 'includes/post_card_template.html' %}
+                    {% endfor %}
+                </div><!-- #posts end -->
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

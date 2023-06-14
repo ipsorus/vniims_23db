@@ -3624,7 +3624,7 @@ body:not(.top-search-open) .top-search-parent #primary-menu-trigger {
 	line-height: 22px;
 	padding: 14px 5px;
 	color: #444;
-	font-weight: 700;
+	font-weight: 400;
 	font-size: 0.9925rem;
 	letter-spacing: 1px;
 	font-family: 'Poppins', sans-serif;

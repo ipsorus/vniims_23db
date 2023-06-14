@@ -148,6 +148,38 @@ def news_page(request):
     return render(request, 'news.html', context=context)
 
 
+def support_page(request):
+    search_query = request.GET.get('search', '')
+
+    if search_query:
+        posts = Support.objects.filter(Q(title__icontains=search_query) | Q(body__icontains=search_query))
+    else:
+        posts = Support.objects.all()
+    paginator = Paginator(posts, 5)
+
+    page_number = request.GET.get('page', 1)
+    page = paginator.get_page(page_number)
+
+    is_paginated = page.has_other_pages()
+
+    if page.has_previous():
+        prev_url = '?page={}'.format(page.previous_page_number())
+    else:
+        prev_url = ''
+    if page.has_next():
+        next_url = '?page={}'.format(page.next_page_number())
+    else:
+        next_url = ''
+
+    context = {
+        'page_object': page,
+        'is_paginated': is_paginated,
+        'prev_url': prev_url,
+        'next_url': next_url,
+    }
+    return render(request, 'support_notifications.html', context=context)
+
+
 def main_page(request):
     spectrum_etalon = Spectrum.objects.filter(is_etalon=True).count()
     spectrum_users = Spectrum.objects.filter(is_etalon=False).count()
