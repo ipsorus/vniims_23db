@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from .models import Tag, Post, CustomUser, Support
 
 
-class CustomUserCreationForm(PopRequestMixin, CreateUpdateAjaxMixin, UserCreationForm):
+class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = CustomUser

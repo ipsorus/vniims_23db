@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
-from django.views import View
+from django.views import View, generic
 from django.views.decorators.csrf import csrf_exempt
 from matchms.similarity import CosineGreedy
 
@@ -80,7 +80,7 @@ def check_admin(user):
     return user.is_superuser
 
 
-class SignUpView(BSModalCreateView):
+class SignUpView(generic.CreateView):
     form_class = CustomUserCreationForm
     template_name = 'authentication/signup.html'
     success_message = 'Вы успешно зарегистрированы. Авторизуйтесь.'
@@ -184,7 +184,7 @@ def main_page(request):
         'spectrum_users': spectrum_users,
         'users': users
     }
-    return render(request, 'index1.html', context=context)
+    return render(request, 'index.html', context=context)
 
 
 class NewsDetail(ObjectDetailMixin, View):

@@ -4,7 +4,7 @@ from .views import tags_list, TagDetail, SpectrumDetail, spectrum_list, TagCreat
     spectrum_search, UserDetail, UserUpdate, users_list, upload_result, \
     UploadSpectrum, spectrum_draft_list, SpectrumReviewDetail, SpectrumUpdate, SpectrumDelete, \
     spectrum_similarity_search, main_page, news_page, NewsCreate, NewsDetail, NewsUpdate, NewsDelete, SupportCreate, \
-    SupportDetail, SupportUpdate, SupportDelete
+    SupportDetail, SupportUpdate, SupportDelete, SignUpView
 
 urlpatterns = [
     path('', main_page, name='main_page_url'),
@@ -35,6 +35,6 @@ urlpatterns = [
     path('users_list/', users_list, name='users_list'),
     path('spectrum_search/', spectrum_search, name='spectrum_search'),
     path('spectrum_similarity_search/', spectrum_similarity_search, name='spectrum_similarity_search'),
-    path('signup/', views.SignUpView.as_view(), name='signup'),
+    path('signup/', SignUpView.as_view(), name='signup'),
     path('login/', views.CustomLoginView.as_view(), name='login')
 ]

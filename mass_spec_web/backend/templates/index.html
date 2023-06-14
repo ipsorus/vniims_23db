@@ -1,48 +1,77 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-{% csrf_token %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-          <span class="news-title fon"><h2 class="font-weight-bold">База данных масс-спектров ФГБУ "ВНИИМС"</h2></span>
+{% include 'includes/_header.html'%}
+<section id="content">
+    <div class="content-wrap">
+        <div class="container clearfix">
+            <div class="row justify-content-center col-mb-20">
+                <div class="col-lg-5">
+                    <div class="emphasis-title">
+                        <h3>Добро пожаловать<br>в базу данных VNIIMS_23DB</h3>
+                    </div>
+                    <p class="lead">База данных предназначена для достоверной идентификации сильнодействующих, наркотических и психоактивных веществ, востребованных в экспертно-криминалистических лабораториях наркотических и токсичных веществ, применяемых для обеспечения единства измерений в экспертно-криминалистической деятельности</p>
+                </div>
 
-            <p>
-              База данных масс-спектров ФГБУ "ВНИИМС" - это ориентированное на метаданные хранилище с автоматическим управлением,
-              предназначенное для эффективного хранения и запроса записей масс-спектров. Он призван служить основой для
-              централизованной совместной базы данных масс-спектров метаболитов, метаданных и связанных с ними соединений.
-              В настоящее время база данных масс-спектров ФГБУ "ВНИИМС" содержит масс-спектральные записи из экспериментальных библиотек и библиотек in-silico,
-              а также из материалов пользователей.
-            </p>
+                <div class="col-lg-7">
+                    <div style="position: relative; margin-bottom: 70px;" class="ohidden" data-height-lg="426" data-height-md="567" data-height-sm="470" data-height-xs="287" data-height-xxs="183">
+                        <img src="{% static 'assets/images/main_image.png' %}" style="position: absolute; top: 0; left: 0;" data-animate="fadeInUp" data-delay="100" alt="Chrome">
+                    </div>
+                </div>
+            </div>
+            <br/><br/><br/>
+        </div>
 
-            <p>
-                Масс-спектр - это данные, полученные напрямую с оборудования и представляющие количество обнаруженных ионов с определенным отношением массы к заряду (m/z). Спектр отображается как график со значениями m/z по оси х и интенсивностью (имп/с) по оси у.
-            </p>
-            <br />
+        <div class="section parallax dark" style="background: url({% static 'assets/images/logo-img1.png' %}) center center no-repeat; background-attachment: fixed; background-size: cover">
+            <div class="container clear-bottommargin clearfix landing-wide-form">
+                <div class="emphasis-title center mb-0">
+                        <h3>Цели и задачи:</h3>
+                    </div>
 
-            <p style="text-align: center">
-                <a href="{% url 'spectrum_search' %}" class="btn btn-secondary btn-lg mr-1"><i class="fa fa-search" aria-hidden="true"></i> Поиск спектров</a>
-              <a href="{% url 'spectrum_list' %}" class="btn btn-success btn-lg mr-1 ml-1"><i class="fa fa-flask" aria-hidden="true"></i> Просмотр спектров</a>
+                <div class="row clearfix">
 
-            </p>
+                    <div class="col-lg-4 col-md-6 dark col-padding">
+                        <div class="heading-block nobottomborder" style="margin-bottom: 10px;">
+                            <h4>Информационное обеспечение</h4>
+                        </div>
+                        <p>Информационное обеспечение сотрудников токсикологических, экспертно-криминалистических лабораторий об имеющихся масс-спектрах сильнодействующих веществ</p>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 dark col-padding">
+                        <div class="heading-block nobottomborder" style="margin-bottom: 10px;">
+                            <h4>Предоставление информации</h4>
+                        </div>
+                        <p>Предоставление информации сотрудникам ВНИИМС (головного исполнителя, отвечающего за метрологическую составляющую данной БД)</p>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 dark col-padding">
+                        <div class="heading-block nobottomborder" style="margin-bottom: 10px;">
+                            <h4>Обмен информацией</h4>
+                        </div>
+                        <p>Обмен информацией между всеми пользователями БД с целью обеспечения возможности для любого пользователя идентифицировать неизвестное соединение</p>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- Posts
+        ============================================= -->
+        <div class="section parallax bottommargin-lg landing-wide-form" style="background-image: url({% static 'assets/images/main_image1.png' %});">
+            <div class="heading-block center border-bottom-0 mb-0 dark">
+                <h2>Уведомления техподдержки</h2>
+            </div>
+        </div>
+        <div class="container clearfix">
+
+            <div id="posts" class="row mx-auto col-lg-9">
+                {% for post in page_object.object_list %}
+                  {% include 'includes/post_card_template.html' %}
+                {% endfor %}
+            </div><!-- #posts end -->
         </div>
     </div>
-
-    <div class="bor-bot"></div><br />
-
-    <div class="row">
-        <div class="col-md-12 float-left">
-            <h3 class="font-weight-bold">Новости</h3>
-            <hr/>
-            {% for post in page_object.object_list %}
-              {% include 'includes/post_card_template.html' %}
-            {% endfor %}
-     <hr/>
-        </div>
-    </div>
-
-    <div class="bor-bot"></div>
-
-</div>
+</section>
 
 {% endblock %}
