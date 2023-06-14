@@ -58,56 +58,12 @@ class UserDetailMixin:
     def get(self, request, username):
         obj = get_object_or_404(self.model, username__iexact=username)
 
-        def map_spectrum(spectrum: Spectrum):
-            precursor_type = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Precursor_type')
-            spectrum_type = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Spectrum_type')
-            precursor_mz = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='PrecursorMZ')
-            instrument_type = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Instrument_type')
-            ion_mode = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Ion_mode')
-            collision_energy = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Collision_energy')
-            formula = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Formula')
-
-            fields = [precursor_type, spectrum_type, precursor_mz, instrument_type, ion_mode, collision_energy, formula]
-            peaks_list = spectrum.spectrum_json
-
-            plot_div = generate_spectrum_mini_plot(peaks_list=peaks_list)
-
-            return {
-                'spectrum': spectrum,
-                'plot_div': plot_div,
-                'name': spectrum.name,
-                'id': spectrum.id,
-                'author': spectrum.author,
-                'create_date': spectrum.date_created,
-                'fields': fields
-            }
-
         spectrums = Spectrum.objects.filter(author=request.user)
-        objects = list(map(map_spectrum, spectrums))
-
-        paginator = Paginator(objects, 10)
-
-        page_number = request.GET.get('page', 1)
-        page = paginator.get_page(page_number)
-
-        is_paginated = page.has_other_pages()
-
-        if page.has_previous():
-            prev_url = '?page={}'.format(page.previous_page_number())
-        else:
-            prev_url = ''
-        if page.has_next():
-            next_url = '?page={}'.format(page.next_page_number())
-        else:
-            next_url = ''
 
         context = {
             self.model.__name__.lower(): obj,
             'admin_object': obj,
-            'page_object': page,
-            'is_paginated': is_paginated,
-            'prev_url': prev_url,
-            'next_url': next_url
+            'spectrums': spectrums
         }
         return render(request, self.template, context=context)
 
@@ -338,7 +294,6 @@ class SpectrumMixin:
                 messages.success(request, 'Ваша запись успешно добавлена!')
                 return redirect('upload_result')
             except ValidationError as error:
-                print('terweerewewrewwerwerewrew')
                 messages.error(request, error)
                 return
 
@@ -380,19 +335,22 @@ class SpectrumMixin:
         if 'pastedSpectrum' in request.POST:
             if request.POST.get('pastedSpectrum'):
                 try:
-                    peaks = [item.split(":") for item in request.POST.get('pastedSpectrum').split(' ') if item != '' and
-                             (re.match(r'([0-9]*\.?[0-9]+)\s*:\s*([0-9]*\.?[0-9]+)', item) or re.match(
-                                 r'([0-9]+\.?[0-9]*)[ \t]+([0-9]*\.?[0-9]+)(?:\s*(?:[;\n])|(?:"?(.+)"?\n?))?', item))]
-                    sorted_peaks = sorted(peaks, key=lambda peak: float(peak[0]))
-                    for item in sorted_peaks:
-                        peaks_list.append([float(item[0]), float(item[1])])
+                    try:
+                        peaks = [item.split(":") for item in request.POST.get('pastedSpectrum').split(' ') if item != '' and
+                                 (re.match(r'([0-9]*\.?[0-9]+)\s*:\s*([0-9]*\.?[0-9]+)', item) or re.match(
+                                     r'([0-9]+\.?[0-9]*)[ \t]+([0-9]*\.?[0-9]+)(?:\s*(?:[;\n])|(?:"?(.+)"?\n?))?', item))]
+                        sorted_peaks = sorted(peaks, key=lambda peak: float(peak[0]))
+                        for item in sorted_peaks:
+                            peaks_list.append([float(item[0]), float(item[1])])
 
-                    # peaks = request.POST.get('pastedSpectrum').split(' ')
-                    # for item in peaks:
-                    #
-                    #     ion = item.split(':')
-                    #     print(ion)
-                    #     peaks_list.append([float(ion[0]), float(ion[1])])
+                    except:
+                        for line in request.POST.get('pastedSpectrum').splitlines():
+
+                            item = line.replace("'", '"')
+                            if re.match(r'([0-9]*\.?[0-9]+)\s*:\s*([0-9]*\.?[0-9]+)', item) or re.match(
+                                    r'([0-9]+\.?[0-9]*)[ \t]+([0-9]*\.?[0-9]+)(?:\s*(?:[;\n])|(?:"?(.+)"?\n?))?', item):
+                                ion = item.strip().replace("\t", ' ').split(' ')
+                                peaks_list.append([float(ion[0]), float(ion[1])])
 
                     plot_div = generate_spectrum_plot(peaks_list=peaks_list)
 
@@ -416,6 +374,9 @@ def save_object(request):
     obj.author = request.user
     obj.name = request.POST.get("Name")
     obj.reg_num = request.POST.get("Number")
+    obj.formula = request.POST.get("Formula")
+    obj.cas = request.POST.get("Cas")
+    obj.exact_mass = request.POST.get("Exact_mass")
 
     i = 0
     peaks = ''
@@ -492,6 +453,7 @@ def get_5_largest(intensity_list: list[float]) -> list[int]:
 
 
 def generate_spectrum_plot(peaks_list: list, id: str | int = None, save_image: bool = False):
+    print('peaks_list', peaks_list)
     layout = {
         "plot_bgcolor": '#fff',
         "xaxis": {

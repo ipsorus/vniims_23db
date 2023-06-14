@@ -31,14 +31,13 @@ class CustomUserChangeForm(UserChangeForm):
 
     class Meta:
         model = CustomUser
-        fields = ("username", 'email', 'first_name', 'last_name', 'patronymic', 'organization', 'position', 'work_experience')
+        fields = ('first_name', 'last_name', 'patronymic', 'email', 'organization', 'position', 'work_experience')
 
         widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.TextInput(attrs={'class': 'form-control'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'patronymic': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.TextInput(attrs={'class': 'form-control'}),
             'organization': forms.TextInput(attrs={'class': 'form-control'}),
             'position': forms.TextInput(attrs={'class': 'form-control'}),
             'work_experience': forms.TextInput(attrs={'class': 'form-control'})
@@ -73,7 +72,7 @@ class PostForm(forms.ModelForm):
         }
 
 
-class SupportPostForm(forms.ModelForm):
+class SupportForm(forms.ModelForm):
     class Meta:
         model = Support
         fields = '__all__'

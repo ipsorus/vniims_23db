@@ -9,11 +9,11 @@
 <section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
 
     <div class="container clearfix">
-        <h1>Редактирование статьи</h1>
+        <h1>Редактирование статьи {{ post.title|title }}</h1>
     </div>
 
 </section><!-- #page-title end -->
-
+{% include 'includes/_header.html'%}
 <!-- Content============================================= -->
 <section id="content">
 	<div class="content-wrap">

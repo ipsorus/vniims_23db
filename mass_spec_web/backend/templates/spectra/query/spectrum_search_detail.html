@@ -1,0 +1,92 @@
+{% extends "base2.html" %}
+{% load static %}
+{% block content %}
+<!-- Page Title
+============================================= -->
+<section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
+
+    <div class="container clearfix">
+        <h1>Поиск по совпадению масс-спектров</h1>
+    </div>
+
+</section><!-- #page-title end -->
+{% include 'includes/_header.html'%}
+<!-- Content============================================= -->
+<section id="content">
+	<div class="content-wrap">
+		<div class="container clearfix">
+
+			<div class="row gutter-40 col-mb-80">
+				<!-- Post Content
+				============================================= -->
+				<div class="postcontent mx-auto col-lg-10 col-md-9">
+                    <form method="POST" id="SimilaritySearchForm" action="">
+                        <input type="hidden" name="peaks" value="{{ peaks }}">
+                        <div class="card">
+                            <div class="card-body">
+                                <!-- mass spectral properties -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                    <div class="accordion" id="accordionPanelsStayOpenExample">
+                                      <div class="accordion-item">
+                                        <h2 class="mb-0" id="headingOne">
+                                          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                            Масс-спектр
+                                          </button>
+                                        </h2>
+                                        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                                          <div class="accordion-body">
+                                              {% autoescape off %}
+                                              {{ plot_div }}
+                                              {% endautoescape %}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                <br/>
+
+                                <div class="clearfix"><br/></div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label">Минимальное совпадение (по-умолчанию: 0.5):</label>
+                                            <input type="text" [(ngModel)]="minSimilarity"
+                                                   name="minSimilarity"
+                                                   class="form-control"
+                                                   placeholder="0.5"
+                                                   value="0.5">
+                                        </div>
+
+
+                                        <label class="control-label">Прекурсор m/z (необязательно):</label>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <input type="text" name="precursorMZ" [(ngModel)]="precursorMZ" class="form-control" placeholder="">
+                                            </div>
+
+                                            <div class="col-sm-2">
+                                                <div class="input-group">
+                                                  <div class="input-group-prepend"><span class="input-group-text">&#177;</span></div>
+                                                    <input type="number" name="precursorMZTolerance" [(ngModel)]="precursorMZTolerance" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br />
+
+                                        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-danger">Отмена</a>
+                                        <button class="btn btn-primary ml-1" type="submit">Найти похожие масс-спектры</button>
+                                        <br/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div><!-- #posts end -->
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

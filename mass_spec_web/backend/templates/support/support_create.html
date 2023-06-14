@@ -1,7 +1,7 @@
 {% extends "base2.html" %}
 {% load static %}
 {% block title %}
-    Создание статьи для сайта
+    Создание уведомления техподдержки
 {% endblock %}
 {% block content %}
 <!-- Page Title
@@ -9,7 +9,7 @@
 <section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
 
     <div class="container clearfix">
-        <h1>Создание статьи для сайта</h1>
+        <h1>Создание уведомления техподдержки</h1>
     </div>
 
 </section><!-- #page-title end -->
@@ -25,10 +25,10 @@
                 <div class="postcontent mx-auto col-lg-9">
                     <div class="card">
                         <div class="card-header">
-                            Новая статья для сайта
+                            Новое уведомление техподдержки
                         </div>
                         <div class="card-body">
-                            <form action="{% url 'news_create_url' %}" method="post">
+                            <form action="{% url 'support_create_url' %}" method="post">
                               {% csrf_token %}
 
                                 {% for field in form %}
@@ -43,7 +43,7 @@
                                 </div>
                                 {% endfor %}
 
-                              <button type="submit" class="btn btn-success">Сохранить новость</button>
+                              <button type="submit" class="btn btn-success">Сохранить уведомление</button>
                             </form>
                         </div>
                     </div>

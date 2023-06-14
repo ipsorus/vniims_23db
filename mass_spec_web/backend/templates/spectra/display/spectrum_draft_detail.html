@@ -11,7 +11,7 @@
     </div>
 
 </section><!-- #page-title end -->
-
+{% include 'includes/_header.html'%}
 <!-- Content============================================= -->
 <section id="content">
 	<div class="content-wrap">
@@ -105,14 +105,16 @@
                                                 Отправитель: {{ spectrum.author.first_name }} {{ spectrum.author.last_name }}
                                             </div>
                                         </li>
+                                        {% if spectrum.cas %}
                                         <li>
                                             <div class="h5">
-                                                Регистрационный номер: {{spectrum.reg_num}}
+                                                CAS номер: {{ spectrum.cas }}
                                             </div>
                                         </li>
+                                        {% endif %}
                                         <li>
                                             <div class="h5">
-                                                {% if spectrum.etalon %}Является эталоном{% endif %}
+                                                Тип записи: {% if spectrum.is_etalon %}Аттестованный масс-спектр{% else %}Запись от пользователя{% endif %}
                                             </div>
                                         </li>
                                     </ul>
@@ -221,6 +223,24 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                {% if spectrum.formula %}
+                                                    <tr>
+                                                        <td>Молекулярная формула</td>
+                                                        <td>{{ spectrum.formula }}</td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if spectrum.reg_num %}
+                                                    <tr>
+                                                        <td>Регистрационный номер / лицензия</td>
+                                                        <td>{{ spectrum.reg_num }}</td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if spectrum.exact_mass %}
+                                                    <tr>
+                                                        <td>Точная масса</td>
+                                                        <td>{{ spectrum.exact_mass }}</td>
+                                                    </tr>
+                                                {% endif %}
                                                 {% for field in fields %}
                                                     <tr>
                                                         <td>{{ field.name }}</td>

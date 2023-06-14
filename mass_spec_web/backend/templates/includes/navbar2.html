@@ -33,7 +33,7 @@
                           <a class="menu-link" href="{% url 'main_page_url' %}">Главная</a>
                         </li>
                         <li class="menu-item">
-                          <a class="menu-link" href="{% url 'main_page_url' %}">Новости</a>
+                          <a class="menu-link" href="{% url 'news_page_url' %}">Новости</a>
                         </li>
                         <li class="menu-item">
                             <a class="menu-link" href="#"><div>База данных</div></a>
@@ -72,7 +72,10 @@
                                         <a class="menu-link" href="/admin" target="_blank"><div>Админпанель</div></a>
                                     </li>
                                     <li class="menu-item">
-                                        <a class="menu-link" href="{% url 'post_create_url' %}"><div>Создать статью</div></a>
+                                        <a class="menu-link" href="{% url 'news_create_url' %}"><div>Создать статью</div></a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a class="menu-link" href="{% url 'support_create_url' %}"><div>Создать уведомление техподдержки</div></a>
                                     </li>
                                     <li class="menu-item">
                                         <a class="menu-link" href="{% url 'users_list' %}"><div>Список пользователей</div></a>
@@ -108,8 +111,8 @@
                     </ul>
 
                 </nav><!-- #primary-menu end -->
-                <form name="search" class="top-search-form" role="search" action="{% url 'main_page_url' %}">
-                    <input type="text" class="form-control" value="" placeholder="Поиск статей" name="search"/>
+                <form name="search" class="top-search-form" role="search" action="">
+                    <input type="text" class="form-control" value="" placeholder="Поиск статей и уведомлений" name="search"/>
                 </form>
             </div>
         </div>

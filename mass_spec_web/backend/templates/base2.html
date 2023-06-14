@@ -19,14 +19,13 @@
 	<link rel="stylesheet" href="{% static 'assets/css_new/animate.css' %}" type="text/css" />
 	<link rel="stylesheet" href="{% static 'assets/css_new/magnific-popup.css' %}" type="text/css" />
 	<link rel="stylesheet" href="{% static 'assets/css_new/custom.css' %}" type="text/css" />
-
-	<link href="{% static 'assets/css/search.css' %}" rel="stylesheet" type="text/css"/>
-	<link href="{% static 'assets/css/autocomplete.css' %}" rel="stylesheet" type="text/css"/>
+<!--	<link href="{% static 'assets/css/search.css' %}" rel="stylesheet" type="text/css"/>-->
+<!--	<link href="{% static 'assets/css/autocomplete.css' %}" rel="stylesheet" type="text/css"/>-->
 	<!-- Bootstrap File Upload CSS -->
-	<link rel="stylesheet" href="{% static 'assets/css_new/components/bs-filestyle.css' %}" type="text/css" />
+<!--	<link rel="stylesheet" href="{% static 'assets/css_new/components/bs-filestyle.css' %}" type="text/css" />-->
 	<!-- Font awesome CSS -->
 	<link rel="stylesheet" href="{% static 'assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
-    {% endblock stylesheets %}
+	{% endblock stylesheets %}
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<!--[if lt IE 9]>
 		<script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
@@ -61,19 +60,19 @@
 
 							<div class="col-lg-3 col-md-6 dark center col-padding">
 								<i class="i-plain i-xlarge mx-auto icon-line2-check"></i>
-								<div class="counter counter-lined"><span data-from="0" data-to="51" data-refresh-interval="15" data-speed="2000"></span></div>
+								<div class="counter counter-lined"><span data-from="0" data-to="{{ spectrum_etalon }}" data-refresh-interval="15" data-speed="2000"></span></div>
 								<h5>Загружено аттестованных масс-спектров</h5>
 							</div>
 
 							<div class="col-lg-3 col-md-6 dark center col-padding">
 								<i class="i-plain i-xlarge mx-auto icon-line2-bar-chart"></i>
-								<div class="counter counter-lined"><span data-from="0" data-to="133" data-refresh-interval="15" data-speed="2000"></span></div>
+								<div class="counter counter-lined"><span data-from="0" data-to="{{ spectrum_users }}" data-refresh-interval="15" data-speed="2000"></span></div>
 								<h5>Загружено масс-спектров пользователями</h5>
 							</div>
 
 							<div class="col-lg-3 col-md-6 dark center col-padding">
 								<i class="i-plain i-xlarge mx-auto icon-line2-user"></i>
-								<div class="counter counter-lined"><span data-from="0" data-to="87" data-refresh-interval="15" data-speed="2000"></span></div>
+								<div class="counter counter-lined"><span data-from="0" data-to="{{ users }}" data-refresh-interval="15" data-speed="2000"></span></div>
 								<h5>Зарегистрировано пользователей</h5>
 							</div>
 						</div></div>
@@ -96,11 +95,11 @@
 			  {% for n in page_object.paginator.page_range %}
 					{% if page_object.number == n %}
 						<li class="page-item active">
-							<a class="page-link" href="?page={{ n }}">{{ n }}<span class="sr-only"></span></a>
+							<a class="page-link" href="?page={{ n }}{% if search_url %}{{ search_url }}{% endif %}">{{ n }}<span class="sr-only"></span></a>
 						</li>
 					{% elif n > page_object.number|add:-3 and n < page_object.number|add:3 %}
 					<li class="page-item">
-						<a class="page-link" href="?page={{ n }}">{{ n }}</a>
+						<a class="page-link" href="?page={{ n }}{% if search_url %}{{ search_url }}{% endif %}">{{ n }}</a>
 					</li>
 					{% endif %}
 			{% endfor %}
@@ -126,15 +125,49 @@
 	<script type="text/javascript" src="{% static 'assets/js/js_new/jquery.js' %}"></script>
 	<script type="text/javascript" src="{% static 'assets/js/js_new/plugins.js' %}"></script>
 
+	<!-- Bootstrap Data Table Plugin -->
+	<script type="text/javascript" src="{% static 'assets/js/js_new/components/bs-datatable.js' %}"></script>
+
 	<!-- Footer Scripts
 	============================================= -->
 	<script type="text/javascript" src="{% static 'assets/js/js_new/functions.js' %}"></script>
 	<!-- You can alternatively load the minified version -->
-	<script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+	<script src="{% static 'assets/js/jquery.bootstrap.modal.forms.js' %}"></script>
+
+	<script src="{% static 'assets/js/loader.js' %}"></script>
     {% endblock scripts %}
+
 	{% include "includes/_modal.html" %}
+
     {% block extrascripts %}
-      <script type="text/javascript">
+		{% if request.path == '/spectrum_search/' %}
+		<script>
+			$("#keyword_search").click(function(){
+				$("input").each(function(){
+					if($(this).val() == '') {
+						$(this).remove();
+					}
+				});
+				$("#keyword_searching").submit();
+			});
+		</script>
+		{% endif %}
+
+		<script>
+
+			$(document).ready(function() {
+				$('#datatable1').dataTable();
+			});
+			$(document).ready(function() {
+				$('#datatable2').dataTable();
+			});
+			$(document).ready(function() {
+				$('#datatable3').dataTable();
+			});
+
+		</script>
+
+      	<script type="text/javascript">
           $(function () {
               // Login
               $("#login-btn").modalForm({
@@ -165,7 +198,7 @@
               });
 
           });
-      </script>
+      	</script>
     {% endblock extrascripts %}
 </body>
 </html>

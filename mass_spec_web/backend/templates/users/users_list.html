@@ -31,7 +31,7 @@
                               </tr>
                             </thead>
                             <tbody>
-                            {% for user in page_object.object_list %}
+                            {% for user in users %}
                               <tr>
                                 <th scope="row">{{ forloop.counter }}</th>
                                 <td>{{ user.first_name }}</td>
@@ -110,14 +110,4 @@
 <!--                [icon]="faUser"></fa-icon>Добавить пользователя-->
 <!--        </button>-->
 <!--</div>-->
-
-<!-- Bootstrap Data Table Plugin -->
-<script src="{% static 'assets/js/js_new/components/bs-datatable.js' %}"></script>
-<script>
-
-    $(document).ready(function() {
-        $('#datatable1').dataTable();
-    });
-
-</script>
 {% endblock %}

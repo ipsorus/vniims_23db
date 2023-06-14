@@ -6,7 +6,7 @@
 <section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
 
     <div class="container clearfix">
-        <h1>Удаление статьи</h1>
+        <h1>Удаление уведомления техподдержки</h1>
     </div>
 
 </section><!-- #page-title end -->
@@ -20,16 +20,16 @@
 				<!-- Post Content
 				============================================= -->
 				<div class="postcontent mx-auto col-lg-9">
-                    <form action="{{ news.get_delete_url }}" method="post">
+                    <form action="{{ support.get_delete_url }}" method="post">
                       {% csrf_token %}
                         <div class="card">
                               <div class="card-header">
-                                {{ post.title|title }}
+                                {{ support.title|title }}
                               </div>
                               <div class="card-body">
                                 <h5 class="card-title">Внимание!</h5>
                                 <p class="card-text">Вы уверены, что хотите выполнить удаление?</p>
-                                  <a href="{{ post.get_absolute_url }}" class="btn btn-primary">Отмена</a>
+                                  <a href="{{ support.get_absolute_url }}" class="btn btn-primary">Отмена</a>
                                 <button type="submit" class="btn btn-danger">Удалить</button>
                               </div>
                         </div>

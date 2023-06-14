@@ -32,7 +32,7 @@ input.invalid {
     </div>
 
 </section><!-- #page-title end -->
-
+{% include 'includes/_header.html'%}
 <!-- Content============================================= -->
 <section id="content">
 	<div class="content-wrap">
@@ -76,17 +76,14 @@ input.invalid {
                                     <small>Ниже представлен загруженный Вами масс-спектр.<br /> Пожалуйста, убедитесь, что он выглядит так, как вы ожидаете</small>
                                 </p>
 
-                                <div>
+                                <div class="promo promo-border promo-mini p-5 mx-auto vertical-middle row clearfix bottommargin-lg">
                                     {% autoescape off %}
                                     {{ plot_div }}
                                     {% endautoescape %}
                                 </div>
-                                <br />
-                                <br />
-                                <br />
 
-                                <div style="height: 500px; overflow: auto; margin-top: 10px;">
-                                    <table class="table">
+                                <div class="table-responsive" style="height: 500px; overflow: auto; margin-top: 10px;">
+                                    <table class="table table-bordered mb-0">
                                         <thead>
                                         <tr>
                                             <th>&nbsp;</th>
@@ -110,11 +107,23 @@ input.invalid {
                             <div class="card-body">
                                 <p>Эти сведения обеспечивают более полное представление о масс-спектре и позволяют пользователям легче находить важные спектры. Ниже приведен список <b>настоятельно рекомендуемых</b> к предоставлению сведений.</p>
                                     <div class="mb-3">
-                                        <label class="form-label">Название спектра:</label>
-                                        <input maxlength="50" id="Name" name="Name" type="text" class="form-control" value="{{ spectrum.name }}">
+                                        <label for="Name" class="form-label">Название спектра:</label>
+                                        <input maxlength="50" id="Name" name="Name" type="text" class="form-control" value="{{ spectrum.name }}" required="required">
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">Регистрационный номер / Лицензия:</label>
+                                        <label for="Formula" class="form-label">Молекулярная формула:</label>
+                                        <input maxlength="64" id="Formula" name="Formula" type="text" class="form-control" value="{{ spectrum.formula }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="Cas" class="form-label">CAS номер:</label>
+                                        <input maxlength="64" id="Cas" name="Cas" type="text" class="form-control" value="{{ spectrum.cas }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="Exact_mass" class="form-label">Точная масса:</label>
+                                        <input maxlength="64" id="Exact_mass" name="Exact_mass" type="text" class="form-control" value="{{ spectrum.exact_mass }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="Number" class="form-label">Регистрационный номер / Лицензия:</label>
                                         <input maxlength="64" id="Number" name="Number" type="text" class="form-control" value="{{ spectrum.reg_num }}">
                                     </div>
 
@@ -174,8 +183,8 @@ input.invalid {
                                     <div id="metadataFields">
                                     {% for field in metadata %}
                                         <div class="input-group mb-3" id="metadataField{{ forloop.counter0 }}" index={{ forloop.counter0 }}>
-                                            <div class="col-sm-5 form-group"><input maxlength="255" id="key{{ forloop.counter0 }}" name="key{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Имя поля" value="{{ field.name|title }}"></div>
-                                            <div class="col-sm-5 form-group"><input maxlength="255" id="value{{ forloop.counter0 }}" name="value{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Значение" value="{{ field.value }}"></div>
+                                            <div class="col-sm-5 form-group"><input maxlength="255" id="key{{ forloop.counter0 }}" name="key{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Имя поля" value="{{ field.name|title }}" required="required"></div>
+                                            <div class="col-sm-5 form-group"><input maxlength="255" id="value{{ forloop.counter0 }}" name="value{{ forloop.counter0 }}" type="text" class="form-control" placeholder="Значение" value="{{ field.value }}" required="required"></div>
                                             <div class="col-sm-2 form-group"><button class="btn btn-danger" type="button" id="button-addon2" onclick="removeField({{ forloop.counter0 }});">Удалить</button></div>
                                         </div>
                                     {% endfor %}
@@ -271,7 +280,7 @@ function validateForm() {
   // A loop that checks every input field in the current tab:
   for (i = 0; i < y.length; i++) {
     // If a field is empty...
-    if (currentTab != 0 && y[i].value == "") {
+    if (currentTab != 0 && y[i].value == "" && y[i].hasAttribute('required')) {
       // add an "invalid" class to the field:
       y[i].className += " invalid";
       // and set the current valid status to false
@@ -298,8 +307,8 @@ function addField() {
         }
         div.append(
             '<div class="input-group mb-3" id="metadataField' + index + '" index="' + index + '">' +
-                '<div class="col-sm-5 form-group"><input maxlength="255" name="key' + index + '" type="text" class="form-control" placeholder="Имя поля" value=""></div>' +
-                '<div class="col-sm-5 form-group"><input maxlength="255" name="value' + index + '" type="text" class="form-control" placeholder="Значение" value=""></div>' +
+                '<div class="col-sm-5 form-group"><input maxlength="255" name="key' + index + '" type="text" class="form-control" placeholder="Имя поля" value="" required="required"></div>' +
+                '<div class="col-sm-5 form-group"><input maxlength="255" name="value' + index + '" type="text" class="form-control" placeholder="Значение" value="" required="required"></div>' +
                 '<div class="col-sm-2 form-group"><button class="btn btn-danger" type="button" id="button-addon2" onclick="removeField(' + index + ');">Удалить</button></div>' +
             '</div>'
         );

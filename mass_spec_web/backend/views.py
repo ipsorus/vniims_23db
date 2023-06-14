@@ -10,10 +10,12 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 from matchms.similarity import CosineGreedy
 
-from .models import SpectrumMeasurement, Spectrum, Post, Tag, Metadata, CustomUser
-from .forms import CustomUserCreationForm, CustomAuthenticationForm, TagForm, PostForm, CustomUserChangeForm
+from .models import SpectrumMeasurement, Spectrum, Post, Tag, Metadata, CustomUser, Support
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, TagForm, PostForm, CustomUserChangeForm, \
+    SupportForm
 from . import forms
 import numpy
 from PIL import Image
@@ -78,10 +80,6 @@ def check_admin(user):
     return user.is_superuser
 
 
-def main(request):
-    return render(request, 'index1.html')
-
-
 class SignUpView(BSModalCreateView):
     form_class = CustomUserCreationForm
     template_name = 'authentication/signup.html'
@@ -111,42 +109,21 @@ class UserUpdate(LoginRequiredMixin, UserUpdateMixin, View):
 @user_passes_test(check_admin)
 def users_list(request):
     users = CustomUser.objects.all()
-    paginator = Paginator(users, 10)
-
-    page_number = request.GET.get('page', 1)
-    page = paginator.get_page(page_number)
-
-    is_paginated = page.has_other_pages()
-
-    if page.has_previous():
-        prev_url = '?page={}'.format(page.previous_page_number())
-    else:
-        prev_url = ''
-    if page.has_next():
-        next_url = '?page={}'.format(page.next_page_number())
-    else:
-        next_url = ''
-
     context = {
         'count': users.count(),
-        'page_object': page,
-        'is_paginated': is_paginated,
-        'prev_url': prev_url,
-        'next_url': next_url
+        'users': users
     }
     return render(request, 'users/users_list.html', context=context)
 
 
-def posts_list(request):
+def news_page(request):
     search_query = request.GET.get('search', '')
-
-    print('request.path', request.path)
 
     if search_query:
         posts = Post.objects.filter(Q(title__icontains=search_query) | Q(body__icontains=search_query))
     else:
         posts = Post.objects.all()
-    paginator = Paginator(posts, 2)
+    paginator = Paginator(posts, 5)
 
     page_number = request.GET.get('page', 1)
     page = paginator.get_page(page_number)
@@ -166,32 +143,96 @@ def posts_list(request):
         'page_object': page,
         'is_paginated': is_paginated,
         'prev_url': prev_url,
-        'next_url': next_url
+        'next_url': next_url,
+    }
+    return render(request, 'news.html', context=context)
+
+
+def main_page(request):
+    spectrum_etalon = Spectrum.objects.filter(is_etalon=True).count()
+    spectrum_users = Spectrum.objects.filter(is_etalon=False).count()
+    users = CustomUser.objects.all().count()
+
+    search_query = request.GET.get('search', '')
+
+    if search_query:
+        support_posts = Support.objects.filter(Q(title__icontains=search_query) | Q(body__icontains=search_query))
+    else:
+        support_posts = Support.objects.all()
+    paginator = Paginator(support_posts, 2)
+
+    page_number = request.GET.get('page', 1)
+    page = paginator.get_page(page_number)
+
+    is_paginated = page.has_other_pages()
+
+    if page.has_previous():
+        prev_url = '?page={}'.format(page.previous_page_number())
+    else:
+        prev_url = ''
+    if page.has_next():
+        next_url = '?page={}'.format(page.next_page_number())
+    else:
+        next_url = ''
+
+    context = {
+        'page_object': page,
+        'is_paginated': is_paginated,
+        'prev_url': prev_url,
+        'next_url': next_url,
+        'spectrum_etalon': spectrum_etalon,
+        'spectrum_users': spectrum_users,
+        'users': users
     }
     return render(request, 'index1.html', context=context)
 
 
-class PostDetail(ObjectDetailMixin, View):
+class NewsDetail(ObjectDetailMixin, View):
     model = Post
     template = 'news/post_detail.html'
 
 
-class PostCreate(LoginRequiredMixin, ObjectCreateMixin, View):
+class NewsCreate(LoginRequiredMixin, ObjectCreateMixin, View):
     model_form = PostForm
     template = 'news/post_create.html'
     raise_exception = True
 
 
-class PostUpdate(LoginRequiredMixin, ObjectUpdateMixin, View):
+class NewsUpdate(LoginRequiredMixin, ObjectUpdateMixin, View):
     model = Post
     model_form = PostForm
     template = 'news/post_update_form.html'
     raise_exception = True
 
 
-class PostDelete(LoginRequiredMixin, ObjectDeleteMixin, View):
+class NewsDelete(LoginRequiredMixin, ObjectDeleteMixin, View):
     model = Post
     template = 'news/post_delete_form.html'
+    redirect_url = 'main_page_url'
+    raise_exception = True
+
+
+class SupportDetail(ObjectDetailMixin, View):
+    model = Support
+    template = 'support/support_detail.html'
+
+
+class SupportCreate(LoginRequiredMixin, ObjectCreateMixin, View):
+    model_form = SupportForm
+    template = 'support/support_create.html'
+    raise_exception = True
+
+
+class SupportUpdate(LoginRequiredMixin, ObjectUpdateMixin, View):
+    model = Support
+    model_form = SupportForm
+    template = 'support/support_update_form.html'
+    raise_exception = True
+
+
+class SupportDelete(LoginRequiredMixin, ObjectDeleteMixin, View):
+    model = Support
+    template = 'support/support_delete_form.html'
     redirect_url = 'main_page_url'
     raise_exception = True
 
@@ -263,6 +304,209 @@ def map_spectrum(spectrum: Spectrum):
     }
 
 
+@csrf_exempt
+def spectrum_similarity_search(request):
+    # if request.GET:
+    #     print('request.GET', request.GET)
+    #     # spectrums = Spectrum.objects.filter(draft=False, is_etalon=True)
+    #     spectrums = Spectrum.objects.all()
+    #
+    #     import numpy as np
+    #     from matchms import calculate_scores
+    #     from matchms import Spectrum as Spec
+    #     from matchms.similarity import MetadataMatch
+    #
+    #     references = []
+    #     total_matches = []
+    #
+    #     for spectrum in spectrums:
+    #         mz = []
+    #         intensity = []
+    #         sorted_etalon_peaks = sorted(spectrum.spectrum_json, key=lambda peak: float(peak[0]))
+    #         for item in sorted_etalon_peaks:
+    #             mz.append(float(item[0]))
+    #             intensity.append(float(item[1]))
+    #
+    #         formula = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Formula')
+    #         print('mz', mz)
+    #
+    #         spectrum_test = Spec(mz=np.array(mz),
+    #                              intensities=np.array(intensity),
+    #                              metadata={"id": spectrum.id})
+    #
+    #         references.append(spectrum_test)
+    #
+    #     mz_query = []
+    #     intensity_query = []
+    #     peaks_list = json.loads(request.GET.get('peaks'))
+    #     for item in peaks_list:
+    #         mz_query.append(float(item[0]))
+    #         intensity_query.append(float(item[1]))
+    #
+    #     spectrum_query = Spec(mz=np.array(mz_query),
+    #                           intensities=np.array(intensity_query))
+    #
+    #     for reference in references:
+    #         cosine_greedy = CosineGreedy(tolerance=0.2)
+    #
+    #         score = cosine_greedy.pair(reference, spectrum_query)
+    #         print(
+    #             f"Cosine score is {score['score']:.2f} with {score['matches']} matched peaks, id: {reference.get('id')}")
+    #         if float(f"{score['score']:.2f}") >= float(request.GET.get('minSimilarity')):
+    #             total_matches.append({'id': reference.get('id'),
+    #                                   'score': float(f"{score['score']:.2f}"),
+    #                                   'matched_peaks': int(f"{score['matches']}"),
+    #                                   'name': Spectrum.objects.get(id=reference.get('id').values_list('spectrum', flat=True))})
+    #
+    #     print('total', total_matches, len(total_matches))
+    #
+    #     res = []
+    #
+    #     if total_matches:
+    #         for item in total_matches:
+    #             res.append(Spectrum.objects.get(id=item['id']))
+    #         objects = list(map(map_spec, res))
+    #         messages.success(request, 'Получен результат')
+    #         return render(request, 'spectra/spectrum_similarity_result.html',
+    #                       context={'objects': objects, 'count': len(objects)})
+    #     else:
+    #         messages.error(request, 'Нет результатов')
+    #         return render(request, 'spectra/spectrum_similarity_result.html',
+    #                       context={'objects': res})
+
+    if request.POST:
+        print('request.GET', request.POST)
+        if 'peaks' in request.POST:
+            print('request.GET', request.POST)
+            # spectrums = Spectrum.objects.filter(draft=False, is_etalon=True)
+            spectrums = Spectrum.objects.all()
+
+            import numpy as np
+            from matchms import calculate_scores
+            from matchms import Spectrum as Spec
+            from matchms.similarity import MetadataMatch
+
+            references = []
+            total_matches = []
+
+            for spectrum in spectrums:
+                mz = []
+                intensity = []
+                sorted_etalon_peaks = sorted(spectrum.spectrum_json, key=lambda peak: float(peak[0]))
+                for item in sorted_etalon_peaks:
+                    mz.append(float(item[0]))
+                    intensity.append(float(item[1]))
+
+                # formula = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Formula')
+                # print('mz', mz)
+
+                spectrum_test = Spec(mz=np.array(mz),
+                                     intensities=np.array(intensity),
+                                     metadata={"id": spectrum.id})
+
+                references.append(spectrum_test)
+
+            mz_query = []
+            intensity_query = []
+            peaks_list = json.loads(request.POST.get('peaks'))
+            sorted_peaks = sorted(peaks_list, key=lambda peak: float(peak[0]))
+            for item in sorted_peaks:
+                mz_query.append(float(item[0]))
+                intensity_query.append(float(item[1]))
+
+            spectrum_query = Spec(mz=np.array(mz_query),
+                                  intensities=np.array(intensity_query))
+
+            for reference in references:
+                cosine_greedy = CosineGreedy(tolerance=0.2)
+
+                score = cosine_greedy.pair(reference, spectrum_query)
+                print(
+                    f"Cosine score is {score['score']:.2f} with {score['matches']} matched peaks, id: {reference.get('id')}")
+                if float(f"{score['score']:.2f}") >= float(request.POST.get('minSimilarity')):
+                    total_matches.append({'id': reference.get('id'),
+                                          'score': float(f"{score['score']:.2f}"),
+                                          'matched_peaks': int(f"{score['matches']}"),
+                                          'name': Spectrum.objects.filter(id=reference.get('id')).values_list('name', flat=True).get()})
+
+            print('total', total_matches, len(total_matches))
+
+            res = []
+
+            if total_matches:
+                return render(request, 'spectra/spectrum_similarity_result.html',
+                              context={'objects': total_matches, 'count': len(total_matches)})
+                # for item in total_matches:
+                #     res.append(Spectrum.objects.get(id=item['id']))
+                # objects = list(map(map_spec, res))
+                # return render(request, 'spectra/spectrum_similarity_result.html',
+                #               context={'objects': objects, 'count': len(objects)})
+            else:
+                return render(request, 'spectra/spectrum_similarity_result.html',
+                              context={'objects': res})
+
+        if 'pastedSpectrumSearch' in request.POST:
+            print('req', request.POST)
+            peaks_list = []
+            try:
+                try:
+                    peaks = [item.split(":") for item in request.POST.get('pastedSpectrumSearch').split(' ') if item != '' and
+                             (re.match(r'([0-9]*\.?[0-9]+)\s*:\s*([0-9]*\.?[0-9]+)', item) or re.match(
+                                 r'([0-9]+\.?[0-9]*)[ \t]+([0-9]*\.?[0-9]+)(?:\s*(?:[;\n])|(?:"?(.+)"?\n?))?', item))]
+
+                    for peak in peaks:
+                        peaks_list.append([float(peak[0]), float(peak[1])])
+
+                except:
+                    for line in request.POST.get('pastedSpectrumSearch').splitlines():
+
+                        item = line.replace("'", '"')
+                        if re.match(r'([0-9]*\.?[0-9]+)\s*:\s*([0-9]*\.?[0-9]+)', item) or re.match(
+                                r'([0-9]+\.?[0-9]*)[ \t]+([0-9]*\.?[0-9]+)(?:\s*(?:[;\n])|(?:"?(.+)"?\n?))?', item):
+                            ion = item.strip().replace("\t", ' ').split(' ')
+                            peaks_list.append([float(ion[0]), float(ion[1])])
+
+                plot_div = generate_spectrum_plot(peaks_list=peaks_list)
+
+                context = {'plot_div': plot_div,
+                           'peaks': peaks_list}
+
+                return render(request, 'spectra/query/spectrum_search_detail.html', context=context)
+            except ValueError:
+                messages.error(request, 'Невозможно загрузить масс-спектр. Проверьте передаваемые данные')
+                return redirect('spectrum_search')
+
+        if 'file' in request.FILES:
+            peaks_list = []
+            file = request.FILES['file']
+            file_content = BytesIO(file.read())
+
+            for line in file_content:
+                item = line.decode('utf8').replace("'", '"')
+                try:
+                    if re.match(r'([0-9]*\.?[0-9]+)\s*:\s*([0-9]*\.?[0-9]+)', item) or re.match(
+                            r'([0-9]+\.?[0-9]*)[ \t]+([0-9]*\.?[0-9]+)(?:\s*(?:[;\n])|(?:"?(.+)"?\n?))?', item):
+
+                        ion = item.strip().replace("\t", ' ').split(' ')
+                        peaks_list.append([float(ion[0]), float(ion[1])])
+
+                except IndexError as error:
+                    messages.error(request, f'Невозможно загрузить масс-спектр. Проверьте передаваемые данные. Ошибка "{error}"')
+                    return redirect('spectrum_search')
+
+            if not peaks_list:
+                messages.error(request, 'Невозможно загрузить масс-спектр. Проверьте передаваемые данные. Отсутствуют данные о спектре.')
+                return redirect('spectrum_search')
+
+            plot_div = generate_spectrum_plot(peaks_list=peaks_list)
+
+            context = {'plot_div': plot_div,
+                       'peaks': peaks_list}
+
+            return render(request, 'spectra/query/spectrum_search_detail.html', context=context)
+
+
+@csrf_exempt
 def spectrum_search(request):
     sourceIntroduction = [
         {'name': "Жидкостная хроматография", 'abv': 'LC'},
@@ -288,154 +532,106 @@ def spectrum_search(request):
         'msType': msType,
         'ionMode': ionMode
     }
-    if request.method == 'POST' and 'keyword_search' in request.POST:
-        search_queryes = dict()
-        res = []
-        test = request.POST
-        print('test', test)
-        if request.POST['Name']:
-            res = list(Spectrum.objects.filter(name__icontains=request.POST['Name']))
-            print('res', res)
-            search_queryes.update({'Название': request.POST['Name']})
-        if request.POST['Formula']:
-            res2 = Metadata.objects.filter(value__icontains=request.POST['Formula']).values_list('spectrum', flat=True)
-            print('res2', res2)
-            search_queryes.update({'Формула': request.POST['Formula']})
-            for item in res2:
-                res.append(Spectrum.objects.get(id=item))
-        print('res_before', res)
-        res_set = set(res)
 
-        if res:
-            res_set = set(res)
-            print('res_after', res_set)
+    if request.GET:
+        if 'similarity_search' not in request.GET:
+            print('req', request.GET)
+            search_url = ''
+            search_queryes = dict()
+            res = []
 
-            def map_spectrum(spectrum: Spectrum):
-                precursor_type = Metadata.objects.filter(spectrum_id=spectrum.id, name='Precursor_type')
-                spectrum_type = Metadata.objects.filter(spectrum_id=spectrum.id, name='Spectrum_type')
-                precursor_mz = Metadata.objects.filter(spectrum_id=spectrum.id, name='PrecursorMZ')
-                instrument_type = Metadata.objects.filter(spectrum_id=spectrum.id, name='Instrument_type')
-                ion_mode = Metadata.objects.filter(spectrum_id=spectrum.id, name='Ion_mode')
-                collision_energy = Metadata.objects.filter(spectrum_id=spectrum.id, name='Collision_energy')
-                formula = Metadata.objects.filter(spectrum_id=spectrum.id, name='Formula')
+            if request.GET.get('Name', ''):
+                res = list(Spectrum.objects.filter(Q(name__icontains=request.GET.get('Name', ''))).filter(draft=False))
+                print('res', res)
+                search_queryes.update({'Название': request.GET.get('Name', '')})
+                search_url += f"&Name={request.GET.get('Name', '')}"
+            if request.GET.get('Formula', ''):
+                # res2 = Metadata.objects.filter(Q(value__icontains=request.GET.get('Formula', ''))).values_list('spectrum', flat=True)
+                res2 = list(Spectrum.objects.filter(Q(name__icontains=request.GET.get('Formula', ''))).filter(draft=False))
+                print('res2', res2)
+                search_queryes.update({'Формула': request.GET.get('Formula', '')})
+                search_url += f"&Formula={request.GET.get('Formula', '')}"
+                res += res2
+                # for item in res2:
+                #     res.append(Spectrum.objects.get(id=item))
+            if request.GET.get('Cas', ''):
+                res3 = list(Spectrum.objects.filter(Q(name__icontains=request.GET.get('Cas', ''))).filter(draft=False))
+                print('res3', res3)
+                search_queryes.update({'CAS-номер': request.GET.get('Cas', '')})
+                search_url += f"&Cas={request.GET.get('Cas', '')}"
+                res += res3
+            if request.GET.get('Exact_mass', ''):
+                res4 = list(Spectrum.objects.filter(Q(name__icontains=request.GET.get('Exact_mass', ''))).filter(draft=False))
+                print('res2', res4)
+                search_queryes.update({'Точная масса': request.GET.get('Exact_mass', '')})
+                search_url += f"&Exact_mass={request.GET.get('Exact_mass', '')}"
+                res += res4
+            print('res_before', res)
 
-                fields = [precursor_type, spectrum_type, precursor_mz, instrument_type, ion_mode, collision_energy,
-                          formula]
-                peaks_list = spectrum.spectrum_json
+            if res:
+                res_set = set(res)
+                print('res_after', res_set)
 
-                plot_div = generate_spectrum_mini_plot(peaks_list=peaks_list)
+                def map_spectrum(spectrum: Spectrum):
+                    precursor_type = Metadata.objects.filter(spectrum_id=spectrum.id, name='Precursor_type')
+                    spectrum_type = Metadata.objects.filter(spectrum_id=spectrum.id, name='Spectrum_type')
+                    precursor_mz = Metadata.objects.filter(spectrum_id=spectrum.id, name='PrecursorMZ')
+                    instrument_type = Metadata.objects.filter(spectrum_id=spectrum.id, name='Instrument_type')
+                    ion_mode = Metadata.objects.filter(spectrum_id=spectrum.id, name='Ion_mode')
+                    collision_energy = Metadata.objects.filter(spectrum_id=spectrum.id, name='Collision_energy')
+                    formula = Metadata.objects.filter(spectrum_id=spectrum.id, name='Formula')
 
-                return {
-                    'plot_div': plot_div,
-                    'name': spectrum.name,
-                    'id': spectrum.id,
-                    'author': spectrum.author,
-                    'create_date': spectrum.date_created,
-                    'fields': fields
-                }
+                    fields = [precursor_type, spectrum_type, precursor_mz, instrument_type, ion_mode, collision_energy,
+                              formula]
+                    peaks_list = spectrum.spectrum_json
 
-            objects = list(map(map_spectrum, res_set))
-            return render(request, 'spectra/spectrum_search_result.html',
-                          context={'objects': objects, 'search_queryes': search_queryes})
-        else:
-            return render(request, 'spectra/spectrum_search_result.html',
-                          context={'objects': res, 'search_queryes': search_queryes})
+                    plot_div = generate_spectrum_mini_plot(peaks_list=peaks_list)
 
-    elif request.method == 'POST' and 'similarity_search' in request.POST:
-        metadata = {}
-        peaks_list = []
-        if 'similarity_search' in request.POST:
-            if request.POST.get('pastedSpectrumSearch'):
+                    return {
+                        'plot_div': plot_div,
+                        'name': spectrum.name,
+                        'id': spectrum.id,
+                        'author': spectrum.author,
+                        'create_date': spectrum.date_created,
+                        'fields': fields
+                    }
 
-                # spectrums = Spectrum.objects.filter(draft=False)
-                spectrums = Spectrum.objects.all()
+                objects = list(map(map_spectrum, res_set))
 
-                import numpy as np
-                from matchms import calculate_scores
-                from matchms import Spectrum as Spec
-                from matchms.similarity import MetadataMatch
+                paginator = Paginator(objects, 10)
 
-                references = []
-                total_matches = []
+                page_number = request.GET.get('page', 1)
+                page = paginator.get_page(page_number)
 
-                for spectrum in spectrums:
-                    mz = []
-                    intensity = []
-                    sorted_etalon_peaks = sorted(spectrum.spectrum_json, key=lambda peak: float(peak[0]))
-                    for item in sorted_etalon_peaks:
-                        mz.append(float(item[0]))
-                        intensity.append(float(item[1]))
+                is_paginated = page.has_other_pages()
 
-                    formula = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Formula')
-                    print('mz', mz)
-
-                    spectrum_test = Spec(mz=np.array(mz),
-                                         intensities=np.array(intensity),
-                                         metadata={"id": spectrum.id})
-
-                    references.append(spectrum_test)
-
-                mz_query = []
-                intensity_query = []
-
-                peaks = [item.split(":") for item in request.POST.get('pastedSpectrumSearch').split(' ') if item != '']
-                sorted_peaks = sorted(peaks, key=lambda peak: float(peak[0]))
-                for item in sorted_peaks:
-                    mz_query.append(float(item[0]))
-                    intensity_query.append(float(item[1]))
-
-                spectrum_query = Spec(mz=np.array(mz_query),
-                                      intensities=np.array(intensity_query))
-
-                for reference in references:
-                    cosine_greedy = CosineGreedy(tolerance=0.2)
-
-                    score = cosine_greedy.pair(reference, spectrum_query)
-                    print(
-                        f"Cosine score is {score['score']:.2f} with {score['matches']} matched peaks, id: {reference.get('id')}")
-                    if float(f"{score['score']:.2f}") >= 0.7:
-                        total_matches.append({'id': reference.get('id'),
-                                              'score': float(f"{score['score']:.2f}"),
-                                              'matched_peaks': int(f"{score['matches']}")})
-
-                print('total', total_matches, len(total_matches))
-
-                res = []
-
-                if total_matches:
-                    for item in total_matches:
-                        res.append(Spectrum.objects.get(id=item['id']))
-                    objects = list(map(map_spec, res))
-                    messages.success(request, 'Получен результат')
-                    return render(request, 'spectra/spectrum_similarity_result.html',
-                                  context={'objects': objects})
+                if page.has_previous():
+                    prev_url = f'?page={page.previous_page_number()}{search_url}'
                 else:
-                    messages.error(request, 'Нет результатов')
-                    return render(request, 'spectra/spectrum_similarity_result.html',
-                                  context={'objects': res})
+                    prev_url = ''
+                if page.has_next():
+                    next_url = f'?page={page.next_page_number()}{search_url}'
+                else:
+                    next_url = ''
 
-
-                # peaks = request.POST.get('pastedSpectrumSearch').split(' ')
-                # print('peaks', peaks)
-                # for item in peaks:
-                #
-                #     ion = item.split(':')
-                #     print(ion)
-                #     peaks_list.append([float(ion[0]), float(ion[1])])
-                #
-                plot_div = generate_spectrum_plot(peaks_list=peaks_list)
-                #
-                # context = {'peaks_list': peaks_list,
-                #            'plot_div': plot_div,
-                #            'metadata': metadata}
-                messages.success(request, 'Данные загружены, нужен редирект. Вставлю позже')
-                # return render(request, 'spectra/upload/spectrum_create_form.html', context=context)
+                context = {
+                    'search_url': search_url,
+                    'count': len(res_set),
+                    'search_queryes': search_queryes,
+                    'page_object': page,
+                    'is_paginated': is_paginated,
+                    'prev_url': prev_url,
+                    'next_url': next_url
+                }
+                return render(request, 'spectra/spectrum_search_result.html', context=context)
 
             else:
-                messages.error(request, 'Невозможно загрузить масс-спектр. Проверьте передаваемые данные')
-                return redirect('spectrum_search')
+                return render(request, 'spectra/spectrum_search_result.html',
+                              context={'objects': res, 'search_queryes': search_queryes})
 
-    return render(request, 'spectra/query/search.html', context={'context': context})
+    else:
+        print('req', request.GET)
+        return render(request, 'spectra/query/search.html', context={'context': context})
 
 
 def spectrum_list(request):
@@ -681,56 +877,56 @@ class UploadSpectrum(SpectrumMixin, View):
         return render(request, 'spectra/upload/upload_file.html')
 
 
-def upload_metadata(request, id):
-    def get_value(d: dict, name: str):
-        s = d.get(name, None)
-        if s is None:
-            return None
-        return int(s)
+# def upload_metadata(request, id):
+#     def get_value(d: dict, name: str):
+#         s = d.get(name, None)
+#         if s is None:
+#             return None
+#         return int(s)
+#
+#     object = SpectrumMeasurement.objects.filter(spectrum_id=id)
+#
+#     if request.method == "POST":
+#         SpectrumMeasurement.objects.filter(spectrum_id=id).delete()
+#         if not object:
+#             object = SpectrumMeasurement.objects.create(spectrum_id=id)
+#         object.source = get_value(request.POST, "source")
+#         object.level = get_value(request.POST, "level")
+#         object.ionization = get_value(request.POST, "ionization")
+#         object.polarity = get_value(request.POST, "polarity")
+#         object.save()
+#         return redirect('upload_fields', id=id)
+#
+#     return render(request, 'spectra/upload/metadata.html', {"id": id, "obj": object})
 
-    object = SpectrumMeasurement.objects.filter(spectrum_id=id)
 
-    if request.method == "POST":
-        SpectrumMeasurement.objects.filter(spectrum_id=id).delete()
-        if not object:
-            object = SpectrumMeasurement.objects.create(spectrum_id=id)
-        object.source = get_value(request.POST, "source")
-        object.level = get_value(request.POST, "level")
-        object.ionization = get_value(request.POST, "ionization")
-        object.polarity = get_value(request.POST, "polarity")
-        object.save()
-        return redirect('upload_fields', id=id)
-
-    return render(request, 'spectra/upload/metadata.html', {"id": id, "obj": object})
-
-
-def upload_fields(request, id):
-    if request.method == "POST":
-        # SpectrumField.objects.filter(measurement_id=id).delete()
-        SpectrumField.objects.filter(spectrum_id=id).delete()
-        # metadata_list = []
-
-        # field = SpectrumField.objects.create(spectrum_id=id)
-        for i in range(0, 100):
-            key = request.POST.get("key%d" % i, None)
-            if key is None:
-                continue
-            value = request.POST.get("value%d" % i, None)
-
-            field = SpectrumField.objects.create(spectrum_id=id)
-            # field = SpectrumField.objects.create(id=id)
-            # metadata_list.append([key, value])
-            field.key = key
-            field.value = value
-            field.save()
-        # field.meta_data = metadata_list
-        # field.save()
-
-        return redirect('upload_review', id=id)
-
-    # fields = SpectrumField.objects.filter(measurement_id=id)
-    fields = SpectrumField.objects.filter(spectrum_id=id)
-    return render(request, 'spectra/upload/fields.html', {'fields': fields, "id": id})
+# def upload_fields(request, id):
+#     if request.method == "POST":
+#         # SpectrumField.objects.filter(measurement_id=id).delete()
+#         SpectrumField.objects.filter(spectrum_id=id).delete()
+#         # metadata_list = []
+#
+#         # field = SpectrumField.objects.create(spectrum_id=id)
+#         for i in range(0, 100):
+#             key = request.POST.get("key%d" % i, None)
+#             if key is None:
+#                 continue
+#             value = request.POST.get("value%d" % i, None)
+#
+#             field = SpectrumField.objects.create(spectrum_id=id)
+#             # field = SpectrumField.objects.create(id=id)
+#             # metadata_list.append([key, value])
+#             field.key = key
+#             field.value = value
+#             field.save()
+#         # field.meta_data = metadata_list
+#         # field.save()
+#
+#         return redirect('upload_review', id=id)
+#
+#     # fields = SpectrumField.objects.filter(measurement_id=id)
+#     fields = SpectrumField.objects.filter(spectrum_id=id)
+#     return render(request, 'spectra/upload/fields.html', {'fields': fields, "id": id})
 
 
 # def generate_spectrum_plot(peaks_list: list, id: str | int = None, save_image: bool = False):
@@ -830,458 +1026,112 @@ def upload_fields(request, id):
 #     return plot_div
 
 
-def upload_peaks(request, id):
-    if request.method == "POST":
-        if request.POST.get('_method', None) == "DELETE":
-            # SpectrumMeasurement.objects.get(id=id).delete()
-            Spectrum.objects.get(id=id).delete()
-            return redirect('upload')
-
-        # SpectrumPeak.objects.filter(measurement_id=id).delete()
-        SpectrumPeak.objects.filter(spectrum_id=id).delete()
-        i = 0
-        peaks_values = dict()
-        peaks_x = []
-        peaks_y = []
-        while True:
-            x = request.POST.get("x%d" % i, None)
-            if x is None:
-                break
-            y = request.POST.get("y%d" % i, None)
-            comment = request.POST.get("comment%d" % i, "")
-            active = request.POST.get("active%d" % i)
-            if active != 'on':
-                i += 1
-                continue
-
-            x = x.replace(',', '.')
-            y = y.replace(',', '.')
-            peak = SpectrumPeak.objects.create(spectrum_id=id, x=float(x), y=float(y), comment=comment)
-
-            # peak = spectrum.peaks.objects.create(peaks_data=float(x), y=float(y), comment=comment)
-            peak.save()
-
-            # peaks_x.append(float(x))
-            # peaks_y.append(float(y))
-            # d = {"x": peaks_x, "y": peaks_y}
-            #
-            # peaks_values.update(d)
-
-            i += 1
-        # peaks_items = SpectrumPeak.objects.create(spectrum_id=id, peaks_data=peaks_values)
-        # peaks_items.save()
-
-        return redirect('upload_metadata', id=id)
-
-    peaks_list = SpectrumPeak.objects.filter(spectrum_id=id)
-
-    # peaks_values = peaks[0].peaks_data
-    #
-    # peaks_list = []
-    # for i in range(len(peaks_values['x'])):
-    #     peaks_list.append([peaks_values['x'][i], peaks_values['y'][i]])
-
-    # print('fddf', peaks_list)
-    #
-    # peaks_values = dict()
-    # peaks_x = []
-    # peaks_y = []
-    # for peak in peaks_list:
-    #     peaks_x.append(float(peak[0]))
-    #     peaks_y.append(float(peak[1]))
-    #     d = {"x": peaks_x, "y": peaks_y}
-    #
-    #     peaks_values.update(d)
-
-    peaks_values = {
-        "x": list(map(lambda p: p.x, peaks)),
-        "y": list(map(lambda p: p.y, peaks)),
-    }
-    plot_div = SpectrumPlot().generate_spectrum_plot(peaks_list=peaks_list)
-
-    return render(request, 'spectra/upload/peaks.html', {'plot_div': plot_div, 'peaks': peaks})
-
-
-def upload_review(request, id):
-    # measurement = SpectrumMeasurement.objects.get(id=id)
-    # peaks = SpectrumPeak.objects.filter(measurement_id=id)
-    # fields = SpectrumField.objects.filter(measurement_id=id)
-    spectrum = Spectrum.objects.get(id=id)
-    measurement = SpectrumMeasurement.objects.filter(spectrum_id=id)[0]
-    peaks = SpectrumPeak.objects.filter(spectrum_id=id)
-    fields = SpectrumField.objects.filter(spectrum_id=id)
-
-    peaks_values = {
-        "x": list(map(lambda p: p.x, peaks)),
-        "y": list(map(lambda p: p.y, peaks)),
-    }
-
-    plot_div = generate_spectrum_plot(peaks_values=peaks_values)
-
-    name = "Spectrum #%d" % spectrum.id
-    name_field = SpectrumField.objects.filter(
-        spectrum=spectrum, key="Name").first()
-    if name_field is not None:
-        name = name_field.value
-
-    context = {
-        'name': name,
-        'plot_div': plot_div,
-        'peaks': peaks,
-        'fields': fields,
-        'id': id,
-        'source': sources[measurement.source],
-        'level': levels[measurement.level],
-        'ionization': ionzations[measurement.ionization],
-        'polarity': polarities[measurement.polarity],
-    }
-    Spectrum.objects.filter(id=id).update(name=name)
-    generate_spectrum_plot(peaks_values=peaks_values, id=id, save_image=True)
-
-    return render(request, 'spectra/upload/review.html', context)
-
-
-def create_spectrum(request, data):
-    print('data', data)
-
-    def get_5_largest(intensity_list: list[float]) -> list[int]:
-        """
-        Returns the indices of the 5 largest ion intensities.
-
-        :param intensity_list: List of Ion intensities
-        """
-
-        largest = [0, 0, 0, 0, 0]
-
-        print('intensity_list', intensity_list)
-
-        # Find out largest value
-        for idx, intensity in enumerate(intensity_list):
-            if intensity > intensity_list[largest[0]]:
-                largest[0] = idx
-
-        # Now find next four largest values
-        for j in [1, 2, 3, 4]:
-            for idx, intensity in enumerate(intensity_list):
-                # if intensity_list[i] > intensity_list[largest[j]] and intensity_list[i] < intensity_list[largest[j-1]]:
-                if intensity_list[largest[j]] < intensity < intensity_list[largest[j - 1]]:
-                    largest[j] = idx
-        print('largest', largest)
-
-        return largest
-
-    trace1 = {
-        "x": [74.03,
-              100.13,
-              133.06,
-              134.06,
-              133.06,
-              162.13,
-              177.17,
-              178.97,
-              185.17,
-              212.13,
-              213.10,
-              214.94,
-              226.32,
-              241.11,
-              256.09,
-              257.74,
-              258.26,
-              259.84,
-              329.11,
-              331.08],
-        "y": [0.39,
-              1.29,
-              1.00,
-              0.50,
-              2.55,
-              1.22,
-              6.77,
-              0.52,
-              0.73,
-              8.49,
-              17.80,
-              1.50,
-              0.36,
-              1.14,
-              39.05,
-              3.13,
-              1.89,
-              0.45,
-              20.05,
-              1.39]
-    }
-
-    result = get_5_largest(trace1['y'])
-
-    trace_len = len(trace1['x'])
-    test_data = []
-    for i in range(trace_len):
-        test_data.append([trace1['x'][i], trace1['y'][i]])
-
-    layout = {
-        # "title": "Mass Spectrum for scan 13332",
-        "plot_bgcolor": '#fff',
-        "xaxis": {
-            "title": "m/z, Da",
-            "ticklen": 5,
-            "tickwidth": 1,
-            "ticks": "outside",
-            "showgrid": True,
-            "linecolor": '#DCDCDC',
-            "gridcolor": '#F5F5F5',
-            "tickcolor": 'white',
-            "tickfont": {'color': '#696969'}
-        },
-        "yaxis": {
-            "title": "Intensity, cps",
-            "ticklen": 5,
-            "tickwidth": 1,
-            "ticks": "outside",
-            "showgrid": True,
-            "linecolor": '#DCDCDC',
-            "gridcolor": '#F5F5F5',
-            "tickcolor": 'white',
-            "tickfont": {'color': '#696969'}
-        },
-        "hoverlabel": {
-            "bgcolor": "white",
-            "font_size": 14,
-            "font_family": "sans-serif"
-        }
-    }
-
-    p = pymzml.plot.Factory()
-
-    p.new_plot()
-    test = p.add(test_data, color=(30, 144, 255), style="sticks", name="peaks")
-
-    test_plot = test
-
-    fig = Figure(data=test_plot, layout=layout)
-    for i in range(len(result)):
-        fig.add_annotation(x=trace1['x'][result[i]], y=trace1['y'][result[i]],
-                           text=trace1['x'][result[i]],
-                           showarrow=False,
-                           yshift=10)
-
-    plot_div = plot(fig, output_type='div', include_plotlyjs=True,
-                    show_link=False, link_text="")
-    return render(request, "spectra/display/viewSpectrum.html", context={'plot_div': plot_div})
-
-
-def view_spectrum1(request):
-    def get_5_largest(intensity_list: list[float]) -> list[int]:
-        """
-        Returns the indices of the 5 largest ion intensities.
-
-        :param intensity_list: List of Ion intensities
-        """
-
-        largest = [0, 0, 0, 0, 0]
-
-        print('intensity_list', intensity_list)
-
-        # Find out largest value
-        for idx, intensity in enumerate(intensity_list):
-            if intensity > intensity_list[largest[0]]:
-                largest[0] = idx
-
-        # Now find next four largest values
-        for j in [1, 2, 3, 4]:
-            for idx, intensity in enumerate(intensity_list):
-                # if intensity_list[i] > intensity_list[largest[j]] and intensity_list[i] < intensity_list[largest[j-1]]:
-                if intensity_list[largest[j]] < intensity < intensity_list[largest[j - 1]]:
-                    largest[j] = idx
-        print('largest', largest)
-
-        return largest
-
-    trace1 = {
-        "x": [74.03,
-              100.13,
-              133.06,
-              134.06,
-              133.06,
-              162.13,
-              177.17,
-              178.97,
-              185.17,
-              212.13,
-              213.10,
-              214.94,
-              226.32,
-              241.11,
-              256.09,
-              257.74,
-              258.26,
-              259.84,
-              329.11,
-              331.08],
-        "y": [0.39,
-              1.29,
-              1.00,
-              0.50,
-              2.55,
-              1.22,
-              6.77,
-              0.52,
-              0.73,
-              8.49,
-              17.80,
-              1.50,
-              0.36,
-              1.14,
-              39.05,
-              3.13,
-              1.89,
-              0.45,
-              20.05,
-              1.39]
-    }
-
-    result = get_5_largest(trace1['y'])
-    print('result', result)
-
-    trace_len = len(trace1['x'])
-    test_data = []
-    for i in range(trace_len):
-        test_data.append([trace1['x'][i], trace1['y'][i]])
-
-    print('test', test_data)
-
-    # data = Figure([trace1])
-
-    # fig = Figure(data=data, layout=layout)
-    # plot_div = py.plot(fig)
-
-    """
-    This script shows how to plot multiple spectra in one plot and
-    how to use label for the annotation of spectra.
-    The first plot is an MS1 spectrum with the annotated precursor ion.
-    The second plot is a zoom into the precursor isotope pattern.
-    The third plot is an annotated fragmentation spectrum (MS2) of the
-    peptide HLVDEPQNLIK from BSA.
-    These examples also show the use of 'layout' to define the appearance
-    of a plot.
-    usage:
-        ./plot_spectrum_with_annotation.py
-    """
-
-    # First we define some general layout attributes
-    layout = {
-        # "title": "Mass Spectrum for scan 13332",
-        "plot_bgcolor": '#fff',
-        "xaxis": {
-            "title": "m/z, Da",
-            "ticklen": 5,
-            "tickwidth": 1,
-            "ticks": "outside",
-            "showgrid": True,
-            "linecolor": '#DCDCDC',
-            "gridcolor": '#F5F5F5',
-            "tickcolor": 'white',
-            "tickfont": {'color': '#696969'}
-        },
-        "yaxis": {
-            "title": "Intensity, cps",
-            "ticklen": 5,
-            "tickwidth": 1,
-            "ticks": "outside",
-            "showgrid": True,
-            "linecolor": '#DCDCDC',
-            "gridcolor": '#F5F5F5',
-            "tickcolor": 'white',
-            "tickfont": {'color': '#696969'}
-        },
-        "hoverlabel": {
-            "bgcolor": "white",
-            "font_size": 14,
-            "font_family": "sans-serif"
-        }
-    }
-
-    # The example BSA file will be used
-
-    data_directory = pathlib.Path(".").resolve().parent / "pyms-data"
-    # Change this if the data files are stored in a different location
-
-    example_file = data_directory / "BSA1.mzML.gz"
-
-    # run = pymzml.run.Reader(example_file)
-    p = pymzml.plot.Factory()
-
-    # print('run', run)
-    test_plot = ''
-    # for spec in run:
-    #     print('spec', spec)
-    #     for mz, i in spec.highest_peaks(5):
-    #         print(mz, i)
-
-    #    data = [[3.00089765e+02, 3.43102612e+03],
-    # [3.00181327e+02, 1.18180896e+03],
-    # [3.00202675e+02, 1.51617456e+03],
-    # [3.00298289e+02, 1.71985474e+03],
-    # [3.00334598e+02, 1.11525964e+03],
-    # [3.01141460e+02, 4.06243359e+04],
-    # [3.01216728e+02, 1.44548083e+03],
-    # [3.01273990e+02, 1.02758801e+03],
-    # [3.01987541e+02, 2.08935547e+03],
-    # [3.02009014e+02, 1.02140710e+03],
-    # [3.02044972e+02, 2.55872314e+03],
-    # [3.02081653e+02, 1.08234814e+03],
-    # [3.02144804e+02, 3.78598608e+03],
-    # [3.02160047e+02, 1.50109509e+03],
-    # [3.02196406e+02, 1.15957288e+03]
-    # ]
-
-    p.new_plot()
-    test = p.add(test_data, color=(30, 144, 255), style="sticks", name="peaks")
-
-    # filename = "example_plot_{0}_{1}.html".format(
-    #     os.path.basename(example_file), spec.ID
-    # )
-    # p.save(
-    #     filename=filename,
-    #     layout=layout,
-    # )
-    # print("Plotted file: {0}".format(filename))
-
-    print('p', test)
-
-    print('testttttt', p.get_data())
-    test_plot = test
-
-    # break
-
-    # fig = Figure(data=[Bar(
-    #     x=trace1['x'],
-    #     y=trace1['y'],
-    #     width=1, base='lines'
-    # )], layout=layout)
-
-    # fig.show()
-    fig = Figure(data=test_plot, layout=layout)
-    # fig.update_traces(hovertemplate='m/z=%{x}<br>Intensity=%{y}')
-    # fig.update_layout(
-    #     hoverlabel=dict(
-    #         bgcolor="white",
-    #         font_size=14,
-    #         font_family="Rockwell"
-    #     )
-    # )
-    for i in range(len(result)):
-        fig.add_annotation(x=trace1['x'][result[i]], y=trace1['y'][result[i]],
-                           text=trace1['x'][result[i]],
-                           showarrow=False,
-                           yshift=10)
-    # fig.update_layout(plot_bgcolor='#fff')
-    # fig.update_xaxes(showline=True, linewidth=1, linecolor='#DCDCDC', gridcolor='#F5F5F5', tickcolor='white', tickfont={'color': '#696969'})
-    # fig.update_yaxes(showline=True, linewidth=1, linecolor='#DCDCDC', gridcolor='#F5F5F5', tickcolor='white', tickfont={'color': '#696969'})
-    # fig.update_yaxes(showline=True, linewidth=1, linecolor='#DCDCDC', gridcolor='#F5F5F5', griddash='longdash', tickcolor='white', tickfont={'color': '#696969'})
-
-    # plot_div = plot(fig, output_type='div', include_plotlyjs=True, show_link=False, link_text="", config=dict(displayModeBar=False))
-    plot_div = plot(fig, output_type='div', include_plotlyjs=True,
-                    show_link=False, link_text="")
-    return render(request, "spectra/display/viewSpectrum.html", context={'plot_div': plot_div})
+# def upload_peaks(request, id):
+#     if request.method == "POST":
+#         if request.POST.get('_method', None) == "DELETE":
+#             # SpectrumMeasurement.objects.get(id=id).delete()
+#             Spectrum.objects.get(id=id).delete()
+#             return redirect('upload')
+#
+#         # SpectrumPeak.objects.filter(measurement_id=id).delete()
+#         SpectrumPeak.objects.filter(spectrum_id=id).delete()
+#         i = 0
+#         peaks_values = dict()
+#         peaks_x = []
+#         peaks_y = []
+#         while True:
+#             x = request.POST.get("x%d" % i, None)
+#             if x is None:
+#                 break
+#             y = request.POST.get("y%d" % i, None)
+#             comment = request.POST.get("comment%d" % i, "")
+#             active = request.POST.get("active%d" % i)
+#             if active != 'on':
+#                 i += 1
+#                 continue
+#
+#             x = x.replace(',', '.')
+#             y = y.replace(',', '.')
+#             peak = SpectrumPeak.objects.create(spectrum_id=id, x=float(x), y=float(y), comment=comment)
+#
+#             # peak = spectrum.peaks.objects.create(peaks_data=float(x), y=float(y), comment=comment)
+#             peak.save()
+#
+#             # peaks_x.append(float(x))
+#             # peaks_y.append(float(y))
+#             # d = {"x": peaks_x, "y": peaks_y}
+#             #
+#             # peaks_values.update(d)
+#
+#             i += 1
+#         # peaks_items = SpectrumPeak.objects.create(spectrum_id=id, peaks_data=peaks_values)
+#         # peaks_items.save()
+#
+#         return redirect('upload_metadata', id=id)
+#
+#     peaks_list = SpectrumPeak.objects.filter(spectrum_id=id)
+#
+#     # peaks_values = peaks[0].peaks_data
+#     #
+#     # peaks_list = []
+#     # for i in range(len(peaks_values['x'])):
+#     #     peaks_list.append([peaks_values['x'][i], peaks_values['y'][i]])
+#
+#     # print('fddf', peaks_list)
+#     #
+#     # peaks_values = dict()
+#     # peaks_x = []
+#     # peaks_y = []
+#     # for peak in peaks_list:
+#     #     peaks_x.append(float(peak[0]))
+#     #     peaks_y.append(float(peak[1]))
+#     #     d = {"x": peaks_x, "y": peaks_y}
+#     #
+#     #     peaks_values.update(d)
+#
+#     peaks_values = {
+#         "x": list(map(lambda p: p.x, peaks)),
+#         "y": list(map(lambda p: p.y, peaks)),
+#     }
+#     plot_div = SpectrumPlot().generate_spectrum_plot(peaks_list=peaks_list)
+#
+#     return render(request, 'spectra/upload/peaks.html', {'plot_div': plot_div, 'peaks': peaks})
+
+
+# def upload_review(request, id):
+#     # measurement = SpectrumMeasurement.objects.get(id=id)
+#     # peaks = SpectrumPeak.objects.filter(measurement_id=id)
+#     # fields = SpectrumField.objects.filter(measurement_id=id)
+#     spectrum = Spectrum.objects.get(id=id)
+#     measurement = SpectrumMeasurement.objects.filter(spectrum_id=id)[0]
+#     peaks = SpectrumPeak.objects.filter(spectrum_id=id)
+#     fields = SpectrumField.objects.filter(spectrum_id=id)
+#
+#     peaks_values = {
+#         "x": list(map(lambda p: p.x, peaks)),
+#         "y": list(map(lambda p: p.y, peaks)),
+#     }
+#
+#     plot_div = generate_spectrum_plot(peaks_values=peaks_values)
+#
+#     name = "Spectrum #%d" % spectrum.id
+#     name_field = SpectrumField.objects.filter(
+#         spectrum=spectrum, key="Name").first()
+#     if name_field is not None:
+#         name = name_field.value
+#
+#     context = {
+#         'name': name,
+#         'plot_div': plot_div,
+#         'peaks': peaks,
+#         'fields': fields,
+#         'id': id,
+#         'source': sources[measurement.source],
+#         'level': levels[measurement.level],
+#         'ionization': ionzations[measurement.ionization],
+#         'polarity': polarities[measurement.polarity],
+#     }
+#     Spectrum.objects.filter(id=id).update(name=name)
+#     generate_spectrum_plot(peaks_values=peaks_values, id=id, save_image=True)
+#
+#     return render(request, 'spectra/upload/review.html', context)

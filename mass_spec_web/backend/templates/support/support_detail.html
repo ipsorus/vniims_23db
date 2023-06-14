@@ -6,7 +6,7 @@
 <section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
 
     <div class="container clearfix">
-        <h1>Список тегов</h1>
+        <h1>Уведомление {{ support.title }}</h1>
     </div>
 
 </section><!-- #page-title end -->
@@ -20,15 +20,17 @@
 				<!-- Post Content
 				============================================= -->
 				<div class="postcontent mx-auto col-lg-9">
-                    {% for tag in tags %}
                     <div class="card">
-                      <h5 class="card-header">--</h5>
+                      <h5 class="card-header">{{ support.date_pub }}</h5>
                       <div class="card-body">
-                        <h5 class="card-title"><a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a></h5>
-                        <p class="card-text">--</p>
+                        <h5 class="card-title">{{ support.title }}</h5>
+                        <p class="card-text">{{ support.body }}</p>
+                      </div>
+                      <div class="card-footer text-muted">
+                          <a href="{{ admin_object.get_delete_url }}" class="btn btn-danger">Удалить</a>
+                          <a href="{{ admin_object.get_update_url }}" class="btn btn-light">Редактировать</a>
                       </div>
                     </div>
-                    {% endfor %}
                 </div><!-- #posts end -->
             </div>
         </div>

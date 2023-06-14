@@ -2,6 +2,8 @@
 {% load static %}
 
 {% block content %}
+<!-- Bootstrap Data Table Plugin -->
+	<link rel="stylesheet" href="{% static 'assets/css_new/components/bs-datatable.css' %}" type="text/css" />
 <!-- Page Title
 ============================================= -->
 <section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
@@ -46,6 +48,10 @@
                                                 <td>{{user.last_name}}</td>
                                             </tr>
                                             <tr>
+                                                <td>Отчество:</td>
+                                                <td>{{user.patronymic}}</td>
+                                            </tr>
+                                            <tr>
                                                 <td>Адрес электронной почты:</td>
                                                 <td>{{user.email}}</td>
                                             </tr>
@@ -75,35 +81,39 @@
                     </div>
                 </div><!-- #posts end -->
             </div>
-        </div>
-    </div>
-</section>
 
-<div class="content-wrap">
-		<div class="container clearfix">
+            <div class="divider divider-rounded divider-center"></div>
 
-			<div class="row gutter-40 col-mb-80">
-				<!-- Post Content
-				============================================= -->
-				<div class="postcontent mx-auto col-lg-9">
-                    {% if page_object.object_list %}
-                        <div class="col-md-12">
+            <div class="table-responsive">
+                <div class="col-md-12">
                             <h3 class="panel-title">Масс-спектры, загруженные пользователем</h3>
                         </div>
-                        <!-- display spectra as list -->
-                        <div class="col-md-12">
-                            <div class="m-md-3">
-                                {% for spec in page_object.object_list %}
-                                  {% include 'spectra/display/spectrum_card_draft_template.html' %}
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% else %}
-                        <div class="col-md-12">
-                            <h3 class="panel-title">Нет записей, загруженных пользователем</h3>
-                        </div>
-                    {% endif %}
-                </div><!-- #posts end -->
+                <table id="datatable3" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Название</th>
+                        <th scope="col">Статус</th>
+                        <th scope="col">Дата создания</th>
+                        <th scope="col">Ссылка</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for spec in spectrums %}
+                      <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ spec.name }}</td>
+                        <td>
+                            {% if spec.draft == False %}<span class="badge bg-success float-start">Опубликовано</span>{% endif %}
+                            {% if spec.draft == True and spec.reject_reason == '' %}<span class="badge bg-warning float-start">Не опубликовано</span>{% endif %}
+                            {% if spec.reject_reason != '' %}<span class="badge bg-danger float-start">Отклонено</span>{% endif %}
+                        </td>
+                        <td>{{ spec.date_created }}</td>
+                        <td><a href="{% url 'spectrum_review_detail' id=spec.id %}">Просмотр записи</a></td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

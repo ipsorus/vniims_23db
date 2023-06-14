@@ -1,37 +1,46 @@
 {% extends "base2.html" %}
 {% load static %}
 {% block content %}
+<!-- Bootstrap Data Table Plugin -->
+	<link rel="stylesheet" href="{% static 'assets/css_new/components/bs-datatable.css' %}" type="text/css" />
 <!-- Page Title
 ============================================= -->
 <section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
 
     <div class="container clearfix">
-        <h1>Результаты поиска по совпадению mz/intensity:</h1>
+        <h1>Результаты поиска по совпадению пиков (всего найдено {{ count }}):</h1>
     </div>
 
 </section><!-- #page-title end -->
-
+{% include 'includes/_header.html'%}
 <!-- Content============================================= -->
 <section id="content">
 	<div class="content-wrap">
 		<div class="container clearfix">
 
-			<div class="row gutter-40 col-mb-80">
-				<!-- Post Content
-				============================================= -->
-				<div class="postcontent mx-auto col-lg-10 col-md-9">
-                    <div class="m-md-3">
-                        {% if objects %}
-                            {% for spec in objects %}
-                                {% include 'spectra/display/spectrum_card_similarity_template.html' %}
-                            {% endfor %}
-                        {% else %}
-                            <div class="fancy-title title-border title-center">
-                                <h1>Результатов не найдено.</h1>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div><!-- #posts end -->
+            <div class="table-responsive">
+                <table id="datatable2" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Точность совпадения</th>
+                        <th scope="col">Количество пиков</th>
+                        <th scope="col">Название</th>
+                        <th scope="col">Ссылка</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for spec in objects %}
+                      <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ spec.score }}</td>
+                        <td>{{ spec.matched_peaks }}</td>
+                        <td>{{ spec.name }}</td>
+                        <td><a href="{% url 'spectrum_detail_url' id=spec.id %}">Просмотр записи</a></td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

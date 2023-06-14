@@ -11,12 +11,11 @@
     </div>
 
 </section><!-- #page-title end -->
-
+{% include 'includes/_header.html'%}
 <!-- Content============================================= -->
 <section id="content">
 	<div class="content-wrap">
 		<div class="container clearfix">
-
 			<div class="row gutter-40 col-mb-80">
 				<!-- Post Content
 				============================================= -->
@@ -25,22 +24,21 @@
                     <div class="tabs tabs-bordered clearfix" id="tab-2">
 
                         <ul class="tab-nav clearfix">
-                            <li><a href="#tabs-5">Поиск по параметрам</a></li>
-                            <li><a href="#tabs-6">Поиск совпадений</a></li>
+                            <li><a href="#tabs-search">Поиск по параметрам</a></li>
+                            <li><a href="#tabs-similarity">Поиск совпадений</a></li>
                         </ul>
 
                         <div class="tab-container">
 
-                            <div class="tab-content clearfix" id="tabs-5">
-                                <form method="POST" action="">
-                                    {% csrf_token %}
+                            <div class="tab-content clearfix" id="tabs-search">
+                                <form id="keyword_searching" name="keyword_search" role="search" method="GET" action="{% url 'spectrum_search' %}">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="table-responsive">
                                                 <table class="table header-fixed table-borderless">
                                                     <thead>
                                                     <tr>
-                                                        <th>Критерии поиска</th>
+                                                        <th>Данные о масс-спектре</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
@@ -61,6 +59,22 @@
                                                         </td>
                                                     </tr>
                                                     <tr>
+                                                        <td colspan="2">
+                                                            <input type="text"
+                                                                   name="Cas"
+                                                                   class="form-control"
+                                                                   placeholder="CAS номер">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <input type="text"
+                                                                   name="Author"
+                                                                   class="form-control"
+                                                                   placeholder="По пользователю">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
                                                         <td>
                                                             <input type="number"
                                                                    name="ExactMass"
@@ -73,7 +87,7 @@
                                                                 <input type="number"
                                                                        name="MassTolerance"
                                                                        class="form-control"
-                                                                       value="0.5">
+                                                                       value="">
                                                                 <div class="input-group-prepend"><span class="input-group-text">Da</span></div>
                                                             </div>
                                                         </td>
@@ -194,20 +208,17 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group row">
-                                                <div class="col-sm-2">
-                                                    <button type="submit" class="btn btn-primary" name="keyword_search">Поиск</button>
-                                                </div>
-                                                <div class="col-sm-5">
-                                                    <button type="reset" class="btn btn-secondary">Сброс</button>
-                                                </div>
-                                            </div>
+                                        <div class="col-md-12" id="spinner-box-off">
+                                            <button type="submit" class="btn btn-primary" id="keyword_search">Поиск</button>
+                                            <button type="reset" class="btn btn-secondary">Сброс</button>
+                                        </div>
+                                        <div class="col-md-12" id="spinner-box-on">
+                                            <button type="reset" class="btn btn-secondary">Сброс</button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
-                            <div class="tab-content clearfix" id="tabs-6">
+                            <div class="tab-content clearfix" id="tabs-similarity">
                                 <div class="card">
                                 <div class="card-header"><strong style="font-size: 1.2em;">Отправьте масс-спектр для поиска</strong></div>
 
@@ -218,12 +229,11 @@
                                     <br />
 
                                     <label><strong>Загрузка файла:</strong></label>
-                                    <form method="POST" action="" enctype="multipart/form-data">
+                                    <form id="file_peaks_searching" name="file_peaks_searching" role="search" method="POST" action="{% url 'spectrum_similarity_search' %}" enctype="multipart/form-data">
                                         {% csrf_token %}
-                                        <!-- Выводим каждое поле формы в отдельном параграфе -->
                                         <div class="input-group mb-3">
-                                        <input class="form-control" type="file" id="formFile" name="file" required="required">
-                                        <button class="btn btn-primary mb" type="submit">Загрузка</button>
+                                        <input accept=".msp,.txt" class="form-control" type="file" id="formFile" name="file" required="required">
+                                        <button class="btn btn-primary mb" name="similarity_search_file" type="submit">Загрузка</button>
                                         </div>
                                     </form>
                                     <span class="help-block">Поддерживает файлы масс-спектральных данных в форматах .MSP и .txt</span>
@@ -231,7 +241,7 @@
                                     <br />
                                     <br />
                                     <br />
-                                    <form method="POST" action="">
+                                    <form id="text_peaks_searching" name="text_peaks_searching" role="search" method="POST" action="{% url 'spectrum_similarity_search' %}">
                                         {% csrf_token %}
                                         <div class="input-group">
                                             <div class="input-group">
@@ -249,7 +259,7 @@
                                               </div>
 
                                         </div>
-                                        <button class="btn btn-primary" name="similarity_search" type="submit">Начать поиск</button>
+                                        <button class="btn btn-primary" name="similarity_search" type="submit">Загрузить</button>
                                     </form>
                                 </div>
                             </div>
@@ -261,5 +271,4 @@
         </div>
     </div>
 </section>
-
 {% endblock %}

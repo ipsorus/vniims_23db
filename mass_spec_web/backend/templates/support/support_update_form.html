@@ -1,7 +1,7 @@
 {% extends "base2.html" %}
 {% load static %}
 {% block title %}
-    Создание статьи для сайта
+    Редактирование уведомления техподдержки {{ support.title|title }}
 {% endblock %}
 {% block content %}
 <!-- Page Title
@@ -9,7 +9,7 @@
 <section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
 
     <div class="container clearfix">
-        <h1>Создание статьи для сайта</h1>
+        <h1>Редактирование уведомления техподдержки {{ support.title|title }}</h1>
     </div>
 
 </section><!-- #page-title end -->
@@ -22,15 +22,11 @@
 			<div class="row gutter-40 col-mb-80">
 				<!-- Post Content
 				============================================= -->
-                <div class="postcontent mx-auto col-lg-9">
+				<div class="postcontent mx-auto col-lg-9">
                     <div class="card">
-                        <div class="card-header">
-                            Новая статья для сайта
-                        </div>
                         <div class="card-body">
-                            <form action="{% url 'news_create_url' %}" method="post">
+                            <form action="{{ support.get_update_url }}" method="post">
                               {% csrf_token %}
-
                                 {% for field in form %}
                                 <div class="form-group">
                                     {% if field.errors %}
@@ -38,12 +34,14 @@
                                         {{ field.errors }}
                                     </div>
                                     {% endif %}
-                                    {{ field.label }}
+                                <div class="mb-3">
+                                    <label class="form-label">{{ field.label }}</label>
                                     {{ field }}
                                 </div>
+                                </div>
                                 {% endfor %}
-
-                              <button type="submit" class="btn btn-success">Сохранить новость</button>
+                              <button type="submit" class="btn btn-success">Сохранить уведомление</button>
+                                <a href="{{ support.get_absolute_url }}" class="btn btn-primary">Отмена</a>
                             </form>
                         </div>
                     </div>
@@ -52,5 +50,4 @@
         </div>
     </div>
 </section>
-
 {% endblock %}

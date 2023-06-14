@@ -2,7 +2,7 @@
 <div class="card">
     <div class="card-header">
         <div class="card-title">
-            {% if spec.spectrum.is_etalon %}<span class="badge bg-secondary float-start">Эталон ВНИИМС</span>&nbsp;&nbsp;{% endif %}
+            {% if spec.spectrum.is_etalon %}<span class="badge bg-secondary float-start">Аттестованный масс-спектр</span>&nbsp;&nbsp;{% endif %}
             {% if spec.spectrum.draft == False %}<span class="badge bg-success float-start">Опубликовано</span>{% endif %}
             {% if spec.spectrum.draft == True and spec.spectrum.reject_reason == '' %}<span class="badge bg-warning float-start">Не опубликовано</span>{% endif %}
             {% if spec.spectrum.reject_reason != '' %}<span class="badge bg-danger float-start">Отклонено</span>{% endif %}
@@ -46,7 +46,7 @@
 
     <div class="card-footer">
         <div class="float-start mr-1">
-            <span class="float-start mr-2"> Дата создания записи: {{ spec.create_date}} </span>
+            <span class="float-start mr-2"> Дата создания записи: {{ spec.create_date }} </span>
         </div>
           <a class="btn btn-success float-end" href="{% url 'spectrum_review_detail' id=spec.id %}">Просмотр записи</a>
     </div>

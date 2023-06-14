@@ -30,13 +30,13 @@ class Post(models.Model):
     tags = models.ManyToManyField('Tag', blank=True, related_name='posts', verbose_name="Тэги")
 
     def get_absolute_url(self):
-        return reverse('post_detail_url', kwargs={'id': self.id})
+        return reverse('news_detail_url', kwargs={'id': self.id})
 
     def get_update_url(self):
-        return reverse('post_update_url', kwargs={'id': self.id})
+        return reverse('news_update_url', kwargs={'id': self.id})
 
     def get_delete_url(self):
-        return reverse('post_delete_url', kwargs={'id': self.id})
+        return reverse('news_delete_url', kwargs={'id': self.id})
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -54,13 +54,13 @@ class Support(models.Model):
     date_pub = models.DateTimeField(auto_now_add=True)
 
     def get_absolute_url(self):
-        return reverse('support_post_detail_url', kwargs={'id': self.id})
+        return reverse('support_detail_url', kwargs={'id': self.id})
 
     def get_update_url(self):
-        return reverse('support_post_update_url', kwargs={'id': self.id})
+        return reverse('support_update_url', kwargs={'id': self.id})
 
     def get_delete_url(self):
-        return reverse('support_post_delete_url', kwargs={'id': self.id})
+        return reverse('support_delete_url', kwargs={'id': self.id})
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -105,8 +105,9 @@ class Spectrum(models.Model):
     reg_num = models.CharField(max_length=64, blank=True, db_index=True, verbose_name="Регистрационный номер")
     is_etalon = models.BooleanField(default=False, verbose_name="Аттестованный масс-спектр")
     metaDataMap = models.JSONField(db_index=True, default=dict, verbose_name="Метаданные")
-    formula = models.CharField(max_length=64, db_index=True, verbose_name="Формула")
-    cas = models.CharField(max_length=64, db_index=True, verbose_name="CAS номер")
+    formula = models.CharField(max_length=64, blank=True, db_index=True, verbose_name="Формула")
+    cas = models.CharField(max_length=64, blank=True, db_index=True, verbose_name="CAS номер")
+    exact_mass = models.CharField(max_length=64, blank=True, db_index=True, verbose_name="Точная масса")
 
     class Meta:
         ordering = ['-date_created']

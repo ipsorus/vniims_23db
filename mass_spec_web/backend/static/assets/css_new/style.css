@@ -16831,3 +16831,7 @@ button.fakeRef {
   color: #999;
   background-color: #eee;
   padding: 2px; }
+
+.not-visible {
+    display: none;
+}
