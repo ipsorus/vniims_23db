@@ -42,8 +42,6 @@ INSTALLED_APPS = [
 
     'backend',
     # 'corsheaders',
-    'sass_processor',
-    # 'import_export',
     'bootstrap_modal_forms',
     'widget_tweaks',
 ]
@@ -59,6 +57,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = 'mass_spec_web.urls'

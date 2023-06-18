@@ -1,0 +1,1 @@
+web: gunicorn mass_spec_project.wsgi

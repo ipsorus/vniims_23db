@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
-from django.db import transaction
 from django.db.models import Q
 from django.views import View, generic
 from django.views.decorators.csrf import csrf_exempt
@@ -16,10 +15,7 @@ from matchms.similarity import CosineGreedy
 from .models import SpectrumMeasurement, Spectrum, Post, Tag, Metadata, CustomUser, Support
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, TagForm, PostForm, CustomUserChangeForm, \
     SupportForm
-from . import forms
-import numpy
-from PIL import Image
-from matplotlib import pyplot
+
 import json
 from io import BytesIO
 
@@ -27,21 +23,12 @@ import pymzml
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalLoginView
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy, reverse
-
-from plotly.offline import plot
-from plotly.graph_objs import Figure
-
-import pathlib
-import matplotlib
+from django.urls import reverse_lazy
 
 from .utils import ObjectDetailMixin, ObjectCreateMixin, ObjectUpdateMixin, ObjectDeleteMixin, UserDetailMixin, \
-    UserUpdateMixin, generate_spectrum_mini_plot, generate_spectrum_plot, save_object, SpectrumMixin, \
+    UserUpdateMixin, generate_spectrum_plot, SpectrumMixin, \
     SpectrumUpdateMixin, SpectrumDeleteMixin
 
-from .utils import map_spectrum as map_spec
-
-matplotlib.use('Agg')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
