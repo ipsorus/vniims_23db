@@ -64,12 +64,20 @@
             </div>
         </div>
         <div class="container clearfix">
+            <div class="container">
 
-            <div id="posts" class="row mx-auto col-lg-9">
-                {% for post in page_object.object_list %}
-                  {% include 'includes/post_card_template.html' %}
-                {% endfor %}
-            </div><!-- #posts end -->
+					<div class="row align-items-center col-mb-50">
+						<div class="col-md-5">
+							<img data-animate="fadeInLeftBig" src="{% static 'assets/images/support.png' %}" alt="Imac">
+						</div>
+
+						<div class="col-md-7 text-center text-md-start">
+							{% for post in page_object.object_list %}
+                              {% include 'includes/post_card_template.html' %}
+                            {% endfor %}
+						</div>
+					</div>
+				</div>
         </div>
     </div>
 </section>

@@ -183,6 +183,9 @@ class SpectrumUpdateMixin:
         obj = self.model.objects.get(id=id)
         obj.name = request.POST.get("Name")
         obj.reg_num = request.POST.get("Number")
+        obj.formula = request.POST.get("Formula")
+        obj.cas = request.POST.get("Cas")
+        obj.exact_mass = request.POST.get("Exact_mass")
 
         i = 0
         peaks = ''
@@ -213,10 +216,8 @@ class SpectrumUpdateMixin:
         fields = Metadata.objects.filter(spectrum_id=obj.id)
         for field in fields:
             saved_fields.append(field.name.lower())
-        print('sdfd', request.POST)
         for i in range(0, 30):
             key = request.POST.get("key%d" % i, None)
-            print('key', key)
             if key is None:
                 continue
             value = request.POST.get("value%d" % i, None)
@@ -236,7 +237,6 @@ class SpectrumUpdateMixin:
                 field.name = key
                 field.value = value
                 field.save()
-            print('saved_fields', saved_fields)
 
         if saved_fields:
             for item in saved_fields:
@@ -260,8 +260,9 @@ class SpectrumUpdateMixin:
         obj.date_updated = datetime.now()
         obj.save()
 
+        generate_spectrum_mini_plot(peaks_list=peaks_list, save_image=True, id=obj.id)
+
         return redirect('spectrum_detail_url', obj.id)
-        # return render(request, self.template, context={'form': bound_form, self.model.__name__.lower(): obj})
 
 
 class SpectrumDeleteMixin:
@@ -316,8 +317,8 @@ class SpectrumMixin:
                     else:
                         item = item.split(':')
                         metadata.update({item[0].lower(): item[1].strip()})
-                except IndexError as error:
-                    messages.error(request, f'Невозможно загрузить масс-спектр. Проверьте передаваемые данные. Ошибка "{error}"')
+                except:
+                    messages.error(request, f'Невозможно загрузить масс-спектр. Проверьте передаваемые данные.')
                     return redirect('upload')
 
             if not peaks_list:
@@ -337,16 +338,19 @@ class SpectrumMixin:
                 try:
                     try:
                         peaks = [item.split(":") for item in request.POST.get('pastedSpectrum').split(' ') if item != '' and
-                                 (re.match(r'([0-9]*\.?[0-9]+)\s*:\s*([0-9]*\.?[0-9]+)', item) or re.match(
-                                     r'([0-9]+\.?[0-9]*)[ \t]+([0-9]*\.?[0-9]+)(?:\s*(?:[;\n])|(?:"?(.+)"?\n?))?', item))]
+                                 (re.match(r'([0-9]*\.?[0-9]+)\s*:\s*([0-9]*\.?[0-9]+)', item))]
+
+                        if not peaks:
+                            assert False
                         sorted_peaks = sorted(peaks, key=lambda peak: float(peak[0]))
                         for item in sorted_peaks:
                             peaks_list.append([float(item[0]), float(item[1])])
 
-                    except:
+                    except AssertionError:
                         for line in request.POST.get('pastedSpectrum').splitlines():
 
                             item = line.replace("'", '"')
+                            item = " ".join(item.split())
                             if re.match(r'([0-9]*\.?[0-9]+)\s*:\s*([0-9]*\.?[0-9]+)', item) or re.match(
                                     r'([0-9]+\.?[0-9]*)[ \t]+([0-9]*\.?[0-9]+)(?:\s*(?:[;\n])|(?:"?(.+)"?\n?))?', item):
                                 ion = item.strip().replace("\t", ' ').split(' ')
@@ -433,6 +437,8 @@ def save_object(request):
     obj.metaDataMap = fields_list
     obj.save()
 
+    generate_spectrum_mini_plot(peaks_list=peaks_list, save_image=True, id=obj.id)
+
     return obj
 
 
@@ -446,33 +452,31 @@ def get_5_largest(intensity_list: list[float]) -> list[int]:
     # Now find next four largest values
     for j in [1, 2, 3, 4]:
         for idx, intensity in enumerate(intensity_list):
-            # if intensity_list[i] > intensity_list[largest[j]] and intensity_list[i] < intensity_list[largest[j-1]]:
             if intensity_list[largest[j]] < intensity < intensity_list[largest[j - 1]]:
                 largest[j] = idx
     return largest
 
 
-def generate_spectrum_plot(peaks_list: list, id: str | int = None, save_image: bool = False):
-    print('peaks_list', peaks_list)
+def generate_spectrum_plot(peaks_list: list):
     layout = {
         "plot_bgcolor": '#fff',
         "xaxis": {
-            "title": "m/z, Da" if not save_image else None,
+            "title": "m/z, Da",
             "ticklen": 5,
             "tickwidth": 1,
             "ticks": "outside",
-            "showgrid": True if not save_image else False,
+            "showgrid": True,
             "linecolor": '#DCDCDC',
             "gridcolor": '#F5F5F5',
             "tickcolor": 'white',
             "tickfont": {'color': '#696969'}
         },
         "yaxis": {
-            "title": "Intensity, cps" if not save_image else None,
+            "title": "Intensity, cps",
             "ticklen": 5,
             "tickwidth": 1,
             "ticks": "outside",
-            "showgrid": True if not save_image else None,
+            "showgrid": True,
             "linecolor": '#DCDCDC',
             "gridcolor": '#F5F5F5',
             "tickcolor": 'white',
@@ -494,29 +498,22 @@ def generate_spectrum_plot(peaks_list: list, id: str | int = None, save_image: b
     spectrum_plot = p.add(peaks_list, color=(30, 144, 255), style="sticks", name="peaks")
     fig = Figure(data=spectrum_plot, layout=layout)
 
-    if save_image:
-        if not os.path.exists(os.path.join(BASE_DIR, 'staticfiles/plots')):
-            os.mkdir(os.path.join(BASE_DIR, 'staticfiles/plots'))
-        filename = os.path.join(BASE_DIR, 'staticfiles/plots/plot-%d.png' % id)
-        fig.write_image(format='png', file=filename)
+    result = get_5_largest(peaks_values['y'])
 
-    else:
-        result = get_5_largest(peaks_values['y'])
+    for i in range(len(result)):
+        fig.add_annotation(x=peaks_values['x'][result[i]], y=peaks_values['y'][result[i]],
+                           text=peaks_values['x'][result[i]],
+                           showarrow=False,
+                           yshift=10)
+    fig.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0})
 
-        for i in range(len(result)):
-            fig.add_annotation(x=peaks_values['x'][result[i]], y=peaks_values['y'][result[i]],
-                               text=peaks_values['x'][result[i]],
-                               showarrow=False,
-                               yshift=10)
-        fig.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0})
+    plot_div = plot(fig, output_type='div', include_plotlyjs=True,
+                    show_link=False, link_text="")
 
-        plot_div = plot(fig, output_type='div', include_plotlyjs=True,
-                        show_link=False, link_text="")
-
-        return plot_div
+    return plot_div
 
 
-def generate_spectrum_mini_plot(peaks_list: list):
+def generate_spectrum_mini_plot(peaks_list: list, save_image: bool = False, id: str = None):
     layout = {
         "plot_bgcolor": '#fff',
         "xaxis": {
@@ -543,6 +540,12 @@ def generate_spectrum_mini_plot(peaks_list: list):
     fig = Figure(data=spectrum_plot, layout=layout)
     fig.update_traces(hoverinfo='skip')
     fig.update_layout(width=400, height=300, margin={"l": 0, "r": 0, "t": 0, "b": 0})
+
+    if save_image:
+        if not os.path.exists(os.path.join(BASE_DIR, 'staticfiles/plots')):
+            os.mkdir(os.path.join(BASE_DIR, 'staticfiles/plots'))
+        filename = os.path.join(BASE_DIR, 'staticfiles/plots/plot-%d.png' % id)
+        fig.write_image(format='png', file=filename)
 
     plot_div = plot(fig, output_type='div', include_plotlyjs=True,
                     show_link=False, link_text="", config=dict(displayModeBar=False, staticPlot=True))

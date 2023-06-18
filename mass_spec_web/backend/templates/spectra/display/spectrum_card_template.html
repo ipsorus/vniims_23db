@@ -16,29 +16,50 @@
                       <div class="masspec-medium">
                           <span>Название: <a style="cursor: pointer" href="{% url 'spectrum_detail_url' id=spec.id %}">{{ spec.name }}</a></span>
                           <br/><br/>
-                          <div style="display: inline-block;">{% autoescape off %}{{ spec.plot_div }}{% endautoescape %}</div>
+                          <div style="display: inline-block;"><img src="{% static spec.image %}" class="card-img-top" alt="..."></div>
                       </div>
                     </div>
                   </div>
                 </div>
             </div>
             <div class="col-lg-6 col-md-5 col-sm-6">
-                {% for fields in spec.fields %}
-                    {% for field in fields %}
-                    <div class="row top5">
-                        <div class="col-lg-5 col-md-5 col-sm-6">
-                                <b>{{ field.name }}</b>
-                        </div>
-                        <div class="col-lg-7 col-md-7 col-sm-6">
-                            {{ field.value|truncatechars:20 }}
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% endfor %}
+                <div class="table-responsive">
+                    <h4>Краткая информация</h4>
+                     <table class="table table-striped table-bordered">
+
+                        <tbody>
+                            {% if spec.spectrum.formula %}
+                                <tr>
+                                    <td>Молекулярная формула</td>
+                                    <td>{{ spec.spectrum.formula }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if spec.spectrum.reg_num %}
+                                <tr>
+                                    <td>CAS номер</td>
+                                    <td>{{ spec.spectrum.cas }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if spec.spectrum.exact_mass %}
+                                <tr>
+                                    <td>Точная масса</td>
+                                    <td>{{ spec.spectrum.exact_mass }}</td>
+                                </tr>
+                            {% endif %}
+                            {% for fields in spec.fields %}
+                                {% for field in fields %}
+                                <tr>
+                                    <td>{{ field.name }}</td>
+                                    <td>{{ field.value }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-
     <div class="card-footer">
         <div class="float-start">
             <span class="float-start">Дата создания: {{ spec.create_date}}</span>

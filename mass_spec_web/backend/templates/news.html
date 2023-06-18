@@ -18,13 +18,11 @@
         <div class="container clearfix">
             <!-- Posts
             ============================================= -->
-            <div class="container clearfix">
-                <div id="posts" class="row mx-auto col-lg-9">
-                    {% for post in page_object.object_list %}
-                      {% include 'includes/post_card_template.html' %}
-                    {% endfor %}
-                </div><!-- #posts end -->
-            </div>
+            <div id="posts" class="row mx-auto col-lg-9">
+                {% for post in page_object.object_list %}
+                  {% include 'includes/post_card_template.html' %}
+                {% endfor %}
+            </div><!-- #posts end -->
         </div>
     </div>
 </section>

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Page Title
+============================================= -->
+<section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
+
+    <div class="container clearfix">
+        <h1>Контакты и реквизиты</h1>
+    </div>
+
+</section><!-- #page-title end -->
+{% include 'includes/_header.html'%}
+<!-- Content============================================= -->
+<section id="content">
+    <div class="content-wrap">
+        <div class="container clearfix">
+            <!-- Posts
+            ============================================= -->
+            <div id="posts" class="row mx-auto col-lg-9">
+                <div class="flip-card text-center top-to-bottom">
+                    <div class="flip-card-front dark" style="background-image: url('demos/business/images/featured/2.jpg');">
+                        <div class="flip-card-inner">
+                            <div class="card bg-transparent border-0 text-center">
+                                <div class="card-body">
+                                    <h3 class="card-title">Справочно-информационная служба</h3>
+                                    <p class="card-text fw-normal">8 (495) 665-30-87, 8 (495) 437-37-29</p>
+                                    <p class="card-text fw-normal">119361, Москва, ул. Озерная, 46, ФГБУ ВНИИМС</p>
+                                    <p class="card-text fw-normal">office@vniims.ru</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card-back" style="background-image: url('demos/business/images/featured/3.jpg');">
+                        <div class="flip-card-inner">
+                            <p class="mb-2 text-white">Здесь можно разместить интерактивную карту и указать место расположения организации</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -9,7 +9,7 @@
     <div class="container clearfix">
         <h1>Уведомления техподдержки</h1>
     </div>
-
+<i class="icon-cog bgicon"></i>
 </section><!-- #page-title end -->
 {% include 'includes/_header.html'%}
 <!-- Content============================================= -->
@@ -18,13 +18,11 @@
         <div class="container clearfix">
             <!-- Posts
             ============================================= -->
-            <div class="container clearfix">
-                <div id="posts" class="row mx-auto col-lg-9">
-                    {% for post in page_object.object_list %}
-                      {% include 'includes/post_card_template.html' %}
-                    {% endfor %}
-                </div><!-- #posts end -->
-            </div>
+            <div id="posts" class="row mx-auto col-lg-9">
+                {% for post in page_object.object_list %}
+                  {% include 'includes/post_card_template.html' %}
+                {% endfor %}
+            </div><!-- #posts end -->
         </div>
     </div>
 </section>
