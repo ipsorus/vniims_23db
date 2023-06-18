@@ -1,1 +1,1 @@
-web: gunicorn mass_spec_project.wsgi
+web: gunicorn mass_spec_web.wsgi
