@@ -89,12 +89,11 @@ WSGI_APPLICATION = 'mass_spec_web.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = 'postgresql://postgres:SvJX4c6GGxRr39vnQwf5@containers-us-west-206.railway.app:7739/railway'
 
 DATABASES = {
-    "default": dj_database_url.config(default=DATABASE_URL, conn_max_age=1800),
+    "default": dj_database_url.config(default=DATABASE_URL),
 }
-
 
 """
 For docker postgresql
