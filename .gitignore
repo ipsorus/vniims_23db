@@ -5,3 +5,13 @@
 mass_spec_web/static/plots/
 mass_spec_web/staticfiles/plots/
 
+
+.env/
+.venv/
+env/
+venv/
+*.env
+
+*.pyc
+db.sqlite3
+staticfiles/
