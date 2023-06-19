@@ -25,8 +25,8 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
-# SECRET_KEY = 'ae279715e5a87641d285a481d4f0259c2c2fd65f4598691a'
+# SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = 'ae279715e5a87641d285a481d4f0259c2c2fd65f4598691a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -91,8 +91,8 @@ WSGI_APPLICATION = 'mass_spec_web.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-# DATABASE_URL = 'postgresql://postgres:SvJX4c6GGxRr39vnQwf5@containers-us-west-206.railway.app:7739/railway'
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = 'postgresql://postgres:SvJX4c6GGxRr39vnQwf5@containers-us-west-206.railway.app:7739/railway'
+# DATABASE_URL = os.getenv("DATABASE_URL")
 DATABASES = {
     "default": dj_database_url.config(default=DATABASE_URL),
 }
