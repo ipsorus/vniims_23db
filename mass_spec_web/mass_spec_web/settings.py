@@ -130,7 +130,9 @@ For local postgresql
 CSRF_TRUSTED_ORIGINS = ["https://127.0.0.1:8000/",
                         "http://127.0.0.1:8000/",
                         "https://vniims23db-test.up.railway.app/",
-                        "http://vniims23db-test.up.railway.app/"]
+                        "https://vniims23db-test.up.railway.app",
+                        "http://vniims23db-test.up.railway.app/",
+                        "http://vniims23db-test.up.railway.app"]
 
 AUTH_PASSWORD_VALIDATORS = [
     {
