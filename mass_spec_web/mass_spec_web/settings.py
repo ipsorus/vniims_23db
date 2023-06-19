@@ -54,7 +54,7 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'backend.CustomUser'
 
 MIDDLEWARE = [
-    # 'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -91,8 +91,8 @@ WSGI_APPLICATION = 'mass_spec_web.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-# DATABASE_URL = 'postgresql://postgres:SvJX4c6GGxRr39vnQwf5@containers-us-west-206.railway.app:7739/railway'
-DATABASE_URL = str(os.getenv("DATABASE_URL"))
+DATABASE_URL = 'postgresql://postgres:SvJX4c6GGxRr39vnQwf5@containers-us-west-206.railway.app:7739/railway'
+# DATABASE_URL = str(os.getenv("DATABASE_URL"))
 DATABASES = {
     "default": dj_database_url.config(default=DATABASE_URL),
 }
