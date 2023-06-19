@@ -126,7 +126,7 @@ For local postgresql
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
-CSRF_TRUSTED_ORIGINS = ["https://http://127.0.0.1:8000/"]
+CSRF_TRUSTED_ORIGINS = ["https://127.0.0.1:8000/", "http://127.0.0.1:8000/", "https://vniims23db-production.up.railway.app"]
 
 AUTH_PASSWORD_VALIDATORS = [
     {
