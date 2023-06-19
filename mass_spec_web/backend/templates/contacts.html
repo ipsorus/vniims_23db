@@ -20,7 +20,7 @@
             ============================================= -->
             <div id="posts" class="row mx-auto col-lg-9">
                 <div class="flip-card text-center top-to-bottom">
-                    <div class="flip-card-front dark" style="background-image: url('demos/business/images/featured/2.jpg');">
+                    <div class="flip-card-front dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
                         <div class="flip-card-inner">
                             <div class="card bg-transparent border-0 text-center">
                                 <div class="card-body">
@@ -32,9 +32,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flip-card-back" style="background-image: url('demos/business/images/featured/3.jpg');">
+                    <div class="flip-card-back">
                         <div class="flip-card-inner">
-                            <p class="mb-2 text-white">Здесь можно разместить интерактивную карту и указать место расположения организации</p>
+                            <p class="mb-2 text-white">
+                                <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Aa58a149d65d2f8417536faceaea06a204887e7ad54a0d70035779b76b2a495ac&amp;width=1000&amp;height=270&amp;lang=ru_RU&amp;scroll=true"></script>
+                            </p>
                         </div>
                     </div>
                 </div>
