@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% load cache %}
+{% block content %}
+{% include 'includes/_header.html'%}
+{% cache 360 error_404_page %}
+<!-- Content
+============================================= -->
+<section id="content">
+    <div class="content-wrap">
+        <div class="container clearfix">
+
+            <div class="row align-items-center col-mb-80">
+
+                <div class="col-lg-6">
+                    <div class="error404 center">404</div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="heading-block text-center text-lg-start border-bottom-0">
+                        <h4>Страница, на которую вы перешли удалена или не существует</h4>
+                        <span>Проверьте адресную строку в браузере</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section><!-- #content end -->
+{% endcache %}
+{% endblock %}

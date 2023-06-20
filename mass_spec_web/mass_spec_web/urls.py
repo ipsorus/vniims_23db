@@ -16,12 +16,15 @@ Including another URLconf
 from django.contrib import admin
 
 from django.urls import path, include
-# from rest_framework import routers
 
-# router = routers.DefaultRouter()
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path('', include('backend.urls')),
 ]
+
+handler404 = 'backend.views.custom_page_not_found_view'
+handler500 = 'backend.views.custom_error_view'
+handler403 = 'backend.views.custom_permission_denied_view'
+handler400 = 'backend.views.custom_bad_request_view'

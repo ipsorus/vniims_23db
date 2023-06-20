@@ -1,4 +1,6 @@
 {% load static %}
+{% load cache %}
+
 <!-- Header
 ============================================= -->
 
@@ -6,7 +8,7 @@
     <div id="header-wrap">
         <div class="container">
             <div class="header-row">
-
+                {% cache 360 navbar %}
                 <!-- Logo
                 ============================================= -->
                 <div id="logo">
@@ -36,7 +38,7 @@
                             <a class="menu-link" href="#"><div>База данных</div></a>
                             <ul class="sub-menu-container">
                                 <li class="menu-item">
-                                    <a class="menu-link" href="{% url 'spectrum_list' %}"><div>Аттестованные масс-спектры</div></a>
+                                    <a class="menu-link" href="{% url 'spectrum_certified_list' %}"><div>Аттестованные масс-спектры</div></a>
                                 </li>
                                 <li class="menu-item">
                                     <a class="menu-link" href="{% url 'spectrum_list' %}"><div>Реестр масс-спектров</div></a>
@@ -58,6 +60,7 @@
                         <li class="menu-item">
                           <a class="menu-link" href="{% url 'support_page_url' %}">Техподдержка</a>
                         </li>
+                        {% endcache %}
                         <li class="menu-item">
                             <a class="menu-link" href="#">
                                 {% if user.is_authenticated %}
@@ -95,7 +98,6 @@
                                       {% else %}
                                         <li class="menu-item">
                                             <a class="menu-link" href="{% url 'logout' %}?next={% url 'main_page_url' %}"><div>Выход</div></a>
-<!--                                            <a class="menu-link" href="{% url 'logout' %}?next={{ request.path }}"><div>Выход</div></a>-->
                                         </li>
                                       {% endif %}
                                 {% else %}
@@ -117,5 +119,6 @@
             </div>
         </div>
     </div>
+
     <div class="header-wrap-clone"></div>
 </header><!-- #header end -->

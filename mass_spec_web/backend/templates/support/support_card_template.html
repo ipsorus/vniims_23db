@@ -1,0 +1,16 @@
+<div class="entry col-12">
+    <div class="grid-inner">
+        <div class="entry-title">
+            <h2><a href="blog-single.html">{{ support.title }}</a></h2>
+        </div>
+        <div class="entry-meta">
+            <ul>
+                <li><i class="icon-calendar3"></i> {{ support.date_pub }}</li>
+            </ul>
+        </div>
+        <div class="entry-content">
+            <p>{{ support.body|truncatewords:50 }}</p>
+            <a href="{{ support.get_absolute_url }}" class="more-link">Читать</a>
+        </div>
+    </div>
+</div>

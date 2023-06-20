@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
-
+{% load cache %}
 {% block content %}
+{% cache 360 support_page %}
 <!-- Page Title
 ============================================= -->
 <section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
@@ -9,8 +10,8 @@
     <div class="container clearfix">
         <h1>Уведомления техподдержки</h1>
     </div>
-<i class="icon-cog bgicon"></i>
 </section><!-- #page-title end -->
+{% endcache %}
 {% include 'includes/_header.html'%}
 <!-- Content============================================= -->
 <section id="content">
@@ -19,8 +20,8 @@
             <!-- Posts
             ============================================= -->
             <div id="posts" class="row mx-auto col-lg-9">
-                {% for post in page_object.object_list %}
-                  {% include 'includes/post_card_template.html' %}
+                {% for support in page_object.object_list %}
+                  {% include 'support/support_card_template.html' %}
                 {% endfor %}
             </div><!-- #posts end -->
         </div>

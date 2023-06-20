@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
+{% load cache %}
 {% block content %}
+{% cache 360 support_detail_page %}
 <!-- Page Title
 ============================================= -->
 <section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
@@ -10,6 +12,7 @@
     </div>
 
 </section><!-- #page-title end -->
+{% endcache %}
 {% include 'includes/_header.html'%}
 <!-- Content============================================= -->
 <section id="content">
@@ -20,17 +23,25 @@
 				<!-- Post Content
 				============================================= -->
 				<div class="postcontent mx-auto col-lg-9">
-                    <div class="card">
-                      <h5 class="card-header">{{ support.date_pub }}</h5>
-                      <div class="card-body">
-                        <h5 class="card-title">{{ support.title }}</h5>
-                        <p class="card-text">{{ support.body }}</p>
-                      </div>
-                      <div class="card-footer text-muted">
-                          <a href="{{ admin_object.get_delete_url }}" class="btn btn-danger">Удалить</a>
-                          <a href="{{ admin_object.get_update_url }}" class="btn btn-light">Редактировать</a>
-                      </div>
+
+                    <div class="entry col-12">
+                        <div class="grid-inner">
+                            <div class="entry-title">
+                                <h2><a href="blog-single.html">{{ support.title }}</a></h2>
+                            </div>
+                            <div class="entry-meta">
+                                <ul>
+                                    <li><i class="icon-calendar3"></i> {{ support.date_pub }}</li>
+                                </ul>
+                            </div>
+                            <div class="entry-content">
+                                <p>{{ support.body }}</p>
+                                <a href="{{ admin_object.get_delete_url }}" class="btn btn-danger">Удалить</a>
+                                <a href="{{ admin_object.get_update_url }}" class="btn btn-light">Редактировать</a>
+                            </div>
+                        </div>
                     </div>
+
                 </div><!-- #posts end -->
             </div>
         </div>

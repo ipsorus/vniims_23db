@@ -1,3 +1,5 @@
+{% load cache %}
+{% cache 3600 footer %}
 <!-- Footer
 ============================================= -->
 <footer id="footer">
@@ -16,3 +18,4 @@
     </div>
 </div><!-- #copyrights end -->
 </footer><!-- #footer end -->
+{% endcache %}

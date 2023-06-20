@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
+{% load cache %}
 
 {% block content %}
 {% include 'includes/_header.html'%}
+{% cache 360 index_page %}
 <section id="content">
     <div class="content-wrap">
         <div class="container clearfix">
@@ -16,7 +18,7 @@
 
                 <div class="col-lg-7">
                     <div style="position: relative; margin-bottom: 70px;" class="ohidden" data-height-lg="426" data-height-md="567" data-height-sm="470" data-height-xs="287" data-height-xxs="183">
-                        <img src="{% static 'assets/images/main_image.png' %}" style="position: absolute; top: 0; left: 0;" data-animate="fadeInUp" data-delay="100" alt="Chrome">
+                        <img src="{% static 'assets/images/main_image.png' %}" style="position: absolute; top: 0; left: 0;" data-animate="fadeInUp" data-delay="5" alt="Chrome">
                     </div>
                 </div>
             </div>
@@ -68,12 +70,12 @@
 
 					<div class="row align-items-center col-mb-50">
 						<div class="col-md-5">
-							<img data-animate="fadeInLeftBig" src="{% static 'assets/images/support.png' %}" alt="Imac">
+							<img data-animate="fadeInLeftBig faster" data-delay="5" src="{% static 'assets/images/support.png' %}" alt="Support">
 						</div>
 
 						<div class="col-md-7 text-center text-md-start">
-							{% for post in page_object.object_list %}
-                              {% include 'includes/post_card_template.html' %}
+							{% for support in page_object.object_list %}
+                              {% include 'support/support_card_template.html' %}
                             {% endfor %}
 						</div>
 					</div>
@@ -81,5 +83,5 @@
         </div>
     </div>
 </section>
-
+{% endcache %}
 {% endblock %}

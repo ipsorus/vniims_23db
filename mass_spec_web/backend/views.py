@@ -5,6 +5,7 @@ from pathlib import Path
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -139,10 +140,10 @@ def support_page(request):
     search_query = request.GET.get('search', '')
 
     if search_query:
-        posts = Support.objects.filter(Q(title__icontains=search_query) | Q(body__icontains=search_query))
+        support_posts = Support.objects.filter(Q(title__icontains=search_query) | Q(body__icontains=search_query))
     else:
-        posts = Support.objects.all()
-    paginator = Paginator(posts, 5)
+        support_posts = Support.objects.all()
+    paginator = Paginator(support_posts, 5)
 
     page_number = request.GET.get('page', 1)
     page = paginator.get_page(page_number)
@@ -168,9 +169,20 @@ def support_page(request):
 
 
 def main_page(request):
-    spectrum_etalon = Spectrum.objects.filter(is_etalon=True).count()
-    spectrum_users = Spectrum.objects.filter(is_etalon=False).count()
-    users = CustomUser.objects.all().count()
+    spectrum_etalon = cache.get('spectrum_etalon')
+    spectrum_users = cache.get('spectrum_users')
+    users = cache.get('users')
+    if not spectrum_etalon:
+        spectrum_etalon = Spectrum.objects.filter(is_etalon=True).count()
+        cache.set('spectrum_etalon', spectrum_etalon, 3600)
+
+    if not spectrum_users:
+        spectrum_users = Spectrum.objects.filter(is_etalon=False).count()
+        cache.set('spectrum_users', spectrum_users, 3600)
+
+    if not users:
+        users = CustomUser.objects.all().count()
+        cache.set('users', users, 3600)
 
     search_query = request.GET.get('search', '')
 
@@ -571,7 +583,7 @@ def spectrum_search(request):
 
 
 def spectrum_list(request):
-    spectrums = Spectrum.objects.filter(draft=False)
+    spectrums = Spectrum.objects.filter(draft=False, is_etalon=False)
     objects = list(map(map_spectrum, spectrums))
 
     paginator = Paginator(objects, 10)
@@ -598,6 +610,36 @@ def spectrum_list(request):
         'next_url': next_url
     }
     return render(request, 'spectra/spectrum_list.html', context=context)
+
+
+def spectrum_certified_list(request):
+    spectrums = Spectrum.objects.filter(draft=False, is_etalon=True)
+    objects = list(map(map_spectrum, spectrums))
+
+    paginator = Paginator(objects, 10)
+
+    page_number = request.GET.get('page', 1)
+    page = paginator.get_page(page_number)
+
+    is_paginated = page.has_other_pages()
+
+    if page.has_previous():
+        prev_url = '?page={}'.format(page.previous_page_number())
+    else:
+        prev_url = ''
+    if page.has_next():
+        next_url = '?page={}'.format(page.next_page_number())
+    else:
+        next_url = ''
+
+    context = {
+        'count': spectrums.count(),
+        'page_object': page,
+        'is_paginated': is_paginated,
+        'prev_url': prev_url,
+        'next_url': next_url
+    }
+    return render(request, 'spectra/spectrum_certified_list.html', context=context)
 
 
 @login_required()
@@ -690,3 +732,19 @@ def contacts(request):
 
 class UploadSpectrum(SpectrumMixin, View):
     pass
+
+
+def custom_page_not_found_view(request, exception):
+    return render(request, "errors/404.html", {})
+
+
+def custom_error_view(request, exception=None):
+    return render(request, "errors/500.html", {})
+
+
+def custom_permission_denied_view(request, exception=None):
+    return render(request, "errors/403.html", {})
+
+
+def custom_bad_request_view(request, exception=None):
+    return render(request, "errors/400.html", {})

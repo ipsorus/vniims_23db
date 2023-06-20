@@ -1,13 +1,15 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
+<!-- Bootstrap Data Table Plugin -->
+	<link rel="stylesheet" href="{% static 'assets/css_new/components/bs-datatable.css' %}" type="text/css" />
 <!-- Page Title
 ============================================= -->
 <section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
 
     <div class="container clearfix">
         <h1>Масс-спектры в базе данных (всего {{ count }}):</h1>
-        <p class="mb-0 mt-2">В разделе собраны подтвержденные пользовательские масс-спектры</p>
+        <p class="mb-0 mt-2">В разделе собраны аттестованные масс-спектры</p>
     </div>
 
 </section><!-- #page-title end -->
@@ -16,6 +18,23 @@
 <section id="content">
 	<div class="content-wrap">
 		<div class="container clearfix">
+<!--            <div class="table-responsive">-->
+<!--                <table id="datatable4" cellspacing="0" width="100%">-->
+<!--                    <thead>-->
+<!--                      <tr>-->
+<!--                        <th></th>-->
+<!--                      </tr>-->
+<!--                    </thead>-->
+<!--                    <tbody>-->
+<!--                    {% for spec in page_object %}-->
+<!--                    <tr><td>-->
+<!--                      {% include 'spectra/display/spectrum_card_template.html' %}-->
+<!--                    </td></tr>-->
+<!--                    {% endfor %}-->
+
+<!--                    </tbody>-->
+<!--                </table>-->
+<!--            </div>-->
             <div class="row gutter-40 col-mb-80">
 				<!-- Post Content
 				============================================= -->

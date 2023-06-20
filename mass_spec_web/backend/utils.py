@@ -1,4 +1,5 @@
 import os
+import pathlib
 import re
 from datetime import datetime
 from pathlib import Path
@@ -277,12 +278,16 @@ class SpectrumDeleteMixin:
     def post(self, request, id):
         obj = self.model.objects.get(id=id)
         obj.delete()
+        filename = os.path.join(BASE_DIR, 'staticfiles/plots/plot-%d.png' % id)
+
+        if os.path.isfile(filename):
+            os.remove(filename)
+
         return redirect(reverse(self.redirect_url))
 
 
 class SpectrumMixin:
     def get(self, request):
-        print('request.path', request.path)
         return render(request, 'spectra/upload/upload_file.html')
 
     def post(self, request):

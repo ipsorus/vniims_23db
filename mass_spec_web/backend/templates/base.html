@@ -1,4 +1,5 @@
 {% load static %}
+{% load cache %}
 
 <!DOCTYPE html>
 <html dir="ltr" lang="ru-RU">
@@ -11,6 +12,7 @@
 	<!-- Stylesheets
 	============================================= -->
     {% block stylesheets %}
+	{% cache 3600 base_page_css %}
 <!--	<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />-->
 	<link rel="stylesheet" href="{% static 'assets/css_new/bootstrap.css' %}" type="text/css" />
 	<link rel="stylesheet" href="{% static 'assets/css_new/style.css' %}" type="text/css" />
@@ -26,6 +28,7 @@
 <!--	<link rel="stylesheet" href="{% static 'assets/css_new/components/bs-filestyle.css' %}" type="text/css" />-->
 	<!-- Font awesome CSS -->
 	<link rel="stylesheet" href="{% static 'assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+	{% endcache %}
 	{% endblock stylesheets %}
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<!--[if lt IE 9]>
@@ -45,6 +48,7 @@
 	<div id="wrapper" class="clearfix">
 		{% include 'includes/navbar.html'%}
 		{% if request.path == '/' %}
+		{% cache 3600 base_page_main_image %}
 		<section id="slider" class="slider-element slider-parallax min-vh-60 min-vh-md-100 dark include-header" style="background: url({% static 'assets/images/logo-img1.png' %}) center center no-repeat; background-attachment: fixed; background-size: cover">
 			<div class="slider-inner">
 
@@ -82,6 +86,7 @@
 				<a href="#" data-scrollto="#content" data-offset="100" class="one-page-arrow dark"><i class="icon-angle-down infinite animated fadeInDown"></i></a>
 			</div>
 		</section>
+		{% endcache %}
 		{% endif %}
 		<!-- Content
 		============================================= -->
@@ -120,9 +125,10 @@
 	<div id="gotoTop" class="icon-angle-up"></div>
 
     {% block scripts %}
+	{% cache 3600 base_page_js %}
 	<!-- External JavaScripts
 	============================================= -->
-<!--    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>-->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 	<script type="text/javascript" src="{% static 'assets/js/js_new/jquery.js' %}"></script>
 	<script type="text/javascript" src="{% static 'assets/js/js_new/plugins.js' %}"></script>
 
@@ -136,6 +142,7 @@
 	<script src="{% static 'assets/js/jquery.bootstrap.modal.forms.js' %}"></script>
 
 	<script src="{% static 'assets/js/loader.js' %}"></script>
+	{% endcache %}
     {% endblock scripts %}
 
 	{% include "includes/_modal.html" %}
