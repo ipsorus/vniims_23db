@@ -173,11 +173,11 @@ def main_page(request):
     spectrum_users = cache.get('spectrum_users')
     users = cache.get('users')
     if not spectrum_etalon:
-        spectrum_etalon = Spectrum.objects.filter(is_etalon=True).count()
+        spectrum_etalon = Spectrum.objects.filter(is_etalon=True, draft=False).count()
         cache.set('spectrum_etalon', spectrum_etalon, 360)
 
     if not spectrum_users:
-        spectrum_users = Spectrum.objects.filter(is_etalon=False).count()
+        spectrum_users = Spectrum.objects.filter(is_etalon=False, draft=False).count()
         cache.set('spectrum_users', spectrum_users, 360)
 
     if not users:
