@@ -48,4 +48,66 @@
 				</div>
 			</div>
 		</section><!-- #content end -->
+<!--<div class="accordion" id="accordionPanelsStayOpenExample">-->
+<!--    {% for user in page_object.object_list %}-->
+<!--  <div class="accordion-item">-->
+<!--    <h2 class="accordion-header" id="panelsStayOpen-heading{{ forloop.counter0 }}">-->
+<!--      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse{{ forloop.counter0 }}" aria-expanded="false" aria-controls="panelsStayOpen-collapse{{ forloop.counter0 }}">-->
+<!--        Пользователь: {{user.last_name}} {{user.first_name}}-->
+<!--      </button>-->
+<!--    </h2>-->
+<!--    <div id="panelsStayOpen-collapse{{ forloop.counter0 }}" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-heading{{ forloop.counter0 }}">-->
+<!--      <div class="accordion-body">-->
+<!--              {{user.first_name}}-->
+<!--              {{user.last_name}}-->
+<!--              {{user.organization}}-->
+<!--              {{user.position}}-->
+<!--              {{user.is_staff}}-->
+<!--              {{user.is_active}}-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    {% endfor %}-->
+<!--</div>-->
+
+<!--<div *ngIf="auth.isLoggedIn() && auth.isAdmin()">-->
+<!--        <div class="form-group">-->
+<!--            <table class="table">-->
+<!--                <thead>-->
+<!--                <tr>-->
+<!--                    <th>Имя</th>-->
+<!--                    <th>Фамилия</th>-->
+<!--                    <th>Организация</th>-->
+<!--                    <th>Должность</th>-->
+<!--                    <th>Роль в системе</th>-->
+<!--                    <th></th>-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody>-->
+<!--                {% for user in page_object.object_list %}-->
+<!--               <tr>-->
+<!--                    <td>{{user.first_name}}</td>-->
+<!--                    <td>{{user.last_name}}</td>-->
+<!--                    <td>{{user.organization}}</td>-->
+<!--                    <td>{{user.position}}</td>-->
+<!--                    <td>{{user.is_staff}}</td>-->
+<!--                    <td>{{user.is_active}}</td>-->
+<!--                    <td>-->
+<!--                        <button (click)="displayEditDialog(sub)" class="btn btn-default"><fa-icon-->
+<!--                                [icon]="faEdit"></fa-icon></button>-->
+<!--                        <button (click)="remove(i)" class="btn btn-default"><fa-icon-->
+<!--                                [icon]="faMinusSquare"></fa-icon></button>-->
+<!--                        <input type="hidden" name="sub.id" name="subid" [(ngModel)]="sub.id" value="{{sub.id}}"/>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--            {% endfor %}-->
+<!--                </tbody>-->
+<!--              <br />-->
+<!--            </table>-->
+<!--        </div>-->
+
+<!--        <button (click)="displayCreateDialog()" class="btn btn-default"><fa-icon-->
+<!--                [icon]="faUser"></fa-icon>Добавить пользователя-->
+<!--        </button>-->
+<!--</div>-->
 {% endblock %}

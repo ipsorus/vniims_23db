@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
+{% load cache %}
 {% block content %}
 {% include 'includes/_header.html'%}
+{% cache 360 error_500_page %}
 <!-- Content
 ============================================= -->
 <section id="content">
@@ -24,4 +26,5 @@
         </div>
     </div>
 </section><!-- #content end -->
+{% endcache %}
 {% endblock %}

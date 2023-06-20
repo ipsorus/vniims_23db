@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
-
+{% load cache %}
 {% block content %}
-
+{% cache 360 news_page %}
 <!-- Page Title
 ============================================= -->
 <section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
@@ -12,7 +12,7 @@
     </div>
 
 </section><!-- #page-title end -->
-
+{% endcache %}
 {% include 'includes/_header.html'%}
 <!-- Content============================================= -->
 <section id="content">
