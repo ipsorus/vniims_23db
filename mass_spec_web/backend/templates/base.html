@@ -46,7 +46,7 @@
 	<div id="wrapper" class="clearfix">
 		{% include 'includes/navbar.html'%}
 		{% if request.path == '/' %}
-		{% cache 3600 base_page_main_image %}
+		{% cache 360 base_page_main_image %}
 		<section id="slider" class="slider-element slider-parallax min-vh-60 min-vh-md-100 dark include-header" style="background: url({% static 'assets/images/logo-img1.png' %}) center center no-repeat; background-attachment: fixed; background-size: cover">
 			<div class="slider-inner">
 

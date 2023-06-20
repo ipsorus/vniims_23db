@@ -174,15 +174,15 @@ def main_page(request):
     users = cache.get('users')
     if not spectrum_etalon:
         spectrum_etalon = Spectrum.objects.filter(is_etalon=True).count()
-        cache.set('spectrum_etalon', spectrum_etalon, 3600)
+        cache.set('spectrum_etalon', spectrum_etalon, 360)
 
     if not spectrum_users:
         spectrum_users = Spectrum.objects.filter(is_etalon=False).count()
-        cache.set('spectrum_users', spectrum_users, 3600)
+        cache.set('spectrum_users', spectrum_users, 360)
 
     if not users:
         users = CustomUser.objects.all().count()
-        cache.set('users', users, 3600)
+        cache.set('users', users, 360)
 
     search_query = request.GET.get('search', '')
 
