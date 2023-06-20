@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
-{% load cache %}
+
 
 {% block content %}
 {% include 'includes/_header.html'%}
-{% cache 360 index_page %}
+
 <section id="content">
     <div class="content-wrap">
         <div class="container clearfix">
@@ -83,5 +83,5 @@
         </div>
     </div>
 </section>
-{% endcache %}
+
 {% endblock %}

@@ -1,5 +1,4 @@
 {% load static %}
-{% load cache %}
 
 <!-- Header
 ============================================= -->
@@ -8,7 +7,6 @@
     <div id="header-wrap">
         <div class="container">
             <div class="header-row">
-                {% cache 360 navbar %}
                 <!-- Logo
                 ============================================= -->
                 <div id="logo">
@@ -60,7 +58,6 @@
                         <li class="menu-item">
                           <a class="menu-link" href="{% url 'support_page_url' %}">Техподдержка</a>
                         </li>
-                        {% endcache %}
                         <li class="menu-item">
                             <a class="menu-link" href="#">
                                 {% if user.is_authenticated %}

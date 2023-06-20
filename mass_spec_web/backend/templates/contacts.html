@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% load cache %}
 {% block content %}
-{% cache 360 contacts_page %}
 <!-- Page Title
 ============================================= -->
 <section id="page-title" class="dark" style="background-image: url({% static 'assets/images/main_image1.png' %});">
@@ -43,5 +41,4 @@
         </div>
     </div>
 </section>
-{% endcache %}
 {% endblock %}
