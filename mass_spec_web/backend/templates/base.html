@@ -12,6 +12,7 @@
 	<!-- Stylesheets
 	============================================= -->
     {% block stylesheets %}
+	{% cache 3600 base_page_css %}
 <!--	<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />-->
 	<link rel="stylesheet" href="{% static 'assets/css_new/bootstrap.css' %}" type="text/css" />
 	<link rel="stylesheet" href="{% static 'assets/css_new/style.css' %}" type="text/css" />
@@ -27,6 +28,7 @@
 <!--	<link rel="stylesheet" href="{% static 'assets/css_new/components/bs-filestyle.css' %}" type="text/css" />-->
 	<!-- Font awesome CSS -->
 	<link rel="stylesheet" href="{% static 'assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+	{% endcache %}
 	{% endblock stylesheets %}
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<!--[if lt IE 9]>
@@ -123,6 +125,7 @@
 	<div id="gotoTop" class="icon-angle-up"></div>
 
     {% block scripts %}
+	{% cache 3600 base_page_js %}
 	<!-- External JavaScripts
 	============================================= -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -139,6 +142,7 @@
 	<script src="{% static 'assets/js/jquery.bootstrap.modal.forms.js' %}"></script>
 
 	<script src="{% static 'assets/js/loader.js' %}"></script>
+	{% endcache %}
     {% endblock scripts %}
 
 	{% include "includes/_modal.html" %}

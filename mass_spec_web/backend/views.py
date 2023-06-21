@@ -382,15 +382,15 @@ def spectrum_similarity_search(request):
                 cosine_greedy = CosineGreedy(tolerance=0.2)
 
                 score = cosine_greedy.pair(reference, spectrum_query)
-                print(
-                    f"Cosine score is {score['score']:.2f} with {score['matches']} matched peaks, id: {reference.get('id')}")
+                # print(
+                #     f"Cosine score is {score['score']:.2f} with {score['matches']} matched peaks, id: {reference.get('id')}")
                 if float(f"{score['score']:.2f}") >= float(request.POST.get('minSimilarity')):
                     total_matches.append({'id': reference.get('id'),
                                           'score': float(f"{score['score']:.2f}"),
                                           'matched_peaks': int(f"{score['matches']}"),
                                           'name': Spectrum.objects.filter(id=reference.get('id')).values_list('name', flat=True).get()})
 
-            print('total', total_matches, len(total_matches))
+            # print('total', total_matches, len(total_matches))
 
             res = []
 
@@ -508,42 +508,35 @@ def spectrum_search(request):
     }
 
     if request.GET:
-        print('req', request.GET)
         search_url = ''
         search_queryes = dict()
         res = []
 
         if request.GET.get('Name', ''):
             res = list(Spectrum.objects.filter(Q(name__icontains=request.GET.get('Name', ''))).filter(draft=False))
-            print('res', res)
             search_queryes.update({'Название': request.GET.get('Name', '')})
             search_url += f"&Name={request.GET.get('Name', '')}"
         if request.GET.get('Formula', ''):
             # res2 = Metadata.objects.filter(Q(value__icontains=request.GET.get('Formula', ''))).values_list('spectrum', flat=True)
-            res2 = list(Spectrum.objects.filter(Q(name__icontains=request.GET.get('Formula', ''))).filter(draft=False))
-            print('res2', res2)
+            res2 = list(Spectrum.objects.filter(Q(formula__icontains=request.GET.get('Formula', ''))).filter(draft=False))
             search_queryes.update({'Формула': request.GET.get('Formula', '')})
             search_url += f"&Formula={request.GET.get('Formula', '')}"
             res += res2
             # for item in res2:
             #     res.append(Spectrum.objects.get(id=item))
         if request.GET.get('Cas', ''):
-            res3 = list(Spectrum.objects.filter(Q(name__icontains=request.GET.get('Cas', ''))).filter(draft=False))
-            print('res3', res3)
+            res3 = list(Spectrum.objects.filter(Q(cas__icontains=request.GET.get('Cas', ''))).filter(draft=False))
             search_queryes.update({'CAS-номер': request.GET.get('Cas', '')})
             search_url += f"&Cas={request.GET.get('Cas', '')}"
             res += res3
         if request.GET.get('Exact_mass', ''):
-            res4 = list(Spectrum.objects.filter(Q(name__icontains=request.GET.get('Exact_mass', ''))).filter(draft=False))
-            print('res2', res4)
+            res4 = list(Spectrum.objects.filter(Q(exact_mass__icontains=request.GET.get('Exact_mass', ''))).filter(draft=False))
             search_queryes.update({'Точная масса': request.GET.get('Exact_mass', '')})
             search_url += f"&Exact_mass={request.GET.get('Exact_mass', '')}"
             res += res4
-        print('res_before', res)
 
         if res:
             res_set = set(res)
-            print('res_after', res_set)
 
             objects = list(map(map_spectrum, res_set))
 
