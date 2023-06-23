@@ -1,0 +1,55 @@
+/*-----------------------------------------------------------------------------------
+
+    Theme Name: Canvas
+    Theme URI: http://themes.semicolonweb.com/html/canvas
+    Description: The Multi-Purpose Template
+    Author: SemiColonWeb
+    Author URI: http://themeforest.net/user/semicolonweb
+    Version: 6.6.5
+
+    SASS Stylesheet
+
+-----------------------------------------------------------------------------------*/
+
+/* Bootstrap */
+@import url("imports/bootstrap.css");
+
+/* Core CSS */
+@import url("imports/layouts.css");
+@import url("imports/typography.css");
+@import url("imports/utilities.css");
+
+
+/* Content Blocks */
+@import url("imports/topbar.css");
+@import url("imports/header.css");
+@import url("imports/sliders.css");
+@import url("imports/pagetitle.css");
+@import url("imports/content.css");
+@import url("imports/portfolio.css");
+@import url("imports/blog.css");
+@import url("imports/shop.css");
+@import url("imports/events.css");
+
+
+/* Shortcodes */
+@import url("imports/shortcodes.css");
+
+/* Forms */
+@import url("imports/forms.css");
+
+/* Footer */
+@import url("imports/footer.css");
+
+
+/* Widgets */
+@import url("imports/widgets.css");
+
+/* Paginations */
+@import url("imports/paginations.css");
+
+/* Extras */
+@import url("imports/extras.css");
+
+/* Page Loaders */
+@import url("imports/page-loaders.css");

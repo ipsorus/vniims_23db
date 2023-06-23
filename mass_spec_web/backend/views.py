@@ -326,10 +326,9 @@ def map_spectrum(spectrum: Spectrum):
 
     return {
         'spectrum': spectrum,
-        'image': "plots/plot-%d.png" % spectrum.id,
-        # 'plot_div': plot_div,
+        'image': "plots/plot-%d.png" % spectrum.pk,
         'name': spectrum.name,
-        'id': spectrum.id,
+        'id': spectrum.pk,
         'author': spectrum.author,
         'create_date': spectrum.date_created,
         'fields': fields
