@@ -14,14 +14,18 @@
     {% block stylesheets %}
 	{% cache 3600 base_page_css %}
 <!--	<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />-->
-	<link rel="stylesheet" href="{% static 'assets/css/bootstrap.css' %}" type="text/css" />
-	<link rel="stylesheet" href="{% static 'assets/css/style.css' %}" type="text/css" />
-	<link rel="stylesheet" href="{% static 'assets/css/swiper.css' %}" type="text/css" />
-	<link rel="stylesheet" href="{% static 'assets/css/dark.css' %}" type="text/css" />
-	<link rel="stylesheet" href="{% static 'assets/css/font-icons.css' %}" type="text/css" />
-	<link rel="stylesheet" href="{% static 'assets/css/animate.css' %}" type="text/css" />
-	<link rel="stylesheet" href="{% static 'assets/css/magnific-popup.css' %}" type="text/css" />
-	<link rel="stylesheet" href="{% static 'assets/css/custom.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/bootstrap.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/style.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/swiper.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/dark.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/font-icons.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/animate.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/magnific-popup.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/css_new/custom.css' %}" type="text/css" />
+<!--	<link href="{% static 'assets/css/search.css' %}" rel="stylesheet" type="text/css"/>-->
+<!--	<link href="{% static 'assets/css/autocomplete.css' %}" rel="stylesheet" type="text/css"/>-->
+	<!-- Bootstrap File Upload CSS -->
+<!--	<link rel="stylesheet" href="{% static 'assets/css_new/components/bs-filestyle.css' %}" type="text/css" />-->
 	<!-- Font awesome CSS -->
 	<link rel="stylesheet" href="{% static 'assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
 	{% endcache %}
@@ -125,15 +129,15 @@
 	<!-- External JavaScripts
 	============================================= -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-	<script type="text/javascript" src="{% static 'assets/js/jquery.js' %}"></script>
-	<script type="text/javascript" src="{% static 'assets/js/plugins.js' %}"></script>
+	<script type="text/javascript" src="{% static 'assets/js/js_new/jquery.js' %}"></script>
+	<script type="text/javascript" src="{% static 'assets/js/js_new/plugins.js' %}"></script>
 
 	<!-- Bootstrap Data Table Plugin -->
-	<script type="text/javascript" src="{% static 'assets/js/components/bs-datatable.js' %}"></script>
+	<script type="text/javascript" src="{% static 'assets/js/js_new/components/bs-datatable.js' %}"></script>
 
 	<!-- Footer Scripts
 	============================================= -->
-	<script type="text/javascript" src="{% static 'assets/js/functions.js' %}"></script>
+	<script type="text/javascript" src="{% static 'assets/js/js_new/functions.js' %}"></script>
 	<!-- You can alternatively load the minified version -->
 	<script src="{% static 'assets/js/jquery.bootstrap.modal.forms.js' %}"></script>
 
