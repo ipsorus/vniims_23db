@@ -204,8 +204,8 @@ CACHES = {
         'LOCATION': os.path.join(BASE_DIR, 'mass_spec_cache'),
     }
 }
-
-# Simplified static file serving.
-# https://pypi.org/project/whitenoise/
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+# 
+# # Simplified static file serving.
+# # https://pypi.org/project/whitenoise/
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
