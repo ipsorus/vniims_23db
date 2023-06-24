@@ -28,8 +28,7 @@ from django.urls import reverse_lazy
 
 from .utils import ObjectDetailMixin, ObjectCreateMixin, ObjectUpdateMixin, ObjectDeleteMixin, UserDetailMixin, \
     UserUpdateMixin, generate_spectrum_plot, SpectrumMixin, \
-    SpectrumUpdateMixin, SpectrumDeleteMixin
-
+    SpectrumUpdateMixin, SpectrumDeleteMixin, generate_spectrum_mini_plot
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -740,3 +739,10 @@ def custom_permission_denied_view(request, exception=None):
 
 def custom_bad_request_view(request, exception=None):
     return render(request, "errors/400.html", {})
+
+
+def rebuild_mini_plot(request):
+    spectrums = Spectrum.object.filter(is_draft=False)
+
+    for spectrum in spectrums:
+        generate_spectrum_mini_plot(peaks_list=spectrum.spectrum_json, save_image=True, id=spectrum.pk)
