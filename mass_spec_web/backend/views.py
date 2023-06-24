@@ -742,7 +742,7 @@ def custom_bad_request_view(request, exception=None):
 
 
 def rebuild_mini_plot(request):
-    spectrums = Spectrum.object.filter(is_draft=False)
+    spectrums = Spectrum.objects.filter(is_draft=False)
 
     for spectrum in spectrums:
         generate_spectrum_mini_plot(peaks_list=spectrum.spectrum_json, save_image=True, id=spectrum.pk)
