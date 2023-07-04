@@ -1,4 +1,3 @@
-import os
 import re
 from datetime import datetime
 from pathlib import Path
@@ -6,7 +5,6 @@ from pathlib import Path
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
-from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.views import View, generic
@@ -20,8 +18,7 @@ from .forms import CustomUserCreationForm, CustomAuthenticationForm, TagForm, Po
 import json
 from io import BytesIO
 
-import pymzml
-from bootstrap_modal_forms.generic import BSModalCreateView, BSModalLoginView
+from bootstrap_modal_forms.generic import BSModalLoginView
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -319,9 +316,6 @@ def map_spectrum(spectrum: Spectrum):
     formula = Metadata.objects.filter(spectrum_id=spectrum.id, name__icontains='Formula')
 
     fields = [precursor_type, spectrum_type, precursor_mz, instrument_type, ion_mode, collision_energy, formula]
-    # peaks_list = spectrum.spectrum_json
-
-    # plot_div = generate_spectrum_mini_plot(peaks_list=peaks_list, save_image=True, id=spectrum.id)
 
     return {
         'spectrum': spectrum,
