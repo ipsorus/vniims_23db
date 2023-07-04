@@ -12,7 +12,7 @@
 	<!-- Stylesheets
 	============================================= -->
     {% block stylesheets %}
-	{% cache 3600 base_page_css %}
+	{% cache 5600 base_page_css %}
 <!--	<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />-->
 	<link rel="stylesheet" href="{% static 'assets/css/bootstrap.css' %}" type="text/css" />
 	<link rel="stylesheet" href="{% static 'assets/css/style.css' %}" type="text/css" />
@@ -121,7 +121,7 @@
 	<div id="gotoTop" class="icon-angle-up"></div>
 
     {% block scripts %}
-	{% cache 3600 base_page_js %}
+	{% cache 5600 base_page_js %}
 	<!-- External JavaScripts
 	============================================= -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
